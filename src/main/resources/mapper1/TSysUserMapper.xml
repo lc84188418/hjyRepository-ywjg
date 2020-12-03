@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hjy.system.dao.TSysUserMapper">
+
+<sql id="BaseColumnList" >
+        pk_user_id,
+        username,
+        password,
+        last_login_date,
+        fk_dept_id,
+        email,
+        tel,
+        enable_status,
+        create_time,
+        IDcard,
+        modify_time,
+        full_name,
+        police_num,
+        unit,
+        on_line,
+        ip,
+        address,
+  </sql>
+    <!--No problem 通过主键查询单个-->
+    <select id="selectById" resultType="com.hjy.system.entity.TSysUser" parameterType="java.lang.String">
+        select * from t_sys_user
+        where pk_user_id = #{pkUserId,jdbcType=VARCHAR}
+    </select>
+    <!--No problem 通过实体作为筛选条件查询-->
+    <select id="selectAllByEntity" resultType="com.hjy.system.entity.TSysUser" parameterType="com.hjy.system.entity.TSysUser">
+        select * from t_sys_user
+        <where>
+            <if test="username != null and username != ''">
+                and username like '%${username}%'
+            </if>
+            <if test="enableStatus != null">
+                and enable_status = #{enableStatus,jdbcType=VARCHAR}
+            </if>
+            <if test="IDcard != null and IDcard != ''">
+                and IDcard like '%${IDcard}%'
+            </if>
+            <if test="fullName != null and fullName != ''">
+                and full_name like '%${fullName}%'
+            </if>
+            <if test="policeNum != null and policeNum != ''">
+                and police_num like '%${policeNum}%'
+            </if>
+            <if test="unit != null and unit != ''">
+                and unit = #{unit,jdbcType=VARCHAR}
+            </if>
+            <if test="onLine != null">
+                and on_line = #{onLine,jdbcType=VARCHAR}
+            </if>
+            <if test="ip != null and ip != '' and ip != 'null'">
+                and ip = #{ip,jdbcType=VARCHAR}
+            </if><if test="address != null and address != ''">
+                and address like '%${address}%'
+            </if>
+        </where>
+    </select>
+    <!--No problem 新增数据-->
+    <insert id="insertSelective" parameterType="com.hjy.system.entity.TSysUser">
+        insert into t_sys_user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="pkUserId != null and pkUserId != ''">
+                pk_user_id,
+            </if>
+            <if test="username != null and username != ''">
+                username,
+            </if>
+            <if test="password != null and password != ''">
+                password,
+            </if>
+            <if test="fkDeptId != null and fkDeptId != ''">
+                fk_dept_id,
+            </if>
+            <if test="email != null and email != ''">
+                email,
+            </if>
+            <if test="tel != null and email != ''">
+                tel,
+            </if>
+            <if test="enableStatus != null and enableStatus !=''">
+                enable_status,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="IDcard != null and IDcard != ''">
+                IDcard,
+            </if>
+            <if test="modifyTime != null">
+                modify_time,
+            </if>
+            <if test="fullName != null and fullName != ''">
+                full_name,
+            </if>
+            <if test="policeNum != null and policeNum != ''">
+                police_num,
+            </if>
+            <if test="unit != null and unit != ''">
+                unit,
+            </if>
+            <if test="ip != null and ip != ''">
+                ip,
+            </if>
+            <if test="address != null and address != ''">
+                address,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="pkUserId != null and pkUserId != ''">
+                #{pkUserId,jdbcType=VARCHAR},
+            </if>
+            <if test="username != null and username != ''">
+                #{username,jdbcType=VARCHAR},
+            </if>
+            <if test="password != null and password != ''">
+                #{password,jdbcType=VARCHAR},
+            </if>
+            <if test="fkDeptId != null and fkDeptId != ''">
+                #{fkDeptId,jdbcType=VARCHAR},
+            </if>
+            <if test="email != null and email != ''">
+                #{email,jdbcType=VARCHAR},
+            </if>
+            <if test="tel != null and tel != ''">
+                #{tel,jdbcType=VARCHAR},
+            </if>
+            <if test="enableStatus != null and enableStatus !=''">
+                #{enableStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=DATE},
+            </if>
+            <if test="IDcard != null and IDcard != ''">
+                #{IDcard,jdbcType=VARCHAR},
+            </if>
+            <if test="modifyTime != null">
+                #{modifyTime,jdbcType=DATE},
+            </if>
+            <if test="fullName != null and fullName != ''">
+                #{fullName,jdbcType=VARCHAR},
+            </if>
+            <if test="policeNum != null and policeNum != ''">
+                #{policeNum,jdbcType=VARCHAR},
+            </if>
+            <if test="unit != null and unit != ''">
+                #{unit,jdbcType=VARCHAR},
+            </if>
+            <if test="ip != null and ip != ''">
+                #{ip,jdbcType=VARCHAR},
+            </if>
+            <if test="address != null and address != ''">
+                #{address,jdbcType=VARCHAR},
+            </if>
+            </trim>
+    </insert>
+
+    <!--No problem 通过主键修改数据-->
+    <update id="updateById" parameterType="com.hjy.system.entity.TSysUser">
+        update t_sys_user
+        <set>
+            <if test="password != null">
+                password = #{password,jdbcType=VARCHAR},
+            </if>
+            <if test="lastLoginDate != null">
+                last_login_date = #{lastLoginDate,jdbcType=DATE},
+            </if>
+            <if test="fkDeptId != null">
+                fk_dept_id = #{fkDeptId,jdbcType=VARCHAR},
+            </if>
+            <if test="email != null">
+                email = #{email,jdbcType=VARCHAR},
+            </if>
+            <if test="tel != null">
+                tel = #{tel,jdbcType=VARCHAR},
+            </if>
+            <if test="enableStatus != null">
+                enable_status = #{enableStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=DATE},
+            </if>
+            <if test="IDcard != null">
+                IDcard = #{IDcard,jdbcType=VARCHAR},
+            </if>
+            <if test="modifyTime != null">
+                modify_time = #{modifyTime,jdbcType=DATE},
+            </if>
+            <if test="fullName != null">
+                full_name = #{fullName,jdbcType=VARCHAR},
+            </if>
+            <if test="policeNum != null">
+                police_num = #{policeNum,jdbcType=VARCHAR},
+            </if>
+            <if test="unit != null">
+                unit = #{unit,jdbcType=VARCHAR},
+            </if>
+            <if test="onLine != null">
+                on_line = #{onLine,jdbcType=VARCHAR},
+            </if>
+            <if test="ip != null" >
+                ip = #{ip,jdbcType=VARCHAR},
+            </if>
+            <if test="address != null">
+                address = #{address,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where pk_user_id = #{pkUserId,jdbcType=VARCHAR}
+    </update>
+
+    <!-- No problem 通过主键删除-->
+    <delete id="deleteById" parameterType="java.lang.String">
+        delete from t_sys_user where pk_user_id = #{pkUserId,jdbcType=VARCHAR}
+    </delete>
+    <!--No problem 通过用户id用户角色表的数据-->
+    <delete id="deleteUserRoleByUserId">
+        delete from re_user_role where fk_user_id = #{fkUserId,jdbcType=VARCHAR}
+    </delete>
+    <!--No problem 通过用户id删除用户权限表的数据-->
+    <delete id="deleteUserPermsByUserId">
+        delete from re_user_perms where fk_user_id = #{fkUserId,jdbcType=VARCHAR}
+    </delete>
+    <!--No problem 查询所有行数据-->
+    <select id="selectAll" resultType="com.hjy.system.entity.TSysUser">
+        select * from t_sys_user
+    </select>
+    <!--No problem 通过用户id查询该用户所拥有的角色的id-->
+    <select id="selectUserRoleByUserId" resultType="java.lang.String" parameterType="java.lang.String">
+        select fk_role_id from re_user_role where fk_user_id = #{fkUserId,jdbcType=VARCHAR}
+    </select>
+    <!--No problem 通过用户名查询用户信息-->
+    <select id="selectUserByUsername" resultType="com.hjy.system.entity.TSysUser"
+            parameterType="java.lang.String">
+        select * from t_sys_user where username = #{username,jdbcType=VARCHAR}
+    </select>
+    <!--No problem 分页时查询总记录条数-->
+    <select id="selectSize" resultType="java.lang.Integer">
+        select count(*) from t_sys_user
+        where 1 = 1
+        <if test="unit != null and unit != '' and unit != 'null'">
+            and unit = #{unit}
+        </if>
+        <if test="fullName != null and fullName != ''and fullName != 'null'">
+            and  full_name = #{fullName}
+        </if>
+        <if test="IDcard != null and IDcard != ''and IDcard != 'null'">
+            and IDcard = #{IDcard,jdbcType=VARCHAR}
+        </if>
+        <if test="policeNum != null and policeNum != '' and policeNum != 'null'">
+            and police_num = #{policeNum}
+        </if>
+    </select>
+    <!--No problem 分页-模糊查询用户列表-->
+    <select id="selectAllPage" resultType="com.hjy.system.entity.TSysUser">
+        select t.*
+        from
+        (select rownum rn, u.*
+        from t_sys_user u
+        where rownum &lt;= #{endRow,jdbcType=INTEGER}
+		<if test="unit != null and unit != '' and unit != 'null'">
+            and unit = #{unit}
+        </if>
+        <if test="fullName != null and fullName != ''and fullName != 'null'">
+            and  full_name = #{fullName}
+        </if>
+        <if test="IDcard != null and IDcard != ''and IDcard != 'null'">
+            and IDcard = #{IDcard}
+        </if>
+        <if test="policeNum != null and policeNum != '' and policeNum != 'null'">
+            and police_num = #{policeNum}
+        </if>
+		) t
+        where t.rn &gt;= #{startRow,jdbcType=INTEGER}
+    </select>
+    <!--No problem 查询所有的用户名-->
+    <select id="selectAllUsername" resultType="java.lang.String">
+        select username from t_sys_user
+    </select>
+
+    <!--No problem 添加用户角色    -->
+    <insert id="addUserRoleByUserRole" parameterType="com.hjy.system.entity.ReUserRole">
+       insert into re_user_role(pk_userRole_id,fk_user_id,fk_role_id)
+        values (#{pk_userRole_id},#{fk_user_id},#{fk_role_id})
+    </insert>
+    <!--No problem 用户添加权限    -->
+    <insert id="addUserPermsByList">
+        insert ALL
+        <foreach collection="idList" item="item" separator="">
+            INTO
+            re_user_perms(pk_userPerms_id,fk_user_id,fk_perms_id)
+            values
+            (
+            #{item.pk_userPerms_id, jdbcType=VARCHAR},
+            #{item.fk_user_id, jdbcType=VARCHAR},
+            #{item.fk_perms_id, jdbcType=VARCHAR}
+            )
+        </foreach>
+        SELECT 1 FROM DUAL
+    </insert>
+    <!--该用户所有3级菜单-->
+    <select id="selectQuickSetByUser" resultType="com.hjy.system.entity.TSysPerms">
+        SELECT
+            T_SYS_PERMS.PK_PERMS_ID,
+	        T_SYS_PERMS.MENU_NAME
+        FROM
+            RE_USER_ROLE
+            INNER JOIN RE_ROLE_PERMS ON RE_USER_ROLE.FK_ROLE_ID = RE_ROLE_PERMS.FK_ROLE_ID
+            INNER JOIN T_SYS_PERMS ON RE_ROLE_PERMS.FK_PERMS_ID = T_SYS_PERMS.PK_PERMS_ID
+        WHERE
+            T_SYS_PERMS.TYPE = '3'
+            AND RE_USER_ROLE.FK_USER_ID = #{fkUserId}
+    </select>
+    <!--该用户已设置的快捷菜单-->
+    <select id="selectUserPermsByUser" resultType="java.lang.String">
+        SELECT FK_PERMS_ID FROM RE_USER_PERMS where FK_USER_ID= #{fkUserId}
+    </select>
+    <!--该用户已设置的快捷菜单信息-->
+    <select id="selectPermsByUser" resultType="com.hjy.system.entity.TSysPerms">
+        SELECT
+            T_SYS_PERMS.*
+        FROM
+            RE_USER_PERMS
+            INNER JOIN T_SYS_PERMS ON RE_USER_PERMS.FK_PERMS_ID = T_SYS_PERMS.PK_PERMS_ID
+        WHERE
+            RE_USER_PERMS.FK_USER_ID = #{fkUserId}
+    </select>
+</mapper>

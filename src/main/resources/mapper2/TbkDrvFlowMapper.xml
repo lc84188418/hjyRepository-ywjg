@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hjy.tbk.dao.TbkDrvFlowMapper">
+
+    <sql id="BaseColumnList" >
+        lsh,sfzmhm,dabh,xm,ywlx,ywyy,zjcx,ywzt,glbm
+    </sql>
+    <!--No problem 查询所有行数据-->
+    <select id="selectByLsh" resultType="com.hjy.tbk.entity.TbkDrvFlow">
+        select lsh,sfzmhm,dabh,xm,ywlx,ywyy,zjcx,ywzt,glbm
+        from drv_flow where lsh = #{lsh,jdbcType=VARCHAR}
+    </select>
+</mapper>

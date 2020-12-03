@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hjy.hall.dao.THallTakenumberMapper">
+
+    <sql id="BaseColumnList" >
+        pk_takeNum_id,
+        ordinal,
+        flag,
+        get_time,
+  </sql>
+    <!--通过主键查询单个-->
+    <select id="selectById" resultType="com.hjy.hall.entity.THallTakenumber" parameterType="com.hjy.hall.entity.THallTakenumber">
+        select * from t_hall_takeNumber
+        where pk_takeNum_id = #{pkTakenumId,jdbcType=VARCHAR}
+    </select>
+    <!--通过实体作为筛选条件查询-->
+    <select id="selectAllByEntity" resultType="com.hjy.hall.entity.THallTakenumber" parameterType="com.hjy.hall.entity.THallTakenumber">
+        select * from t_hall_takeNumber
+        <where>
+            <if test="pkTakenumId != null and pkTakenumId != ''">
+                and pk_takeNum_id = #{pkTakenumId,jdbcType=VARCHAR}
+            </if>
+            <if test="ordinal != null and ordinal != ''">
+                and ordinal = #{ordinal,jdbcType=VARCHAR}
+            </if>
+            <if test="flag != null">
+                and flag = #{flag,jdbcType=INTEGER}
+            </if>
+            <if test="getTime != null">
+                and get_time = #{getTime,jdbcType=DATE}
+            </if>
+        </where>
+    </select>
+
+    <insert id="insertSelective" parameterType="com.hjy.hall.entity.THallTakenumber">
+        insert into t_hall_takeNumber
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="pkTakenumId != null and pkTakenumId != ''">
+                pk_takeNum_id,
+            </if>
+            <if test="ordinal != null and ordinal != ''">
+                ordinal,
+            </if>
+            <if test="flag != null">
+                flag,
+            </if>
+            <if test="getTime != null">
+                get_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="pkTakenumId != null and pkTakenumId != ''">
+                #{pkTakenumId,jdbcType=VARCHAR},
+            </if>
+            <if test="ordinal != null and ordinal != ''">
+                #{ordinal,jdbcType=VARCHAR},
+            </if>
+            <if test="flag != null">
+                #{flag,jdbcType=INTEGER},
+            </if>
+            <if test="getTime != null">
+                #{getTime,jdbcType=DATE},
+            </if>
+        </trim>
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="updateById" parameterType="com.hjy.hall.entity.THallTakenumber">
+        update t_hall_takeNumber
+        <set>
+            <if test="ordinal != null and ordinal != ''">
+                ordinal = #{ordinal,jdbcType=VARCHAR},
+            </if>
+            <if test="flag != null">
+                flag = #{flag,jdbcType=INTEGER},
+            </if>
+            <if test="getTime != null">
+                get_time = #{getTime,jdbcType=DATE},
+            </if>
+        </set>
+        where pk_takeNum_id = #{pkTakenumId,jdbcType=VARCHAR}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById" parameterType="com.hjy.hall.entity.THallTakenumber">
+        delete from t_hall_takeNumber where pk_takeNum_id = #{pkTakenumId,jdbcType=VARCHAR}
+    </delete>
+    <delete id="deleteAll">
+        delete from t_hall_takeNumber
+    </delete>
+    <delete id="deteleBeforeData">
+        delete from t_hall_takeNumber where GET_TIME &lt;= SYSDATE -1
+    </delete>
+<!--    //顺序叫号时，以防万一若有重复数据，则删除-->
+    <delete id="deleteDuplicateData">
+        delete from
+            t_hall_takeNumber
+        where
+            ORDINAL
+        in
+            (select ORDINAL from t_hall_takeNumber group by  ORDINAL having count (ORDINAL)> 1)
+        and rowid not in
+            (select min(rowid) from t_hall_takeNumber group by ORDINAL having count (ORDINAL)>1)
+    </delete>
+    <delete id="deleteByOrdinal">
+        delete from T_HALL_TAKENUMBER where ordinal = #{Ordinal,jdbcType=VARCHAR}
+    </delete>
+    <!--查询所有行数据-->
+    <select id="selectAll" resultType="com.hjy.hall.entity.THallTakenumber">
+        select * from t_hall_takeNumber where TO_CHAR(get_time,'YYYY-MM-DD')=TO_CHAR(SYSDATE,'YYYY-MM-DD')
+    </select>
+    <select id="count" resultType="java.lang.Integer">
+      select count(*)
+      from t_hall_takeNumber
+      where TO_CHAR(get_time,'YYYY-MM-DD')=TO_CHAR(SYSDATE,'YYYY-MM-DD')
+    </select>
+    <select id="count2" resultType="java.lang.Integer" parameterType="java.lang.String">
+      select count(*)
+      from t_hall_takeNumber
+      where TO_CHAR(get_time,'YYYY-MM-DD')=TO_CHAR(SYSDATE,'YYYY-MM-DD')
+      and ORDINAL like '${sign}%'
+    </select>
+
+    <select id="getMinOrdinal" resultType="java.lang.String" parameterType="java.lang.String">
+        select min(ORDINAL) as ORDINAL from t_hall_takeNumber
+        where flag = 0
+        and TO_CHAR(get_time,'YYYY-MM-DD')=TO_CHAR(SYSDATE,'YYYY-MM-DD')
+        and ordinal like  '${ordinal}%'
+    </select>
+    <select id="getMaxTackNumber" resultType="java.lang.String" parameterType="java.lang.String">
+        select Max(ORDINAL) from t_hall_takeNumber
+        where TO_CHAR(get_time,'YYYY-MM-DD')=TO_CHAR(SYSDATE,'YYYY-MM-DD')
+        and ordinal like  '${ordinal}%'
+    </select>
+
+    <!--No problem 通过排队号查询取号数据-->
+    <select id="getByOrdinal" resultType="com.hjy.hall.entity.THallTakenumber">
+      select * from t_hall_takeNumber
+      where ordinal = #{Ordinal,jdbcType=VARCHAR}
+      and TO_CHAR(get_time,'YYYY-MM-DD')=TO_CHAR(SYSDATE,'YYYY-MM-DD')
+    </select>
+    <select id="wetherExist" resultType="java.lang.Integer">
+      select count(*) from t_hall_takeNumber
+      where ordinal = #{Ordinal,jdbcType=VARCHAR}
+      and TO_CHAR(get_time,'YYYY-MM-DD')=TO_CHAR(SYSDATE,'YYYY-MM-DD')
+    </select>
+<!--No problem 查询前方等候人数-->
+    <select id="selectWaitNum" resultType="java.lang.Integer">
+        select count(*) from t_hall_takeNumber
+        where flag = 0
+		and TO_CHAR(get_time,'YYYY-MM-DD')=TO_CHAR(SYSDATE,'YYYY-MM-DD')
+		and ordinal != #{ordinal,jdbcType=VARCHAR}
+    </select>
+    <select id="selectAllWaitNum" resultType="java.lang.String">
+        select ordinal from t_hall_takeNumber where flag = 0 and TO_CHAR(get_time,'YYYY-MM-DD')=TO_CHAR(SYSDATE,'YYYY-MM-DD')
+    </select>
+	<select id="indexDataWaitNum" resultType="java.lang.Integer">
+        select count(*) from t_hall_takeNumber where flag = 0 and TO_CHAR(get_time,'YYYY-MM-DD')=TO_CHAR(SYSDATE,'YYYY-MM-DD')
+    </select>
+</mapper>

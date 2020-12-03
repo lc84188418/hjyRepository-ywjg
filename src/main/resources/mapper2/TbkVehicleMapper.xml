@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hjy.tbk.dao.TbkVehicleMapper">
+
+    <sql id="BaseColumnList" >
+        hpzl,hphm,clpp,cllx,clxh,clsbdh,sfzmhm,stlb,syr,zt
+  </sql>
+    <!--No problem 查询所有行数据-->
+    <select id="selectByIdCard" resultType="com.hjy.tbk.entity.TbkVehicle">
+        select sfzmhm,sfzmmc,lsh,zt,syr,hpzl,hphm,clpp1,cllx, clxh,syxz,clsbdh,glbm,jbr,dabh
+        from vehicle where sfzmhm = #{idCard,jdbcType=VARCHAR}
+    </select>
+</mapper>

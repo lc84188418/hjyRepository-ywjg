@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hjy.list.dao.TListAgentMapper">
+
+<sql id="BaseColumnList" >
+        pk_agent_id,
+        business_type,
+        a_certificates_type,
+        a_name,
+        a_Idcard,
+        b_certificates_type,
+        b_name,
+        b_Idcard,
+        add_time,
+        agent,
+        remarks,
+  </sql>
+    <!--No problem 通过主键查询单个-->
+    <select id="selectById" resultType="com.hjy.list.entity.TListAgent" parameterType="com.hjy.list.entity.TListAgent">
+        select * from t_list_agent
+        where pk_agent_id = #{pkAgentId,jdbcType=VARCHAR}
+    </select>
+    <!--No problem 通过实体作为筛选条件查询-->
+    <select id="selectAllByEntity" resultType="com.hjy.list.entity.TListAgent" parameterType="com.hjy.list.entity.TListAgent">
+        select * from t_list_agent
+        <where>
+            <if test="pkAgentId != null and pkAgentId != ''">
+                and pk_agent_id = #{pkAgentId,jdbcType=VARCHAR}
+            </if>
+            <if test="businessType != null and businessType != ''">
+                and business_type = #{businessType,jdbcType=VARCHAR}
+            </if>
+            <if test="aCertificatesType != null and aCertificatesType != ''">
+                and a_certificates_type = #{aCertificatesType,jdbcType=VARCHAR}
+            </if>
+            <if test="aName != null and aName != ''">
+                and a_name = #{aName,jdbcType=VARCHAR}
+            </if>
+            <if test="aIdcard != null and aIdcard != ''">
+                and a_Idcard = #{aIdcard,jdbcType=VARCHAR}
+            </if>
+            <if test="bCertificatesType != null and bCertificatesType != ''">
+                and b_certificates_type = #{bCertificatesType,jdbcType=VARCHAR}
+            </if>
+            <if test="bName != null and bName != ''">
+                and b_name = #{bName,jdbcType=VARCHAR}
+            </if>
+            <if test="bIdcard != null and bIdcard != ''">
+                and b_Idcard = #{bIdcard,jdbcType=VARCHAR}
+            </if>
+            <if test="addTime != null">
+                and add_time = #{addTime,jdbcType=DATE}
+            </if>
+            <if test="agent != null and agent != ''">
+                and agent = #{agent,jdbcType=VARCHAR}
+            </if>
+            <if test="remarks != null and remarks != ''">
+                and remarks = #{remarks,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+    <!--No problem 添加数据-->
+    <insert id="insertSelective" parameterType="com.hjy.list.entity.TListAgent">
+        insert into t_list_agent
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+        <if test="pkAgentId != null and pkAgentId != ''">
+                pk_agent_id,
+        </if>
+        <if test="businessType != null and businessType != ''">
+                business_type,
+        </if>
+        <if test="aCertificatesType != null and aCertificatesType != ''">
+                a_certificates_type,
+        </if>
+        <if test="aName != null and aName != ''">
+                a_name,
+        </if>
+        <if test="aIdcard != null and aIdcard != ''">
+                a_Idcard,
+        </if>
+        <if test="bCertificatesType != null and bCertificatesType != ''">
+                b_certificates_type,
+        </if>
+        <if test="bName != null and bName != ''">
+                b_name,
+        </if>
+        <if test="bIdcard != null and bIdcard != ''">
+                b_Idcard,
+        </if>
+        <if test="addTime != null">
+                add_time,
+        </if>
+        <if test="agent != null and agent != ''">
+                agent,
+        </if>
+        <if test="remarks != null and remarks != ''">
+                remarks,
+        </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="pkAgentId != null and pkAgentId != ''">
+                #{pkAgentId,jdbcType=VARCHAR},
+            </if>
+            <if test="businessType != null and businessType != ''">
+                #{businessType,jdbcType=VARCHAR},
+            </if>
+                    <if test="aCertificatesType != null and aCertificatesType != ''">
+                #{aCertificatesType,jdbcType=VARCHAR},
+            </if>
+                    <if test="aName != null and aName != ''">
+                #{aName,jdbcType=VARCHAR},
+            </if>
+                    <if test="aIdcard != null and aIdcard != ''">
+                #{aIdcard,jdbcType=VARCHAR},
+            </if>
+                    <if test="bCertificatesType != null and bCertificatesType != ''">
+                #{bCertificatesType,jdbcType=VARCHAR},
+            </if>
+                    <if test="bName != null and bName != ''">
+                #{bName,jdbcType=VARCHAR},
+            </if>
+                    <if test="bIdcard != null and bIdcard != ''">
+                #{bIdcard,jdbcType=VARCHAR},
+            </if>
+                    <if test="addTime != null">
+                #{addTime,jdbcType=DATE},
+            </if>
+                    <if test="agent != null and agent != ''">
+                #{agent,jdbcType=VARCHAR},
+            </if>
+                    <if test="remarks != null and remarks != ''">
+                #{remarks,jdbcType=VARCHAR},
+            </if>
+       </trim>
+    </insert>
+
+    <!--No problem 通过主键修改数据-->
+    <update id="updateById" parameterType="com.hjy.list.entity.TListAgent">
+        update t_list_agent
+        <set>
+            <if test="businessType != null and businessType != ''">
+                business_type = #{businessType,jdbcType=VARCHAR},
+            </if>
+            <if test="aCertificatesType != null and aCertificatesType != ''">
+                a_certificates_type = #{aCertificatesType,jdbcType=VARCHAR},
+            </if>
+            <if test="aName != null and aName != ''">
+                a_name = #{aName,jdbcType=VARCHAR},
+            </if>
+            <if test="aIdcard != null and aIdcard != ''">
+                a_Idcard = #{aIdcard,jdbcType=VARCHAR},
+            </if>
+            <if test="bCertificatesType != null and bCertificatesType != ''">
+                b_certificates_type = #{bCertificatesType,jdbcType=VARCHAR},
+            </if>
+            <if test="bName != null and bName != ''">
+                b_name = #{bName,jdbcType=VARCHAR},
+            </if>
+            <if test="bIdcard != null and bIdcard != ''">
+                b_Idcard = #{bIdcard,jdbcType=VARCHAR},
+            </if>
+            <if test="addTime != null">
+                add_time = #{addTime,jdbcType=OTHER},
+            </if>
+            <if test="agent != null and agent != ''">
+                agent = #{agent,jdbcType=VARCHAR},
+            </if>
+            <if test="remarks != null and remarks != ''">
+                remarks = #{remarks,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where pk_agent_id = #{pkAgentId,jdbcType=VARCHAR}
+    </update>
+
+    <!--No problem 通过主键删除-->
+    <delete id="deleteById" parameterType="com.hjy.list.entity.TListAgent">
+        delete from t_list_agent where pk_agent_id = #{pkAgentId,jdbcType=VARCHAR}
+    </delete>
+    <!--No problem 查询所有行数据-->
+    <select id="selectAll" resultType="com.hjy.list.entity.TListAgent">
+        select * from t_list_agent
+    </select>
+<!--No problem 分页-查询代办记录条数-->
+    <select id="selectSize" resultType="java.lang.Integer">
+        select count(*) from t_list_agent
+        where 1 = 1
+        <if test="businessType != null and businessType != '' and businessType != 'null'">
+            and business_type like '%${businessType}%'
+        </if>
+        <if test="aName != null and aName != ''and aName != 'null'">
+            and a_name like '%${aName}%'
+        </if>
+        <if test="aIdcard != null and aIdcard != '' and aIdcard != 'null'">
+            and a_Idcard like '%${aIdcard}%'
+        </if>
+        <if test="bName != null and bName != '' and bName != 'null'">
+            and b_name like '%${bName}%'
+        </if>
+        <if test="bIdcard != null and bIdcard != '' and bIdcard != 'null'">
+            and b_Idcard like '%${bIdcard}%'
+        </if><if test="agent != null and agent != '' and agent != 'null'">
+            and agent like '%${agent}%'
+        </if>
+    </select>
+    <!--No problem 分页-查询所有代办记录-->
+    <select id="selectAllPage" resultType="com.hjy.list.entity.TListAgent">
+        select t.*
+        from
+        (select rownum rn, u.*
+        from t_list_agent u
+        where rownum &lt;= #{endRow,jdbcType=INTEGER}
+        <if test="businessType != null and businessType != '' and businessType != 'null'">
+            and business_type like '%${businessType}%'
+        </if>
+        <if test="aName != null and aName != ''and aName != 'null'">
+            and a_name like '%${aName}%'
+        </if>
+        <if test="aIdCard != null and aIdCard != '' and aIdCard != 'null'">
+            and a_Idcard like '%${aIdCard}%'
+        </if>
+        <if test="bName != null and bName != '' and bName != 'null'">
+            and b_name like '%${bName}%'
+        </if>
+        <if test="bIdCard != null and bIdCard != '' and bIdCard != 'null'">
+            and b_Idcard like '%${bIdCard}%'
+        </if>
+		<if test="agent != null and agent != '' and agent != 'null'">
+			and agent like '%${agent}%'
+		</if>
+        ) t
+        where t.rn &gt;= #{startRow,jdbcType=INTEGER}
+    </select>
+</mapper>

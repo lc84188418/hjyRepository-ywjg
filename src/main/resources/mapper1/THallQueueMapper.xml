@@ -1,0 +1,738 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hjy.hall.dao.THallQueueMapper">
+
+    <sql id="BaseColumnList" >
+        pk_queue_id,
+        ordinal,
+        window_name,
+        agent,
+        business_type,
+        a_certificates_type,
+        a_name,
+        a_Idcard,
+        b_certificates_type,
+        b_name,
+        b_Idcard,
+        get_time,
+        start_time,
+        end_time,
+        remarks,
+        is_vip,
+		idCard,
+		serial_number
+  </sql>
+    <!--通过主键查询单个-->
+    <select id="selectById" resultType="com.hjy.hall.entity.THallQueue" parameterType="com.hjy.hall.entity.THallQueue">
+        select * from t_hall_queue where pk_queue_id = #{pkQueueId,jdbcType=VARCHAR}
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insertSelective" parameterType="com.hjy.hall.entity.THallQueue">
+        insert into t_hall_queue
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="pkQueueId != null and pkQueueId != ''">
+                pk_queue_id,
+            </if>
+            <if test="ordinal != null and ordinal != ''">
+                ordinal,
+            </if>
+            <if test="windowName != null and windowName != ''">
+                window_name,
+            </if>
+            <if test="agent != null and agent != ''">
+                agent,
+            </if>
+            <if test="idCard != null and idCard != ''">
+                idCard,
+            </if>
+            <if test="businessType != null and businessType != ''">
+                business_type,
+            </if>
+            <if test="aCertificatesType != null and aCertificatesType != ''">
+                a_certificates_type,
+            </if>
+            <if test="aName != null and aName != ''">
+                a_name,
+            </if>
+            <if test="aIdcard != null and aIdcard != ''">
+                a_Idcard,
+            </if>
+            <if test="bCertificatesType != null and bCertificatesType != ''">
+                b_certificates_type,
+            </if>
+            <if test="bName != null and bName != ''">
+                b_name,
+            </if>
+            <if test="bIdcard != null and bIdcard != ''">
+                b_Idcard,
+            </if>
+            <if test="getTime != null">
+                get_time,
+            </if>
+            <if test="startTime != null">
+                start_time,
+            </if>
+            <if test="endTime != null">
+                end_time,
+            </if>
+            <if test="remarks != null">
+                remarks,
+            </if>
+            <if test="isVip != null">
+                is_vip,
+            </if>
+            <if test="serialNumber != null">
+                serial_number,
+            </if>
+            <if test="daobanPeople != null">
+                DAOBAN_PEOPLE,
+            </if>
+            <if test="daobanIdcard != null">
+                DAOBAN_IDCARD,
+            </if>
+            <if test="evaluate != null">
+                EVALUATE,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="pkQueueId != null and pkQueueId != ''">
+                #{pkQueueId,jdbcType=VARCHAR},
+            </if>
+            <if test="ordinal != null and ordinal != ''">
+                #{ordinal,jdbcType=VARCHAR},
+            </if>
+            <if test="windowName != null and windowName != ''">
+                #{windowName,jdbcType=VARCHAR},
+            </if>
+            <if test="agent != null and agent != ''">
+                #{agent,jdbcType=VARCHAR},
+            </if>
+            <if test="idCard != null and idCard != ''">
+                #{idCard,jdbcType=VARCHAR},
+            </if>
+            <if test="businessType != null and businessType != ''">
+                #{businessType,jdbcType=VARCHAR},
+            </if>
+            <if test="aCertificatesType != null and aCertificatesType != ''">
+                #{aCertificatesType,jdbcType=VARCHAR},
+            </if>
+            <if test="aName != null and aName != ''">
+                #{aName,jdbcType=VARCHAR},
+            </if>
+            <if test="aIdcard != null and aIdcard != ''">
+                #{aIdcard,jdbcType=VARCHAR},
+            </if>
+            <if test="bCertificatesType != null and bCertificatesType != ''">
+                #{bCertificatesType,jdbcType=VARCHAR},
+            </if>
+            <if test="bName != null and bName != ''">
+                #{bName,jdbcType=VARCHAR},
+            </if>
+            <if test="bIdcard != null and bIdcard != ''">
+                #{bIdcard,jdbcType=VARCHAR},
+            </if>
+            <if test="getTime != null">
+                #{getTime,jdbcType=DATE},
+            </if>
+            <if test="startTime != null">
+                #{startTime,jdbcType=DATE},
+            </if>
+            <if test="endTime != null">
+                #{endTime,jdbcType=DATE},
+            </if>
+            <if test="remarks != null">
+                #{remarks,jdbcType=VARCHAR},
+            </if>
+            <if test="isVip != null">
+                #{isVip,jdbcType=INTEGER},
+            </if>
+            <if test="serialNumber != null">
+                #{serialNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="daobanPeople != null">
+                #{daobanPeople,jdbcType=VARCHAR},
+            </if>
+            <if test="daobanIdcard != null">
+                #{daobanIdcard,jdbcType=VARCHAR},
+            </if>
+            <if test="evaluate != null">
+                #{evaluate,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="updateById" parameterType="com.hjy.hall.entity.THallQueue">
+        update t_hall_queue
+        <set>
+            <if test="ordinal != null and ordinal != ''">
+                ordinal = #{ordinal,jdbcType=VARCHAR},
+            </if>
+            <if test="windowName != null and windowName != ''">
+                window_name = #{windowName,jdbcType=VARCHAR},
+            </if>
+            <if test="agent != null and agent != ''">
+                agent = #{agent,jdbcType=VARCHAR},
+            </if>
+            <if test="idCard != null and idCard != ''">
+                idCard = #{idCard,jdbcType=VARCHAR},
+            </if>
+            <if test="businessType != null and businessType != ''">
+                business_type = #{businessType,jdbcType=VARCHAR},
+            </if>
+            <if test="aCertificatesType != null and aCertificatesType != ''">
+                a_certificates_type = #{aCertificatesType,jdbcType=VARCHAR},
+            </if>
+            <if test="aName != null and aName != ''">
+                a_name = #{aName,jdbcType=VARCHAR},
+            </if>
+            <if test="aIdcard != null and aIdcard != ''">
+                a_Idcard = #{aIdcard,jdbcType=VARCHAR},
+            </if>
+            <if test="bCertificatesType != null and bCertificatesType != ''">
+                b_certificates_type = #{bCertificatesType,jdbcType=VARCHAR},
+            </if>
+            <if test="bName != null and bName != ''">
+                b_name = #{bName,jdbcType=VARCHAR},
+            </if>
+            <if test="bIdcard != null and bIdcard != ''">
+                b_Idcard = #{bIdcard,jdbcType=VARCHAR},
+            </if>
+            <if test="getTime != null">
+                get_time = #{getTime,jdbcType=DATE},
+            </if>
+            <if test="startTime != null">
+                start_time = #{startTime,jdbcType=DATE},
+            </if>
+            <if test="endTime != null">
+                end_time = #{endTime,jdbcType=DATE},
+            </if>
+            <if test="remarks != null">
+                remarks = #{remarks,jdbcType=VARCHAR},
+            </if>
+            <if test="serialNumber != null">
+                serial_number = #{serialNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="isVip != null">
+                IS_VIP = #{isVip,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where pk_queue_id = #{pkQueueId,jdbcType=VARCHAR}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById" parameterType="com.hjy.hall.entity.THallQueue">
+        delete from t_hall_queue where pk_queue_id = #{pkQueueId,jdbcType=VARCHAR}
+    </delete>
+    <!--查询所有行数据-->
+    <select id="selectAll" resultType="com.hjy.hall.entity.THallQueue">
+        select * from t_hall_queue
+    </select>
+    <!--    排队信息查询-->
+    <select id="selectSize" resultType="java.lang.Integer">
+        select count(*) from t_hall_queue
+        where 1 = 1
+        <if test="ordinal != null and ordinal != ''">
+            and ordinal like '%${ordinal}%'
+        </if>
+        <if test="windowName != null and windowName != ''">
+            and window_name like '%${windowName}%'
+        </if>
+        <if test="agent != null and agent != ''">
+            and agent like '%${agent}%'
+        </if>
+        <if test="businessType != null and businessType != ''">
+            and business_type like '%${businessType}%'
+        </if>
+        <if test="remarks != null and remarks == '未办理'">
+            and remarks is null
+        </if>
+        <if test="remarks != null and remarks == '已办结'">
+            and remarks = '办结'
+        </if>
+        <if test="remarks != null and remarks == '空号'">
+            and remarks = '空号'
+        </if>
+        <if test="remarks != null and remarks == '退号'">
+            and remarks = '退号'
+        </if>
+        <if test="remarks == '正在办理'">
+            and remarks like '%正在办理%'
+        </if>
+        <if test="remarks == '特呼'">
+            and is_vip = '1'
+        </if>
+        <if test="bName != null and bName != ''">
+            and b_name like '%${bName}%'
+        </if>
+        <if test="bIdcard != null and bIdcard != ''">
+            and B_IDCARD like '%${bIdcard}%'
+        </if>
+        <if test="queryStart == null and queryEnd == null">
+            and TO_CHAR(get_time,'YYYY-MM-DD')=TO_CHAR(SYSDATE,'YYYY-MM-DD')
+        </if>
+        <if test="queryStart != null">
+            and get_time &gt;= #{queryStart}
+        </if>
+        <if test="queryEnd != null">
+            and get_time &lt;= #{queryEnd}
+        </if>
+    </select>
+    <select id="selectAllPage" resultType="com.hjy.hall.entity.THallQueue">
+        select t.*
+        from
+        (
+        select rownum rn, u.*
+        from t_hall_queue u
+        where rownum &lt;= #{endRow,jdbcType=INTEGER}
+        <if test="ordinal != null and ordinal != ''">
+            and ordinal like '%${ordinal}%'
+        </if>
+        <if test="windowName != null and windowName != ''">
+            and window_name like '%${windowName}%'
+        </if>
+        <if test="agent != null and agent != ''">
+            and agent like '%${agent}%'
+        </if>
+        <if test="businessType != null and businessType != ''">
+            and business_type like '%${businessType}%'
+        </if>
+        <if test="remarks != null and remarks == '未办理'">
+            and remarks is null
+        </if>
+        <if test="remarks != null and remarks == '已办结'">
+            and remarks = '办结'
+        </if>
+        <if test="remarks != null and remarks == '空号'">
+            and remarks = '空号'
+        </if>
+        <if test="remarks != null and remarks == '退号'">
+            and remarks = '退号'
+        </if>
+        <if test="remarks == '正在办理'">
+            and remarks like '%正在办理%'
+        </if>
+        <if test="remarks == '特呼'">
+            and is_vip = '1'
+        </if>
+        <if test="bName != null and bName != ''">
+            and b_name like '%${bName}%'
+        </if>
+        <if test="bIdcard != null and bIdcard != ''">
+            and B_IDCARD like '%${bIdcard}%'
+        </if>
+        <if test="queryStart == null and queryEnd == null">
+            and TO_CHAR(get_time,'YYYY-MM-DD')=TO_CHAR(SYSDATE,'YYYY-MM-DD')
+        </if>
+        <if test="queryStart != null">
+            and get_time &gt;= #{queryStart}
+        </if>
+        <if test="queryEnd != null">
+            and get_time &lt;= #{queryEnd}
+        </if>
+        ) t
+        where t.rn &gt;= #{startRow,jdbcType=INTEGER}
+    </select>
+    <!-- 根据时间和号码查询特呼的排队信息-->
+    <select id="getByOrdinalAndDatestr" resultType="com.hjy.hall.entity.THallQueue">
+        SELECT * FROM t_hall_queue
+		WHERE ordinal= #{Ordinal}
+		AND to_char(get_time,'yyyy-mm-dd') = to_char (sysdate,'yyyy-mm-dd')
+		AND is_vip !=1
+    </select>
+    <!--    导办取号等候人数统计-->
+    <select id="daobanData" resultType="com.hjy.hall.entity.THallQueueCount">
+        SELECT a.type_name as businessType, NVL(b.num,0)as nowWaitNum
+		FROM t_sys_businessType a
+        LEFT JOIN (SELECT business_type,COUNT(*) as num
+		from t_hall_queue
+        WHERE remarks is null
+        and to_char(get_time,'yyyy-mm-dd') = to_char (sysdate,'yyyy-mm-dd')
+        GROUP BY business_type) b
+        on a.type_name=b.business_type
+        ORDER BY type_name
+    </select>
+    <!--大厅管理-统计分析-预警统计-->
+    <select id="WarningCount" resultType="com.hjy.hall.entity.THallQueueCount" statementType="STATEMENT">
+        SELECT to_char(get_time,'yyyy-mm-dd') as countDate,
+        COUNT(*) as totalNum,
+        trunc(AVG((start_time-get_time)*86400)) as avgWaitTime,
+        COUNT(DECODE(SIGN(${serviceOverTime}-(end_time-start_time)*86400),-1, 1, null)) as waitOverTimeNum,
+        trunc(AVG((end_time-start_time)*86400)) as avgServiceTime ,
+        COUNT(DECODE(SIGN(${waitOverTime}-(start_time-get_time)*86400),-1, 1, null)) as serviceOverTimeNum
+        from t_hall_queue
+        WHERE remarks = '办结'
+        and to_char(get_time,'yyyy-mm-dd') >= '${queryStart}'
+        and to_char(get_time,'yyyy-mm-dd')&lt;='${queryEnd}'
+        GROUP BY to_char(get_time,'yyyy-mm-dd')
+    </select>
+    <select id="queryByTime" resultType="com.hjy.hall.entity.THallQueue">
+        SELECT * FROM t_hall_queue
+		WHERE to_char(get_time,'yyyy-mm-dd') >= '${startTime}'
+		AND to_char(get_time,'yyyy-mm-dd') &lt;='${endTime}'
+    </select>
+
+    <select id="totalCount" resultType="com.hjy.hall.entity.THallQueueCount">
+        SELECT agent,window_name,COUNT(*)as totalCount FROM t_hall_queue
+        WHERE to_char(get_time,'yyyy-mm-dd') >= '${queryStart}'
+        AND to_char(get_time,'yyyy-mm-dd')&lt;='${queryEnd}'
+        GROUP BY agent,window_name
+    </select>
+
+    <select id="realCount" resultType="com.hjy.hall.entity.THallQueueCount">
+        SELECT agent,window_name,business_type,COUNT(business_type)as realCount FROM t_hall_queue
+        WHERE to_char(get_time,'yyyy-mm-dd') >= '${queryStart}'
+        AND to_char(get_time,'yyyy-mm-dd')&lt;='${queryEnd}'
+        AND remarks='办结'
+        GROUP BY agent,window_name,business_type
+    </select>
+
+    <select id="nullCount" resultType="com.hjy.hall.entity.THallQueueCount">
+        SELECT agent,window_name,COUNT(*)as nullCount FROM t_hall_queue
+        WHERE to_char(get_time,'yyyy-mm-dd') >= '${queryStart}'
+        AND to_char(get_time,'yyyy-mm-dd')&lt;='${queryEnd}'
+        AND remarks='空号'
+        GROUP BY agent,window_name
+    </select>
+
+    <select id="backCount" resultType="com.hjy.hall.entity.THallQueueCount">
+        SELECT agent,window_name,COUNT(*)as backCount FROM t_hall_queue
+        WHERE to_char(get_time,'yyyy-mm-dd') >= '${queryStart}'
+        AND to_char(get_time,'yyyy-mm-dd')&lt;='${queryEnd}'
+        AND remarks='退号'
+        GROUP BY agent,window_name
+    </select>
+    <!--no problem-->
+    <select id="handleNum" resultType="java.lang.Integer">
+        select count(DISTINCT(ORDINAL)) from t_hall_queue
+        where b_Idcard = #{idCard,jdbcType=VARCHAR}
+        and a_Idcard is null
+        and remarks ='办结'
+    </select>
+    <!--no problem查询代理次数-->
+    <select id="agentNum" resultType="java.lang.Integer">
+        select count(DISTINCT(ORDINAL)) from t_hall_queue
+        where a_Idcard = #{idCard,jdbcType=VARCHAR}
+        and remarks ='办结'
+    </select>
+    <select id="getNowNumByWindowName" resultType="com.hjy.hall.entity.THallQueue">
+		SELECT *
+        FROM t_hall_queue
+        WHERE remarks = #{windowName,jdbcType=VARCHAR}
+        and to_char(get_time,'yyyy-mm-dd') = to_char (sysdate,'yyyy-mm-dd')
+        and rownum = 1
+    </select>
+    <select id="getCallNum" resultType="com.hjy.hall.entity.THallQueue">
+        SELECT *
+        FROM t_hall_queue t
+        WHERE t.get_time =
+        (SELECT MAX(t.get_time)
+        FROM t_hall_queue t where ordinal = #{ordinal,jdbcType=VARCHAR})
+        AND remarks is null
+        AND ordinal = #{ordinal,jdbcType=VARCHAR}
+        and rownum = 1
+    </select>
+    <select id="windowNumToday" resultType="com.hjy.hall.entity.THallQueueCount">
+        SELECT a.window_name, NVL(b.num,0)as realCount 
+		FROM t_sys_window a
+        LEFT JOIN (SELECT window_name,COUNT(*) as num 
+		from t_hall_queue
+        WHERE remarks='办结'
+        and to_char(get_time,'yyyy-mm-dd') >= '${queryStart}'
+        and to_char(get_time,'yyyy-mm-dd')&lt;='${queryEnd}'
+        GROUP BY window_name) b
+        on a.window_name=b.window_name
+        ORDER BY window_name
+    </select>
+<!--    这是统计包括空号，退号，办结，正在办理的，如果要统计办结的   remarks='办结' 并且同一个人一个号码可以算多次的话count(*)-->
+    <select id="indexDataWindowNumToday" resultType="com.hjy.hall.entity.THallQueueCount">
+        SELECT a.window_name, NVL(b.num,0)as realCount 
+		FROM t_sys_window a
+        LEFT JOIN (SELECT window_name,COUNT(DISTINCT(ordinal)) as num
+		from t_hall_queue
+        WHERE remarks is not null
+        and to_char(get_time,'yyyy-mm-dd') = to_char (sysdate,'yyyy-mm-dd')
+        GROUP BY window_name) b
+        on a.window_name=b.window_name
+        ORDER BY window_name
+    </select>
+    <!-- 这是包含了空号，退号，办结，正在处理的号码 -->
+    <!-- 如果只需要统计办结的，  b结果中 remarks = '办结' 并且同一个人一个号码可以算多次的话count(*)-->
+    <select id="indexDataBusinessToday" resultType="com.hjy.hall.entity.THallQueueCount">
+        SELECT
+	a.type_name AS businessType,
+	NVL( b.num, 0 ) AS realCount,
+	NVL( c.num, 0 ) AS nullCount
+FROM
+	t_sys_businessType a
+	LEFT JOIN (
+	SELECT
+		business_type,
+		COUNT(DISTINCT(ordinal)) AS num
+	FROM
+		t_hall_queue
+	WHERE
+		remarks is not null
+		AND to_char( get_time, 'yyyy-mm-dd' ) = to_char( SYSDATE, 'yyyy-mm-dd' )
+	GROUP BY
+		business_type
+	) b ON a.type_name = b.business_type
+	LEFT JOIN (
+	SELECT
+		business_type,
+		COUNT( * ) AS num
+	FROM
+		t_hall_queue
+	WHERE
+		remarks IS NULL
+		AND to_char( get_time, 'yyyy-mm-dd' ) = to_char( SYSDATE, 'yyyy-mm-dd' )
+	GROUP BY
+		business_type
+	) c ON a.type_name = c.business_type
+ORDER BY
+	type_name
+
+    </select>
+    <!-- 这是包含了空号，退号，办结，正在处理的号码-->
+    <!-- 如果只需要统计办结的，  remarks = '办结' 并且同一个人一个号码可以算多次的话count(*)-->
+    <select id="indexDataAgentNumToday" resultType="com.hjy.hall.entity.THallQueueCount" statementType="STATEMENT">
+        SELECT agent,COUNT(DISTINCT(ordinal)) as realCount,
+		TRUNC(AVG(end_time-start_time)*86400)  as avgServiceTime,
+		COUNT(DECODE(SIGN(${serviceOverTime}-(end_time-start_time)*86400),-1, 1, null)) as serviceOverTimeNum 
+		from t_hall_queue
+        WHERE remarks is not null
+        and to_char(get_time,'yyyy-mm-dd') >= '${queryStart}'
+        and to_char(get_time,'yyyy-mm-dd')&lt;='${queryEnd}'
+        GROUP BY agent
+    </select>
+    <select id="agentNumToday" resultType="com.hjy.hall.entity.THallQueueCount" statementType="STATEMENT">
+        SELECT agent,idCard,COUNT(*) as realCount, 
+		TRUNC(AVG(end_time-start_time)*86400)  as avgServiceTime,
+		COUNT(DECODE(SIGN(${serviceOverTime}-(end_time-start_time)*86400),-1, 1, null)) as overTimeNum 
+		from t_hall_queue
+        WHERE remarks='办结'
+        and to_char(get_time,'yyyy-mm-dd') >= '${queryStart}'
+        and to_char(get_time,'yyyy-mm-dd')&lt;='${queryEnd}'
+        GROUP BY agent,idCard
+    </select>
+    <select id="vip_ordinalwhetherBackNumToday" resultType="java.lang.Integer"
+            parameterType="java.lang.String">
+		SELECT count(*) FROM t_hall_queue t
+        WHERE t.GET_TIME =
+        (SELECT MAX(t.GET_TIME)
+        FROM t_hall_queue t where ordinal = #{vip_ordinal}
+        ) and ordinal = #{vip_ordinal} and (remarks != '退号' or remarks is null)
+    </select>
+    <select id="vip_ordinalQueue" resultType="com.hjy.hall.entity.THallQueue" parameterType="java.lang.String">
+		SELECT * FROM t_hall_queue
+        WHERE ordinal = #{vip_ordinal}
+        and to_char(get_time,'yyyy-mm-dd') = to_char (sysdate,'yyyy-mm-dd')
+    </select>
+    <select id="selectStatisticsTodayGroupBy" resultType="java.lang.Integer"
+            parameterType="java.lang.String">
+        SELECT count(*) FROM t_hall_queue
+        WHERE to_char(get_time,'yyyy-mm-dd') = to_char (sysdate,'yyyy-mm-dd')
+        <if test="windowName != null and windowName != ''">
+            and window_name = #{windowName}
+        </if>
+        <if test="businessType != null and businessType != ''">
+            and business_type = #{businessType}
+        </if>
+    </select>
+    <select id="selectNearlyToday" resultType="com.hjy.hall.entity.THallQueue">
+        select * from
+        (select rownum rn, u.*
+        from t_hall_queue u
+        where to_char(get_time,'yyyy-mm-dd') = to_char(sysdate,'yyyy-mm-dd')
+        and start_time is not null
+        order by start_time desc) t
+        where rownum &lt;#{endRow,jdbcType=INTEGER}
+        and t.rn >0
+    </select>
+    <select id="selectWaitStatisticsTodayDateSection" resultType="int">
+        select count(DISTINCT(ordinal)) from t_hall_queue
+        where to_char(get_time,'yyyy-mm-dd') = to_char(sysdate,'yyyy-mm-dd')
+        and get_time
+        between to_date('${queryStart}','yyyy-mm-dd hh24:mi:ss')
+        and to_date('${queryEnd}','yyyy-mm-dd hh24:mi:ss')
+    </select>
+    <select id="selectHandStatisticsTodayDateSection" resultType="int">
+        select count(DISTINCT(ordinal)) from t_hall_queue
+        where to_char(get_time,'yyyy-mm-dd') = to_char(sysdate,'yyyy-mm-dd')
+        and end_time
+        between to_date('${queryStart}','yyyy-mm-dd hh24:mi:ss')
+        and to_date('${queryEnd}','yyyy-mm-dd hh24:mi:ss')
+    </select>
+    <select id="selectAllIdCardOneday" resultType="com.hjy.hall.entity.THallQueue">
+        SELECT DISTINCT idCard,agent FROM t_hall_queue
+        where idCard is not null
+        <if test="queryStart == null and queryEnd == null">
+            and TO_CHAR(get_time,'YYYY-MM-DD')=TO_CHAR(SYSDATE,'YYYY-MM-DD')
+        </if>
+        <if test="queryStart != null">
+            and get_time &gt;= #{queryStart}
+        </if>
+        <if test="queryEnd != null">
+            and get_time &lt;= #{queryEnd}
+        </if>
+    </select>
+    <select id="statisticsNum" resultType="java.lang.Integer" parameterType="com.hjy.hall.entity.THallQueue">
+        SELECT COUNT(*) FROM t_hall_queue
+        WHERE
+        idCard = #{idCard,jdbcType=VARCHAR}
+        and remarks = #{remarks}
+        <if test="queryStart == null and queryEnd == null">
+            and TO_CHAR(get_time,'YYYY-MM-DD')=TO_CHAR(SYSDATE,'YYYY-MM-DD')
+        </if>
+        <if test="queryStart != null">
+            and get_time &gt;= #{queryStart}
+        </if>
+        <if test="queryEnd != null">
+            and get_time &lt;= #{queryEnd}
+        </if>
+    </select>
+    <select id="acceptancePeopleStatistics" resultType="com.hjy.hall.entity.Statistics" parameterType="com.hjy.hall.entity.THallQueue">
+        SELECT idCard as agentIdCard,agent as agentName,business_type as businessType,count(*) as trueNum
+        FROM t_hall_queue
+        where  business_type in
+        (SELECT  DISTINCT business_type FROM t_hall_queue
+        where idCard = #{idCard,jdbcType=VARCHAR}
+        )
+        and remarks ='办结'
+        and idCard = #{idCard,jdbcType=VARCHAR}
+        <if test="queryStart == null and queryEnd == null">
+            and TO_CHAR(get_time,'YYYY-MM-DD')=TO_CHAR(SYSDATE,'YYYY-MM-DD')
+        </if>
+        <if test="queryStart != null">
+            and get_time &gt;= #{queryStart}
+        </if>
+        <if test="queryEnd != null">
+            and get_time &lt;= #{queryEnd}
+        </if>
+        GROUP BY idCard,agent,business_type
+    </select>
+    <!--    大厅管理-统计分析-预警统计-分页总记录条数-->
+    <select id="selectSizeWarningCount" resultType="java.lang.Integer">
+        select count(*) from (SELECT count(*) from T_HALL_QUEUE GROUP BY TO_CHAR(GET_TIME,'YYYY-MM-DD') ) t
+    </select>
+    <!--    大厅管理-统计分析-预警统计-分页记录-->
+    <select id="selectWarningCountAllPage" resultType="com.hjy.hall.entity.THallQueueCount">
+        SELECT b.* from (SELECT ROWNUM rn, a.* from (
+        SELECT
+        TO_CHAR(T.GET_TIME,'yyyy-mm-dd') as "countDate",
+        COUNT(*) as "totalCount",
+        trunc(AVG((start_time-get_time)*86400)) as "avgWaitTime",
+        COUNT(DECODE(SIGN(${serviceOverTime}-(end_time-start_time)*86400),-1, 1, null)) as "waitOverTimeNum",
+        trunc(AVG((end_time-start_time)*86400)) as "avgServiceTime",
+        COUNT(DECODE(SIGN(${waitOverTime}-(start_time-get_time)*86400),-1, 1, null)) as "serviceOverTimeNum"
+        FROM T_HALL_QUEUE T
+        where REMARKS = '办结'
+        <if test="queryStart != null and queryStart != ''">
+            and to_char(get_time,'yyyy-mm-dd') >= '${queryStart}'
+        </if>
+        <if test="queryEnd != null and queryEnd != ''">
+            and to_char(get_time,'yyyy-mm-dd')&lt;='${queryEnd}'
+        </if>
+        GROUP BY TO_CHAR(T.GET_TIME,'yyyy-mm-dd')
+        ORDER BY TO_CHAR(T.GET_TIME,'yyyy-mm-dd') ASC NULLS LAST
+        ) a WHERE rownum &lt;= #{endRow,jdbcType=INTEGER}) b
+        WHERE b.rn &gt;= #{startRow,jdbcType=INTEGER}
+    </select>
+    <select id="selectNullNumToday" resultType="java.lang.Integer">
+        SELECT count(DISTINCT(ORDINAL)) FROM T_HALL_QUEUE
+        where to_char(get_time,'yyyy-mm-dd') = to_char(sysdate,'yyyy-mm-dd')
+        and REMARKS ='空号'
+        and b_Idcard =  #{bIdCard,jdbcType=VARCHAR}
+    </select>
+    <!--查询单人单日办理业务退办数-->
+    <select id="selectBackNumToday" resultType="java.lang.Integer">
+        SELECT count(DISTINCT(ORDINAL)) FROM T_HALL_QUEUE
+        where to_char(get_time,'yyyy-mm-dd') = to_char(sysdate,'yyyy-mm-dd')
+        and REMARKS ='退号'
+        and b_Idcard =  #{bIdCard,jdbcType=VARCHAR}
+    </select>
+<!--    查询当日某业务类型未处理数量-->
+    <select id="selectWaitNumByBusiness" resultType="java.lang.Integer">
+        SELECT count(*) FROM T_HALL_QUEUE
+        where to_char(get_time,'yyyy-mm-dd') = to_char(sysdate,'yyyy-mm-dd')
+        and REMARKS is null
+        and BUSINESS_TYPE = #{businessType,jdbcType=VARCHAR}
+    </select>
+    <select id="map9Data" resultType="com.hjy.hall.entity.THallQueueCount">
+        SELECT
+		business_type AS businessType,
+		COUNT( * ) AS nowWaitNum
+	FROM
+		t_hall_queue
+	WHERE
+		remarks is null
+		and START_TIME is null
+		AND to_char( get_time, 'yyyy-mm-dd' ) = to_char( SYSDATE, 'yyyy-mm-dd' )
+	GROUP BY
+		business_type
+    </select>
+    <select id="dutyStatistics" resultType="com.hjy.hall.entity.THallQueueCount">
+        SELECT DAOBAN_IDCARD as idCard,DAOBAN_PEOPLE as agent,BUSINESS_TYPE as businessType,count(DISTINCT(ORDINAL)) as realCount
+        FROM t_hall_queue
+        where  BUSINESS_TYPE in
+        (SELECT  DISTINCT BUSINESS_TYPE FROM t_hall_queue
+        where DAOBAN_IDCARD in
+        (select DISTINCT DAOBAN_IDCARD FROM T_HALL_QUEUE WHERE 1=1
+        <if test="queryStart == null">
+            and TO_CHAR(get_time,'YYYY-MM-DD')=TO_CHAR(SYSDATE,'YYYY-MM-DD')
+        </if>
+        <if test="queryStart != null">
+            and TO_CHAR(get_time,'YYYY-MM-DD')=TO_CHAR(#{queryStart},'YYYY-MM-DD')
+        </if>
+        )
+        )
+        and DAOBAN_IDCARD in(
+        select DISTINCT DAOBAN_IDCARD FROM T_HALL_QUEUE WHERE  1=1
+        <if test="queryStart == null">
+            and TO_CHAR(get_time,'YYYY-MM-DD')=TO_CHAR(SYSDATE,'YYYY-MM-DD')
+        </if>
+        <if test="queryStart != null">
+            and TO_CHAR(get_time,'YYYY-MM-DD')=TO_CHAR(#{queryStart},'YYYY-MM-DD')
+        </if>
+        )
+        <if test="queryStart == null">
+            and TO_CHAR(get_time,'YYYY-MM-DD')=TO_CHAR(SYSDATE,'YYYY-MM-DD')
+        </if>
+        <if test="queryStart != null">
+            and TO_CHAR(get_time,'YYYY-MM-DD')=TO_CHAR(#{queryStart},'YYYY-MM-DD')
+        </if>
+        GROUP BY DAOBAN_IDCARD,DAOBAN_PEOPLE,BUSINESS_TYPE
+    </select>
+    <select id="selectBNameByIdCard" resultType="java.lang.String">
+        select B_NAME from T_HALL_QUEUE where B_IDCARD = #{bIdCard,jdbcType=VARCHAR}
+        and rownum = 1
+    </select>
+    <select id="selectANameByIdCard" resultType="java.lang.String">
+        select A_NAME from T_HALL_QUEUE where A_IDCARD = #{bIdCard,jdbcType=VARCHAR}
+        and rownum = 1
+    </select>
+    <delete id="deteleBeforeData">
+        DELETE
+        FROM
+        T_HALL_QUEUE
+        WHERE
+        GET_TIME &lt;= SYSDATE -1
+        and  END_TIME is null
+    </delete>
+    <delete id="deteleNoHandBeforeData">
+        DELETE
+        FROM
+        T_HALL_QUEUE
+        WHERE END_TIME is null
+    </delete>
+    <delete id="systemMaintain">
+        DELETE
+        FROM
+        T_HALL_QUEUE
+        where REMARKS is null or REMARKS like '%正在办理%'
+    </delete>
+    <delete id="deleteDuplicateData">
+
+    </delete>
+</mapper>

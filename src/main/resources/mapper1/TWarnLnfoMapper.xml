@@ -1,0 +1,485 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hjy.warning.dao.TWarnLnfoMapper">
+
+    <!--查询通过窗口办理状态查询是否存在预警信息-->
+    <select id="selectByWindow" resultType="com.hjy.warning.entity.Warning" parameterType="java.lang.String">
+        select * from T_WARN_LNFO
+        where HANDLE_STATUS = #{handleStatus}
+        and to_char(get_time,'yyyy-mm-dd') = to_char (sysdate,'yyyy-mm-dd')
+        and rownum = 1
+    </select>
+    <!--查询单个-->
+    <select id="selectById" resultType="com.hjy.warning.entity.Warning">
+        select * from T_WARN_LNFO
+        where PK_WARNING_ID = #{pkWarningId}
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insertSelective" parameterType="com.hjy.warning.entity.Warning">
+        insert into T_WARN_LNFO
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="pkWarningId != null and pkWarningId != ''">
+                PK_WARNING_ID,
+            </if>
+            <if test="warningCategory != null and warningCategory != ''">
+                WARNING_CATEGORY,
+            </if>
+            <if test="warningType != null and warningType != ''">
+                WARNING_TYPE,
+            </if>
+            <if test="warningReason != null and warningReason != ''">
+                WARNING_REASON,
+            </if>
+            <if test="warningDate != null">
+                WARNING_DATE,
+            </if>
+            <if test="warningSerial != null and warningSerial != ''">
+                WARNING_SERIAL,
+            </if>
+            <if test="daobanPeople != null and daobanPeople != ''">
+                DAOBANPEOPLE,
+            </if>
+            <if test="isAgent != null and isAgent != ''">
+                ISAGENT,
+            </if>
+            <if test="businessType != null and businessType != ''">
+                BUSINESSTYPE,
+            </if>
+            <if test="ordinal != null and ordinal != ''">
+                ORDINAL,
+            </if>
+            <if test="windowName != null and windowName != ''">
+                WINDOW_NAME,
+            </if>
+            <if test="agent != null and agent != ''">
+                AGENT,
+            </if>
+            <if test="idCard != null and idCard != ''">
+                IDCARD,
+            </if>
+            <if test="aCertificatesType != null and aCertificatesType != ''">
+                A_CERTIFICATES_TYPE,
+            </if>
+            <if test="aName != null and aName != ''">
+                ANAME,
+            </if>
+            <if test="aIdcard != null and aIdcard != ''">
+                AIDCARD,
+            </if>
+            <if test="bCertificatesType != null and bCertificatesType != ''">
+                BCERTIFICATESTYPE,
+            </if>
+            <if test="bName != null and bName != ''">
+                BNAME,
+            </if>
+            <if test="bIdcard != null and bIdcard != ''">
+                BIDCARD,
+            </if>
+            <if test="getTime != null">
+                GET_TIME,
+            </if>
+            <if test="startTime != null">
+                START_TIME,
+            </if>
+            <if test="endTime != null">
+                ENDTIME,
+            </if>
+            <if test="serialNumberA != null and serialNumberA != ''">
+                SERIAL_NUMBER_A,
+            </if>
+            <if test="serialNumberB != null and serialNumberB != ''">
+                SERIAL_NUMBER_B,
+            </if>
+            <if test="checkStatus != null and checkStatus != ''">
+                CHECK_STATUS,
+            </if>
+            <if test="checkResult != null and checkResult != ''">
+                CHECK_RESULT,
+            </if>
+            <if test="checkDesc != null and checkDesc != ''">
+                CHECK_DESC,
+            </if>
+            <if test="checkDate != null">
+                CHECK_DATE,
+            </if>
+            <if test="checkPeople != null and checkPeople != ''">
+                CHECK_PEOPLE,
+            </if>
+            <if test="checkFile != null and checkFile != ''">
+                CHECK_FILE,
+            </if>
+            <if test="handleStatus != null and handleStatus != ''">
+                HANDLE_STATUS,
+            </if>
+            <if test="chezhuXm != null and chezhuXm != ''">
+                CHEZHU_XM,
+            </if>
+            <if test="chezhuCard != null and chezhuCard != ''">
+                CHEZHU_CARD,
+            </if>
+            <if test="hpzl != null and hpzl != ''">
+                HPZL,
+            </if>
+            <if test="hphm != null and hphm != ''">
+                HPHM,
+            </if>
+            <if test="syxz != null and syxz != ''">
+                SYXZ,
+            </if>
+            <if test="clsbdh != null and clsbdh != ''">
+                clsbdh,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="pkWarningId != null and pkWarningId != ''">
+                #{pkWarningId,jdbcType=VARCHAR},
+            </if>
+            <if test="warningCategory != null and warningCategory != ''">
+                #{warningCategory,jdbcType=VARCHAR},
+            </if>
+            <if test="warningType != null and warningType != ''">
+                #{warningType,jdbcType=VARCHAR},
+            </if>
+            <if test="warningReason != null and warningReason != ''">
+                #{warningReason,jdbcType=VARCHAR},
+            </if>
+            <if test="warningDate != null">
+                #{warningDate,jdbcType=DATE},
+            </if>
+            <if test="warningSerial != null and warningSerial != ''">
+                #{warningSerial,jdbcType=VARCHAR},
+            </if>
+            <if test="daobanPeople != null and daobanPeople != ''">
+                #{daobanPeople,jdbcType=VARCHAR},
+            </if>
+            <if test="isAgent != null and isAgent != ''">
+                #{isAgent,jdbcType=VARCHAR},
+            </if>
+            <if test="businessType != null and businessType != ''">
+                #{businessType,jdbcType=VARCHAR},
+            </if>
+            <if test="ordinal != null and ordinal != ''">
+                #{ordinal,jdbcType=VARCHAR},
+            </if>
+            <if test="windowName != null and windowName != ''">
+                #{windowName,jdbcType=VARCHAR},
+            </if>
+            <if test="agent != null and agent != ''">
+                #{agent,jdbcType=VARCHAR},
+            </if>
+            <if test="idCard != null and idCard != ''">
+                #{idCard,jdbcType=VARCHAR},
+            </if>
+            <if test="aCertificatesType != null and aCertificatesType != ''">
+                #{aCertificatesType,jdbcType=VARCHAR},
+            </if>
+            <if test="aName != null and aName != ''">
+                #{aName,jdbcType=VARCHAR},
+            </if>
+            <if test="aIdcard != null and aIdcard != ''">
+                #{aIdcard,jdbcType=VARCHAR},
+            </if>
+            <if test="bCertificatesType != null and bCertificatesType != ''">
+                #{bCertificatesType,jdbcType=VARCHAR},
+            </if>
+            <if test="bName != null and bName != ''">
+                #{bName,jdbcType=VARCHAR},
+            </if>
+            <if test="bIdcard != null and bIdcard != ''">
+                #{bIdcard,jdbcType=VARCHAR},
+            </if>
+            <if test="getTime != null">
+                #{getTime,jdbcType=DATE},
+            </if>
+            <if test="startTime != null">
+                #{startTime,jdbcType=DATE},
+            </if>
+            <if test="endTime != null">
+                #{endTime,jdbcType=DATE},
+            </if>
+            <if test="serialNumberA != null and serialNumberA != ''">
+                #{serialNumberA,jdbcType=VARCHAR},
+            </if>
+            <if test="serialNumberB != null and serialNumberB != ''">
+                #{serialNumberB,jdbcType=VARCHAR},
+            </if>
+            <if test="checkStatus != null and checkStatus != ''">
+                #{checkStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="checkResult != null and checkResult != ''">
+                #{checkResult,jdbcType=VARCHAR},
+            </if>
+            <if test="checkDesc != null and checkDesc != ''">
+                #{checkDesc,jdbcType=VARCHAR},
+            </if>
+            <if test="checkDate != null">
+                #{checkDate,jdbcType=VARCHAR},
+            </if>
+            <if test="checkPeople != null and checkPeople != ''">
+                #{checkPeople,jdbcType=VARCHAR},
+            </if>
+            <if test="checkFile != null and checkFile != ''">
+                #{checkFile,jdbcType=VARCHAR},
+            </if>
+            <if test="handleStatus != null and handleStatus != ''">
+                #{handleStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="chezhuXm != null and chezhuXm != ''">
+                #{chezhuXm,jdbcType=VARCHAR},
+            </if>
+            <if test="chezhuCard != null and chezhuCard != ''">
+                #{chezhuCard,jdbcType=VARCHAR},
+            </if>
+            <if test="hpzl != null and hpzl != ''">
+                #{hpzl,jdbcType=VARCHAR},
+            </if>
+            <if test="hphm != null and hphm != ''">
+                #{hphm,jdbcType=VARCHAR},
+            </if>
+            <if test="syxz != null and syxz != ''">
+                #{syxz,jdbcType=VARCHAR},
+            </if>
+            <if test="clsbdh != null and clsbdh != ''">
+                #{clsbdh,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update T_WARN_LNFO
+        <set>
+            <if test="warningCategory != null">
+                WARNING_CATEGORY = #{warningCategory},
+            </if>
+            <if test="warningType != null">
+                WARNING_TYPE = #{warningType},
+            </if>
+            <if test="warningReason != null">
+                WARNING_REASON = #{warningReason},
+            </if>
+            <if test="warningDate != null">
+                WARNING_DATE = #{warningDate},
+            </if>
+            <if test="warningSerial != null">
+                WARNING_SERIAL = #{warningSerial},
+            </if>
+            <if test="daobanPeople != null">
+                DAOBANPEOPLE = #{daobanPeople},
+            </if>
+            <if test="isAgent != null">
+                ISAGENT = #{isAgent},
+            </if>
+            <if test="businessType != null">
+                BUSINESSTYPE = #{businessType},
+            </if>
+            <if test="ordinal != null">
+                ORDINAL = #{ordinal},
+            </if>
+            <if test="windowName != null">
+                WINDOW_NAME = #{windowName},
+            </if>
+            <if test="agent != null">
+                AGENT = #{agent},
+            </if>
+            <if test="idCard != null">
+                IDCARD = #{idCard},
+            </if>
+            <if test="aCertificatesType != null">
+                A_CERTIFICATES_TYPE = #{aCertificatesType},
+            </if>
+            <if test="aName != null">
+                ANAME = #{aName},
+            </if>
+            <if test="aIdcard != null">
+                AIDCARD = #{aIdcard},
+            </if>
+            <if test="bCertificatesType != null">
+                BCERTIFICATESTYPE = #{bCertificatesType},
+            </if>
+            <if test="bName != null">
+                BNAME = #{bName},
+            </if>
+            <if test="bIdcard != null">
+                BIDCARD = #{bIdcard},
+            </if>
+            <if test="getTime != null">
+                GET_TIME = #{getTime},
+            </if>
+            <if test="startTime != null">
+                START_TIME = #{startTime},
+            </if>
+            <if test="endTime != null">
+                ENDTIME = #{endTime},
+            </if>
+            <if test="serialNumberA != null">
+                SERIAL_NUMBER_A = #{serialNumberA},
+            </if>
+            <if test="serialNumberB != null">
+                SERIAL_NUMBER_B = #{serialNumberB},
+            </if>
+            <if test="checkResult != null">
+                CHECK_RESULT = #{checkResult},
+            </if>
+             <if test="checkStatus != null">
+                 CHECK_STATUS = #{checkStatus},
+            </if>
+            <if test="checkDesc != null">
+                CHECK_DESC = #{checkDesc},
+            </if>
+            <if test="checkDate != null">
+                CHECK_DATE = #{checkDate},
+            </if>
+            <if test="checkPeople != null">
+                CHECK_PEOPLE = #{checkPeople},
+            </if>
+            <if test="checkFile != null">
+                CHECK_FILE = #{checkFile},
+            </if>
+            <if test="handleStatus != null">
+                HANDLE_STATUS = #{handleStatus},
+            </if>
+            <if test="chezhuXm != null">
+                CHEZHU_XM = #{chezhuXm},
+            </if>
+            <if test="chezhuCard != null">
+                CHEZHU_CARD = #{chezhuCard},
+            </if>
+            <if test="hpzl != null">
+                HPZL = #{hpzl},
+            </if>
+            <if test="hphm != null">
+                HPHM = #{hphm},
+            </if>
+            <if test="syxz != null">
+                SYXZ = #{syxz},
+            </if>
+            <if test="clsbdh != null">
+                CLSBDH = #{clsbdh},
+            </if>
+        </set>
+        where PK_WARNING_ID = #{pkWarningId}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from T_WARN_LNFO where PK_WARNING_ID = #{pkWarningId}
+    </delete>
+    <!--    维护接口-->
+    <delete id="systemMaintain">
+        delete from T_WARN_LNFO where HANDLE_STATUS != '办结'
+    </delete>
+    <delete id="deteleNoHandBeforeData">
+        delete from T_WARN_LNFO where ENDTIME is null
+    </delete>
+    <select id="selectSize" resultType="java.lang.Integer">
+        select count(*) from T_WARN_LNFO
+        where 1 = 1
+        <if test="businessType != null and businessType != ''">
+            and businessType = #{businessType}
+        </if>
+        <if test="warningCategory != null and warningCategory != ''">
+            and WARNING_CATEGORY = #{warningCategory}
+        </if>
+        <if test="warningType != null and warningType != ''">
+            and WARNING_TYPE like '%${warningType}%'
+        </if>
+        <if test="checkStatus != null and checkStatus == '待核查'">
+            and CHECK_STATUS ='待核查'
+        </if>
+        <if test="checkStatus != null and checkStatus == '已核查'">
+            and CHECK_STATUS ='已核查'
+        </if>
+        <if test="checkStatus != null and checkStatus == '查看'">
+            and CHECK_STATUS is null
+        </if>
+        <if test="checkResult != null and checkResult == '异常'">
+            and CHECK_RESULT = '异常'
+        </if>
+        <if test="bName != null and bName != ''">
+            and BNAME like '%${bName}%'
+        </if>
+        <if test="bIdcard != null and bIdcard != ''">
+            and BIDCARD like '%${bIdcard}%'
+        </if>
+        <if test="ordinal != null and ordinal != ''">
+            and ORDINAL like '%${ordinal}%'
+        </if>
+        <if test="hphm != null and hphm != ''">
+            and HPHM like '%${hphm}%'
+        </if>
+        <if test="windowName != null and windowName != ''">
+            and WINDOW_NAME = #{windowName}
+        </if><if test="agent != null and agent != ''">
+        and agent = #{agent}
+    </if>
+        <if test="queryStart == null and queryEnd == null">
+            and TO_CHAR(WARNING_DATE,'YYYY-MM-DD')=TO_CHAR(SYSDATE,'YYYY-MM-DD')
+        </if>
+        <if test="queryStart != null">
+            and WARNING_DATE &gt;= #{queryStart}
+        </if>
+        <if test="queryEnd != null">
+            and WARNING_DATE &lt;= #{queryEnd}
+        </if>
+    </select>
+    <select id="selectAllPage" resultType="com.hjy.warning.entity.Warning">
+        select t.*
+        from
+        (
+        select rownum rn, u.*
+        from T_WARN_LNFO u
+        where rownum &lt;= #{endRow,jdbcType=INTEGER}
+        <if test="businessType != null and businessType != ''">
+            and businessType = #{businessType}
+        </if>
+        <if test="warningCategory != null and warningCategory != ''">
+            and WARNING_CATEGORY = #{warningCategory}
+        </if>
+        <if test="warningType != null and warningType != ''">
+            and WARNING_TYPE like '%${warningType}%'
+        </if>
+        <if test="checkStatus != null and checkStatus == '待核查'">
+            and CHECK_STATUS ='待核查'
+        </if>
+        <if test="checkStatus != null and checkStatus == '已核查'">
+            and CHECK_STATUS ='已核查'
+        </if>
+        <if test="checkStatus != null and checkStatus == '查看'">
+            and CHECK_STATUS is null
+        </if>
+        <if test="checkResult != null and checkResult == '异常'">
+            and CHECK_RESULT = '异常'
+        </if>
+        <if test="bName != null and bName != ''">
+            and BNAME like '%${bName}%'
+        </if>
+        <if test="bIdcard != null and bIdcard != ''">
+            and BIDCARD like '%${bIdcard}%'
+        </if>
+        <if test="ordinal != null and ordinal != ''">
+            and ordinal like '%${ordinal}%'
+        </if>
+        <if test="hphm != null and hphm != ''">
+            and HPHM like '%${hphm}%'
+        </if>
+        <if test="windowName != null and windowName != ''">
+            and WINDOW_NAME = #{windowName}
+        </if>
+        <if test="agent != null and agent != ''">
+            and agent = #{agent}
+        </if>
+        <if test="queryStart == null and queryEnd == null">
+            and TO_CHAR(WARNING_DATE,'YYYY-MM-DD')=TO_CHAR(SYSDATE,'YYYY-MM-DD')
+        </if>
+        <if test="queryStart != null">
+            and WARNING_DATE &gt;= #{queryStart}
+        </if>
+        <if test="queryEnd != null">
+            and WARNING_DATE &lt;= #{queryEnd}
+        </if>
+        ) t
+        where t.rn &gt;= #{startRow,jdbcType=INTEGER}
+    </select>
+</mapper>

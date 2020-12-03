@@ -1,0 +1,154 @@
+package com.hjy.system.controller;
+
+import com.hjy.common.annotation.OperLog;
+import com.hjy.common.domin.CommonResult;
+import com.hjy.common.exception.FebsException;
+import com.hjy.system.entity.TSysDept;
+import com.hjy.system.service.TSysDeptService;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import lombok.extern.slf4j.Slf4j;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * (TSysDept)表控制层
+ *
+ * @author liuchun
+ * @since 2020-07-27 16:15:29
+ */
+@Slf4j
+@RestController
+public class TSysDeptController {
+    /**
+     * 服务对象
+     */
+    @Autowired
+    private TSysDeptService tSysDeptService;
+
+    /**
+     * 1 跳转到新增页面
+     */
+    @GetMapping(value = "/system/dept/addPage")
+    public CommonResult tSysDeptAddPage() throws FebsException {
+        try {
+            //
+            List<TSysDept> deptList =tSysDeptService.selectAll();
+            return new CommonResult(200,"success","成功!",deptList);
+        } catch (Exception e) {
+            String message = "失败";
+            log.error(message, e);
+            throw new FebsException(message);
+        }
+    }
+    /**
+     * 1 新增数据
+     * @param tSysDept 实体对象
+     * @return 新增结果
+     */
+    @OperLog(operModul = "系统管理-权限管理-部门管理",operType = "添加",operDesc = "新增部门信息")
+    @RequiresPermissions({"dept:view"})
+//    @RequiresPermissions({"dept:add"})
+    @PostMapping("/system/dept/add")
+    public CommonResult tSysDeptAdd(@RequestBody TSysDept tSysDept) throws FebsException{
+        try {
+            //
+            tSysDeptService.insert(tSysDept);
+            return new CommonResult(200,"success","数据添加成功!",null);
+        } catch (Exception e) {
+            String message = "数据添加失败";
+            log.error(message, e);
+            throw new FebsException(message);
+        }
+    }
+    /**
+     * 2 查询所有数据
+     * @return 所有数据
+     */
+    @OperLog(operModul = "系统管理-权限管理-部门管理",operType = "查看",operDesc = "查看部门列表")
+    @RequiresPermissions({"dept:view"})
+    @GetMapping("/system/dept/list")
+    public CommonResult tSysDeptList() throws FebsException{
+        try {
+            //
+            List<TSysDept> tSysDeptList = tSysDeptService.selectAll();
+            return new CommonResult(200,"success","查询数据成功!",tSysDeptList);
+        } catch (Exception e) {
+            String message = "查询数据失败";
+            log.error(message, e);
+            throw new FebsException(message);
+        }
+    }
+
+    /**
+     * 3 删除数据
+     * @return 删除结果
+     */
+    @OperLog(operModul = "系统管理-权限管理-部门管理",operType = "删除",operDesc = "删除部门信息")
+    @RequiresPermissions({"dept:view"})
+//    @RequiresPermissions({"dept:del"})
+    @DeleteMapping("/system/dept/del")
+    public CommonResult tSysDeptDel(@RequestBody String parm) throws FebsException{
+        JSONObject jsonObject = JSON.parseObject(parm);
+        String idStr=String.valueOf(jsonObject.get("pk_id"));
+        try {
+            //
+            tSysDeptService.deleteById(idStr);
+            return new CommonResult(200,"success","数据删除成功!",null);
+        } catch (Exception e) {
+            String message = "数据删除失败";
+            log.error(message, e);
+            throw new FebsException(message);
+        }
+    }
+
+    /**
+     * 4 通过主键查询单条数据
+     * @return 单条数据
+     */
+    @OperLog(operModul = "系统管理-权限管理-部门管理",operType = "查看",operDesc = "查看部门详情")
+    @PostMapping("/system/dept/getOne")
+    public CommonResult tSysDeptgetOne(@RequestBody String parm) throws FebsException{
+        JSONObject jsonObject = JSON.parseObject(parm);
+        String idStr=String.valueOf(jsonObject.get("pk_id"));
+        try {
+            //
+            JSONObject json = new JSONObject();
+            TSysDept tSysDept = tSysDeptService.selectById(idStr);
+            json.put("dept",tSysDept);
+            List<TSysDept> depts = tSysDeptService.selectAll();
+            json.put("depts",depts);
+            return new CommonResult(200,"success","数据获取成功!",json);
+        } catch (Exception e) {
+            String message = "数据获取失败";
+            log.error(message, e);
+            throw new FebsException(message);
+        }
+    }
+
+    /**
+     * 4 修改数据
+     * @param tSysDept 实体对象
+     * @return 修改结果
+     */
+    @OperLog(operModul = "系统管理-权限管理-部门管理",operType = "修改",operDesc = "修改部门信息")
+    @RequiresPermissions({"dept:view"})
+//    @RequiresPermissions({"dept:update"})
+    @PutMapping("/system/dept/update")
+    public CommonResult tSysDeptUpdate(@RequestBody TSysDept tSysDept) throws FebsException{
+        try {
+            //
+            tSysDeptService.updateById(tSysDept);
+            return new CommonResult(200,"success","修改成功!",null);
+        } catch (Exception e) {
+            String message = "修改失败";
+            log.error(message, e);
+            throw new FebsException(message);
+        }
+    }
+
+}

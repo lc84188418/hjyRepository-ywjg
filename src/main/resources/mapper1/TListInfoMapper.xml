@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hjy.list.dao.TListInfoMapper">
+
+    <sql id="BaseColumnList">
+        pk_list_id,
+        list_type,
+        list_scope,
+        full_name,
+        IDCARD,
+        tel,
+        explain,
+        other,
+        reason,
+        whether_pass,
+        approval_people,
+        unit,
+        organization_code,
+        apply_book,
+        code_certificates,
+        operator,
+        create_time,
+        approval_time,
+  </sql>
+    <!--No problem 通过主键查询单个-->
+    <select id="selectById" resultType="com.hjy.list.entity.TListInfo" parameterType="com.hjy.list.entity.TListInfo">
+        select * from t_list_info
+        where PK_LIST_ID = #{pkListId,jdbcType=VARCHAR}
+    </select>
+
+    <!--No problem新增所有列-->
+    <insert id="insertSelective" parameterType="com.hjy.list.entity.TListInfo">
+        insert into t_list_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="pkListId != null and pkListId != ''">
+                pk_list_id,
+            </if>
+            <if test="listType != null and listType != ''">
+                list_type,
+            </if>
+            <if test="listScope != null">
+                list_scope,
+            </if>
+            <if test="fullName != null and fullName != ''">
+                full_name,
+            </if>
+            <if test="idCard != null and idCard != ''">
+                IDCARD,
+            </if>
+            <if test="tel != null and tel != ''">
+                tel,
+            </if>
+            <if test="explain != null and explain != ''">
+                explain,
+            </if>
+            <if test="other != null and other != ''">
+                other,
+            </if>
+            <if test="reason != null and reason != ''">
+                reason,
+            </if>
+            <if test="whetherPass != null and whetherPass != ''">
+                whether_pass,
+            </if>
+            <if test="approvalPeople != null and approvalPeople != ''">
+                approval_people,
+            </if>
+            <if test="unit != null and unit != ''">
+                unit,
+            </if>
+            <if test="organizationCode != null and organizationCode != ''">
+                organization_code,
+            </if>
+            <if test="applyBook != null and applyBook != ''">
+                apply_book,
+            </if>
+            <if test="codeCertificates != null and codeCertificates != ''">
+                code_certificates,
+            </if>
+            <if test="operator != null and operator != ''">
+                operator,
+            </if>
+            <if test="createTime != null ">
+                create_time,
+            </if>
+            <if test="approvalTime != null ">
+                approval_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="pkListId != null and pkListId != ''">
+                #{pkListId,jdbcType=VARCHAR},
+            </if>
+            <if test="listType != null and listType != ''">
+                #{listType,jdbcType=VARCHAR},
+            </if>
+            <if test="listScope != null">
+                #{listScope,jdbcType=VARCHAR},
+            </if>
+            <if test="fullName != null and fullName != ''">
+                #{fullName,jdbcType=VARCHAR},
+            </if>
+            <if test="idCard != null and idCard != ''">
+                #{idCard,jdbcType=VARCHAR},
+            </if>
+            <if test="tel != null and tel != ''">
+                #{tel,jdbcType=VARCHAR},
+            </if>
+            <if test="explain != null and explain != ''">
+                #{explain,jdbcType=VARCHAR},
+            </if>
+            <if test="other != null and other != ''">
+                #{other,jdbcType=VARCHAR},
+            </if>
+            <if test="reason != null and reason != ''">
+                #{reason,jdbcType=VARCHAR},
+            </if>
+            <if test="whetherPass != null and whetherPass != ''">
+                #{whetherPass,jdbcType=VARCHAR},
+            </if>
+            <if test="approvalPeople != null and approvalPeople != ''">
+                #{approvalPeople,jdbcType=VARCHAR},
+            </if>
+            <if test="unit != null and unit != ''">
+                #{unit,jdbcType=VARCHAR},
+            </if>
+            <if test="organizationCode != null and organizationCode != ''">
+                #{organizationCode,jdbcType=VARCHAR},
+            </if>
+            <if test="applyBook != null and applyBook != ''">
+                #{applyBook,jdbcType=VARCHAR},
+            </if>
+            <if test="codeCertificates != null and codeCertificates != ''">
+                #{codeCertificates,jdbcType=VARCHAR},
+            </if>
+            <if test="operator != null and operator != ''">
+                #{operator,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=DATE},
+            </if>
+            <if test="approvalTime != null">
+                #{approvalTime,jdbcType=DATE},
+            </if>
+        </trim>
+    </insert>
+
+    <!--No problem通过主键修改数据-->
+    <update id="updateById" parameterType="com.hjy.list.entity.TListInfo">
+        update t_list_info
+        <set>
+            <if test="listType != null and listType != ''">
+                list_type = #{listType,jdbcType=VARCHAR},
+            </if>
+            <if test="listScope != null">
+                LIST_SCOPE = #{listScope,jdbcType=VARCHAR},
+            </if>
+            <if test="fullName != null and fullName != ''">
+                full_name = #{fullName,jdbcType=VARCHAR},
+            </if>
+            <if test="idCard != null and idCard != ''">
+                IDCARD = #{idCard,jdbcType=VARCHAR},
+            </if>
+            <if test="tel != null and tel != ''">
+                tel = #{tel,jdbcType=VARCHAR},
+            </if>
+            <if test="explain != null and explain != ''">
+                explain = #{explain,jdbcType=VARCHAR},
+            </if>
+            <if test="other != null and other != ''">
+                other = #{other,jdbcType=VARCHAR},
+            </if>
+            <if test="reason != null and reason != ''">
+                reason = #{reason,jdbcType=VARCHAR},
+            </if>
+            <if test="whetherPass != null and whetherPass != ''">
+                whether_pass = #{whetherPass,jdbcType=VARCHAR},
+            </if>
+            <if test="approvalPeople != null and approvalPeople != ''">
+                approval_people = #{approvalPeople,jdbcType=VARCHAR},
+            </if>
+            <if test="unit != null and unit != ''">
+                unit = #{unit,jdbcType=VARCHAR},
+            </if>
+            <if test="organizationCode != null and organizationCode != ''">
+                organization_code = #{organizationCode,jdbcType=VARCHAR},
+            </if>
+            <if test="applyBook != null">
+                apply_book = #{applyBook,jdbcType=VARCHAR},
+            </if>
+            <if test="codeCertificates != null">
+                code_certificates = #{codeCertificates,jdbcType=VARCHAR},
+            </if>
+            <if test="operator != null and operator != ''">
+                operator = #{operator,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=DATE},
+            </if>
+            <if test="approvalTime != null">
+                approval_time = #{approvalTime,jdbcType=DATE},
+            </if>
+        </set>
+        where pk_list_id = #{pkListId,jdbcType=VARCHAR}
+    </update>
+
+    <!--No problem 通过主键删除-->
+    <delete id="deleteById" parameterType="com.hjy.list.entity.TListInfo">
+        delete from t_list_info where pk_list_id = #{pkListId,jdbcType=VARCHAR}
+    </delete>
+    <!--定时任务，每月最后一日0点0分0秒执行-->
+    <delete id="deleteBlackByYear">
+        delete from t_list_info
+        where list_type = '黑名单' and approval_people = '系统添加' and explain = '代办次数过多'
+        and create_time &lt;= SYSDATE -#{dayNum}
+    </delete>
+    <!--No problem 查询所有行数据-->
+    <select id="selectAll" resultType="com.hjy.list.entity.TListInfo">
+        select * from t_list_info
+    </select>
+    <!--No problem 查询前方等候人数-->
+    <select id="selectWaitApprovalSize" resultType="java.lang.Integer">
+        select count(*) from t_list_info
+        where approval_people is null
+    </select>
+    <!--No problem 分页-查询待审批记录-->
+    <select id="selectWaitApproval" resultType="com.hjy.list.entity.TListInfo">
+        select t.*
+        from
+        (select rownum rn, u.*
+        from t_list_info u
+        where rownum &lt;= #{endRow,jdbcType=INTEGER} and approval_people is null) t
+        where t.rn &gt;= #{startRow,jdbcType=INTEGER}
+    </select>
+    <!--No problem 通过身份证查询黑红名单信息-->
+    <select id="selectByIdCard" resultType="com.hjy.list.entity.TListInfo" parameterType="string">
+        select * from t_list_info where Idcard = #{idCard,jdbcType=VARCHAR} AND rownum =1
+    </select>
+    <!--No problem 分页-查询黑红名单记录条数-->
+    <select id="selectSize" resultType="java.lang.Integer">
+        select count(*) from t_list_info
+        where 1 = 1
+        <if test="listType != null and listType != '' and listType != 'null'">
+            and list_type = #{listType,jdbcType=VARCHAR}
+        </if>
+        <if test="fullName != null and fullName != ''and fullName != 'null'">
+            and full_name like '%${fullName}%'
+        </if>
+        <if test="idCard != null and idCard != '' and idCard != 'null'">
+            and IDCARD like '%${idCard}%'
+        </if>
+        <if test="approvalPeople != null and approvalPeople != '' and approvalPeople != 'null'">
+            and approval_people like '%${approvalPeople}%'
+        </if>
+        and whether_pass is not null
+    </select>
+    <!--No problem 分页-查询所有黑红名单记录-->
+    <select id="selectAllPage" resultType="com.hjy.list.entity.TListInfo">
+        select t.*
+        from
+        (select rownum rn, u.*
+        from t_list_info u
+        where rownum &lt;= #{endRow,jdbcType=INTEGER} and whether_pass is not null
+        <if test="listType != null and listType != '' and listType != 'null'">
+            and list_type = #{listType}
+        </if>
+        <if test="fullName != null and fullName != ''and fullName != 'null'">
+            and full_name like '%${fullName}%'
+        </if>
+        <if test="idCard != null and idCard != '' and idCard != 'null'">
+            and IDCARD like '%${idCard}%'
+        </if>
+        <if test="approvalPeople != null and approvalPeople != '' and approvalPeople != 'null'">
+            and approval_people like '%${approvalPeople}%'
+        </if>
+        ) t
+        where t.rn &gt;= #{startRow,jdbcType=INTEGER}
+    </select>
+
+</mapper>

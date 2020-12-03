@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hjy.log.dao.TLogRecordMapper">
+
+    <sql id="BaseColumnList">
+    PK_RECORD_ID,
+    RECORD_MODULE,
+    RECORD_TYPE,
+    RECORD_DESC,
+    RECORD_REQU_PARAM,
+    RECORD_RESP_PARAM,
+    RECORD_USER_ID,
+    RECORD_USER_NAME,
+    RECORD_FULL_NAME,
+    RECORD_METHOD,
+    RECORD_URL,
+    RECORD_IP,
+    RECORD_TIME,
+    RECORD_VERSION,
+  </sql>
+    <!--新增所有列-->
+    <insert id="insertSelective" parameterType="com.hjy.log.entity.TLogRecord">
+        insert into "T_LOG_RECORD"
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="pkRecordId != null">
+                "PK_RECORD_ID",
+            </if>
+            <if test="recordModule != null">
+                "RECORD_MODULE",
+            </if>
+            <if test="recordType != null">
+                "RECORD_TYPE",
+            </if>
+            <if test="recordDesc != null">
+                "RECORD_DESC",
+            </if>
+            <if test="recordRequParam != null">
+                "RECORD_REQU_PARAM",
+            </if>
+            <if test="recordRespParam != null">
+                "RECORD_RESP_PARAM",
+            </if>
+            <if test="recordUserId != null">
+                "RECORD_USER_ID",
+            </if>
+            <if test="recordUserName != null">
+                "RECORD_USER_NAME",
+            </if>
+            <if test="recordFullName != null">
+                "RECORD_FULL_NAME",
+            </if>
+            <if test="recordMethod != null">
+                "RECORD_METHOD",
+            </if>
+            <if test="recordUrl != null">
+                "RECORD_URL",
+            </if>
+            <if test="recordIp != null">
+                "RECORD_IP",
+            </if>
+            <if test="recordTime != null">
+                "RECORD_TIME",
+            </if>
+            <if test="recordVersion != null">
+                "RECORD_VERSION",
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="pkRecordId != null">
+                #{pkRecordId,jdbcType=VARCHAR},
+            </if>
+            <if test="recordModule != null">
+                #{recordModule,jdbcType=VARCHAR},
+            </if>
+            <if test="recordType != null">
+                #{recordType,jdbcType=VARCHAR},
+            </if>
+            <if test="recordDesc != null">
+                #{recordDesc,jdbcType=VARCHAR},
+            </if>
+            <if test="recordRequParam != null">
+                #{recordRequParam,jdbcType=VARCHAR},
+            </if>
+            <if test="recordRespParam != null">
+                #{recordRespParam,jdbcType=VARCHAR},
+            </if>
+            <if test="recordUserId != null">
+                #{recordUserId,jdbcType=VARCHAR},
+            </if>
+            <if test="recordUserName != null">
+                #{recordUserName,jdbcType=VARCHAR},
+            </if>
+            <if test="recordFullName != null">
+                #{recordFullName,jdbcType=VARCHAR},
+            </if>
+            <if test="recordMethod != null">
+                #{recordMethod,jdbcType=VARCHAR},
+            </if>
+            <if test="recordUrl != null">
+                #{recordUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="recordIp != null">
+                #{recordIp,jdbcType=VARCHAR},
+            </if>
+            <if test="recordTime != null">
+                #{recordTime,jdbcType=DATE},
+            </if>
+            <if test="recordVersion != null">
+                #{recordVersion,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <!--通过主键删除-->
+    <delete id="deleteById" parameterType="com.hjy.log.entity.TLogRecord">
+        delete from "T_LOG_RECORD" where "PK_RECORD_ID" = #{pkRecordId,jdbcType=VARCHAR}
+    </delete>
+    <delete id="deleteRecordByYear">
+        DELETE
+        FROM
+        T_LOG_RECORD
+        WHERE
+        RECORD_TIME &lt;= SYSDATE -#{dayNum}
+    </delete>
+    <!--查询所有行数据-->
+    <select id="selectAll" resultType="com.hjy.log.entity.TLogRecord" parameterType="com.hjy.log.entity.TLogRecord">
+        select t.*
+        from
+        (
+        select rownum rn, u.*
+        from T_LOG_RECORD u
+        where rownum &lt;= #{endRow,jdbcType=INTEGER}
+        <if test="recordModule != null and recordModule != ''">
+            and RECORD_MODULE like '%${recordModule}%'
+        </if>
+        <if test="recordType != null and recordType != ''">
+            and RECORD_TYPE like '%${recordType}%'
+        </if>
+        <if test="recordUserName != null and recordUserName != ''">
+            and RECORD_USER_NAME like '%${recordUserName}%'
+        </if>
+        <if test="recordFullName != null and recordFullName != ''">
+            and RECORD_FULL_NAME like '%${recordFullName}%'
+        </if>
+        <if test="startTime == null and endTime == null">
+            and TO_CHAR(RECORD_TIME,'YYYY-MM-DD')= TO_CHAR(SYSDATE,'YYYY-MM-DD')
+        </if>
+        <if test="startTime != null">
+            and RECORD_TIME &gt;= #{startTime}
+        </if>
+        <if test="endTime != null">
+            and RECORD_TIME &lt;= #{endTime}
+        </if>
+        ) t
+        where t.rn &gt;= #{startRow,jdbcType=INTEGER}
+    </select>
+    <select id="selectSize" resultType="java.lang.Integer" parameterType="com.hjy.log.entity.TLogRecord">
+        select count(*) from T_LOG_RECORD
+        where 1 = 1
+        <if test="recordModule != null and recordModule != ''">
+            and RECORD_MODULE like '%${recordModule}%'
+        </if>
+        <if test="recordType != null and recordType != ''">
+            and RECORD_TYPE like '%${recordType}%'
+        </if>
+        <if test="recordUserName != null and recordUserName != ''">
+            and RECORD_USER_NAME like '%${recordUserName}%'
+        </if>
+        <if test="recordFullName != null and recordFullName != ''">
+            and RECORD_FULL_NAME like '%${recordFullName}%'
+        </if>
+        <if test="startTime == null and endTime == null">
+            and TO_CHAR(RECORD_TIME,'YYYY-MM-DD')= TO_CHAR(SYSDATE,'YYYY-MM-DD')
+        </if>
+        <if test="startTime != null">
+            and RECORD_TIME &gt;= #{startTime}
+        </if>
+        <if test="endTime != null">
+            and RECORD_TIME &lt;= #{endTime}
+        </if>
+    </select>
+
+</mapper>

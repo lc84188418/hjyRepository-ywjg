@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hjy.system.dao.TSysParamMapper">
+
+<sql id="BaseColumnList" >
+        pk_param_id,
+        param_key,
+        param_value,
+        operator_people,
+        operator_time,
+  </sql>
+
+    <!--通过主键修改数据-->
+    <update id="updateById" parameterType="com.hjy.system.entity.TSysParam">
+        update t_sys_param
+        <set>
+            <if test="paramKey != null and paramKey != ''">
+                param_key = #{paramKey,jdbcType=VARCHAR},
+            </if>
+            <if test="paramValue != null and paramValue != ''">
+                param_value = #{paramValue,jdbcType=VARCHAR},
+            </if>
+            <if test="operatorPeople != null and operatorPeople != ''">
+                operator_people = #{operatorPeople,jdbcType=VARCHAR},
+            </if>
+            <if test="operatorTime != null">
+                operator_time = #{operatorTime,jdbcType=DATE},
+            </if>
+        </set>
+        where pk_param_id = #{pkParamId,jdbcType=VARCHAR}
+    </update>
+
+    <!--No problem 查询所有行数据-->
+    <select id="selectAll" resultType="com.hjy.system.entity.TSysParam">
+        select * from t_sys_param
+    </select>
+    <!--No problem 通过关键字查询单条数据-->
+    <select id="selectById" resultType="com.hjy.system.entity.TSysParam">
+        select * from t_sys_param
+        where  pk_param_id = '${pkParamId}'
+    </select>
+    <!--No problem 通过关键字查询单条参数值-->
+    <select id="selectParamById" resultType="java.lang.String">
+        select param_value from t_sys_param
+        where  pk_param_id = #{pkParamId,jdbcType=VARCHAR}
+    </select>
+    <select id="selectWarningParam" resultType="com.hjy.system.entity.TSysParam">
+        SELECT * FROM "T_SYS_PARAM" where PK_PARAM_ID not in('ZDJRHMDQX','ZJBLQKJLTS')
+    </select>
+
+</mapper>

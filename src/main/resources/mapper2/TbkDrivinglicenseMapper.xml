@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hjy.tbk.dao.TbkDrivinglicenseMapper">
+
+    <sql id="BaseColumnList" >
+        xm,
+        sfzmhm,
+        sjhm,
+        lsh,
+        zt,
+        jbr,
+        zjcx,
+        cclzrq,
+        yxqz,
+        syyxqz,
+        dabh,
+  </sql>
+    <!--No problem 查询所有行数据-->
+    <select id="selectByIdCard" resultType="com.hjy.tbk.entity.TbkDrivinglicense">
+        select xm,sfzmhm,sjhm,lsh,zt,jbr,zjcx,cclzrq,yxqz,syyxqz,dabh from drivinglicense where sfzmhm = #{idCard,jdbcType=VARCHAR}
+    </select>
+</mapper>

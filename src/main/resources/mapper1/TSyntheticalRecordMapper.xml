@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hjy.synthetical.dao.TSyntheticalRecordMapper">
+
+    <sql id="BaseColumnList">
+    PK_RECORD_ID,
+    BALX,
+    JGLX,
+    ZZJGDM,
+    DW_MC,
+    JBR,
+    JBR_TEL,
+    DW_DZ,
+    DW_TEL,
+    BASM,
+    ZZJGDMZ,
+    WTS,
+    BY1_MC,
+    BY1_PATH,
+    BY2_MC,
+    BY2_PATH,
+    BA_DATE,
+  </sql>
+    <!--通过主键查询单个-->
+    <select id="selectById" resultType="com.hjy.synthetical.entity.TSyntheticalRecord"
+            parameterType="com.hjy.synthetical.entity.TSyntheticalRecord">
+        select * from T_SYNTHETICAL_RECORD
+        where "PK_RECORD_ID" = #{pkRecordId,jdbcType=VARCHAR}
+    </select>
+    <select id="selectByZzjgdm" resultType="com.hjy.synthetical.entity.TSyntheticalRecord"
+            parameterType="com.hjy.synthetical.entity.TSyntheticalRecord">
+        select * from T_SYNTHETICAL_RECORD
+        where ZZJGDM = #{ZZJGDM,jdbcType=VARCHAR}
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insertSelective" parameterType="com.hjy.synthetical.entity.TSyntheticalRecord">
+        insert into T_SYNTHETICAL_RECORD
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            PK_RECORD_ID,
+            <if test="balx != null">
+                "BALX",
+            </if>
+            <if test="jglx != null">
+                "JGLX",
+            </if>
+            <if test="zzjgdm != null">
+                "ZZJGDM",
+            </if>
+            <if test="dwMc != null">
+                "DW_MC",
+            </if>
+            <if test="jbr != null">
+                "JBR",
+            </if>
+            <if test="jbrTel != null">
+                "JBR_TEL",
+            </if>
+            <if test="dwDz != null">
+                "DW_DZ",
+            </if>
+            <if test="dwTel != null">
+                "DW_TEL",
+            </if>
+            <if test="basm != null">
+                "BASM",
+            </if>
+            <if test="zzjgdmz != null">
+                "ZZJGDMZ",
+            </if>
+            <if test="wts != null">
+                "WTS",
+            </if>
+            <if test="by1Mc != null">
+                "BY1_MC",
+            </if>
+            <if test="by1Path != null">
+                "BY1_PATH",
+            </if>
+            <if test="by2Mc != null">
+                "BY2_MC",
+            </if>
+            <if test="by2Path != null">
+                "BY2_PATH",
+            </if>
+            <if test="baDate != null">
+                "BA_DATE",
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+                #{pkRecordId,jdbcType=VARCHAR},
+            <if test="balx != null">
+                #{balx,jdbcType=VARCHAR},
+            </if>
+            <if test="jglx != null">
+                #{jglx,jdbcType=VARCHAR},
+            </if>
+            <if test="zzjgdm != null">
+                #{zzjgdm,jdbcType=VARCHAR},
+            </if>
+            <if test="dwMc != null">
+                #{dwMc,jdbcType=VARCHAR},
+            </if>
+            <if test="jbr != null">
+                #{jbr,jdbcType=VARCHAR},
+            </if>
+            <if test="jbrTel != null">
+                #{jbrTel,jdbcType=VARCHAR},
+            </if>
+            <if test="dwDz != null">
+                #{dwDz,jdbcType=VARCHAR},
+            </if>
+            <if test="dwTel != null">
+                #{dwTel,jdbcType=VARCHAR},
+            </if>
+            <if test="basm != null">
+                #{basm,jdbcType=VARCHAR},
+            </if>
+            <if test="zzjgdmz != null">
+                #{zzjgdmz,jdbcType=VARCHAR},
+            </if>
+            <if test="wts != null">
+                #{wts,jdbcType=VARCHAR},
+            </if>
+            <if test="by1Mc != null">
+                #{by1Mc,jdbcType=VARCHAR},
+            </if>
+            <if test="by1Path != null">
+                #{by1Path,jdbcType=VARCHAR},
+            </if>
+            <if test="by2Mc != null">
+                #{by2Mc,jdbcType=VARCHAR},
+            </if>
+            <if test="by2Path != null">
+                #{by2Path,jdbcType=VARCHAR},
+            </if>
+            <if test="baDate != null">
+                #{baDate,jdbcType=DATE},
+            </if>
+        </trim>
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="updateById" parameterType="com.hjy.synthetical.entity.TSyntheticalRecord">
+        update T_SYNTHETICAL_RECORD
+        <set>
+            <if test="balx != null">
+                "BALX" = #{balx,jdbcType=VARCHAR},
+            </if>
+            <if test="jglx != null">
+                "JGLX" = #{jglx,jdbcType=VARCHAR},
+            </if>
+            <if test="zzjgdm != null">
+                "ZZJGDM" = #{zzjgdm,jdbcType=VARCHAR},
+            </if>
+            <if test="dwMc != null">
+                "DW_MC" = #{dwMc,jdbcType=VARCHAR},
+            </if>
+            <if test="jbr != null">
+                "JBR" = #{jbr,jdbcType=VARCHAR},
+            </if>
+            <if test="jbrTel != null">
+                "JBR_TEL" = #{jbrTel,jdbcType=VARCHAR},
+            </if>
+            <if test="dwDz != null">
+                "DW_DZ" = #{dwDz,jdbcType=VARCHAR},
+            </if>
+            <if test="dwTel != null">
+                "DW_TEL" = #{dwTel,jdbcType=VARCHAR},
+            </if>
+            <if test="basm != null">
+                "BASM" = #{basm,jdbcType=VARCHAR},
+            </if>
+            <if test="zzjgdmz != null">
+                "ZZJGDMZ" = #{zzjgdmz,jdbcType=VARCHAR},
+            </if>
+            <if test="wts != null">
+                "WTS" = #{wts,jdbcType=VARCHAR},
+            </if>
+            <if test="by1Mc != null">
+                "BY1_MC" = #{by1Mc,jdbcType=VARCHAR},
+            </if>
+            <if test="by1Path != null">
+                "BY1_PATH" = #{by1Path,jdbcType=VARCHAR},
+            </if>
+            <if test="by2Mc != null">
+                "BY2_MC" = #{by2Mc,jdbcType=VARCHAR},
+            </if>
+            <if test="by2Path != null">
+                "BY2_PATH" = #{by2Path,jdbcType=VARCHAR},
+            </if>
+            <if test="baDate != null">
+                "BA_DATE" = #{baDate,jdbcType=DATE},
+            </if>
+        </set>
+        where "PK_RECORD_ID" = #{pkRecordId,jdbcType=VARCHAR}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById" parameterType="com.hjy.synthetical.entity.TSyntheticalRecord">
+        delete from T_SYNTHETICAL_RECORD where "PK_RECORD_ID" = #{pkRecordId,jdbcType=VARCHAR}
+    </delete>
+    <!--查询所有行数据-->
+    <select id="selectAllPage" resultType="com.hjy.synthetical.entity.TSyntheticalRecord">
+        select t.*
+        from
+        (
+        select rownum rn, u.*
+        from T_SYNTHETICAL_RECORD u
+        where rownum &lt;= #{endRow,jdbcType=INTEGER}
+        <if test="balx != null and balx != ''">
+            and BALX like '%${balx}%'
+        </if>
+        <if test="jglx != null and jglx != ''">
+            and JGLX like '%${jglx}%'
+        </if>
+        <if test="zzjgdm != null and zzjgdm != ''">
+            and ZZJGDM like '%${zzjgdm}%'
+        </if>
+        <if test="dwMc != null and dwMc != ''">
+            and DW_MC like '%${dwMc}%'
+        </if>
+        ) t
+        where t.rn &gt;= #{startRow,jdbcType=INTEGER}
+    </select>
+    <select id="selectSize" resultType="java.lang.Integer">
+        select count(*) from T_SYNTHETICAL_RECORD
+        where 1 = 1
+        <if test="balx != null and balx != ''">
+            and BALX like '%${balx}%'
+        </if>
+        <if test="jglx != null and jglx != ''">
+            and JGLX like '%${jglx}%'
+        </if>
+        <if test="zzjgdm != null and zzjgdm != ''">
+            and ZZJGDM like '%${zzjgdm}%'
+        </if>
+        <if test="dwMc != null and dwMc != ''">
+            and DW_MC like '%${dwMc}%'
+        </if>
+    </select>
+</mapper>
