@@ -42,11 +42,11 @@ public class CardFileUtil {
             }
         }
         if(tHallMakecard.getAIdcard() == null){
-            msg = tHallMakecard.getBName()+" "+bIdMsg+"\n";
+            msg = tHallMakecard.getBName()+" "+bIdMsg;
         }else {
-            msg = tHallMakecard.getBName()+" "+bIdMsg+" "+aIdMsg+"\n";
+            msg = tHallMakecard.getBName()+" "+bIdMsg+" "+aIdMsg;
         }
-        resultList.add(msg);
+        resultList.add(msg+"\n");
         //再读取文件
         FileInputStream in = null;
         try {
@@ -108,7 +108,7 @@ public class CardFileUtil {
         return "成功";
     }
     //制证领取、弃用
-    public static void MakeCardShareFileDel(TSyntheticalMakecard tHallMakecard) {
+    public static String MakeCardShareFileDel(TSyntheticalMakecard tHallMakecard) {
         List<String> resultList = new ArrayList<>();
         String delmsg = null;
         int bIdCardLength = tHallMakecard.getBIdcard().length();
@@ -148,12 +148,13 @@ public class CardFileUtil {
                 }
             }
             if(i>1){
-                for(int j=0;j<i;j++){
-                    resultList.add(delmsg+"\n");
+                for(int j=1;j<i;j++){
+                    resultList.add(0,delmsg+"\n");
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException();
         }
         //开始写入文件，先清空
         try {
@@ -163,6 +164,7 @@ public class CardFileUtil {
             fw.close();
         } catch (IOException e) {
             e.printStackTrace();
+            throw new RuntimeException();
         }
         //开始写入文件
         FileOutputStream out = null;
@@ -189,7 +191,7 @@ public class CardFileUtil {
             inbytes =null;
             bf = null;
         }catch (Exception e){
-
+            throw new RuntimeException();
         } finally {
             try {
                 if (out != null) {
@@ -198,8 +200,10 @@ public class CardFileUtil {
                 out = null;
             } catch (Exception e) {
                 e.printStackTrace();
+                throw new RuntimeException();
             }
         }
+        return "修改证件成功！";
     }
 
     //维护制证
@@ -240,11 +244,11 @@ public class CardFileUtil {
                 }
             }
             if(tHallMakecard.getAIdcard() == null){
-                msg = tHallMakecard.getBName()+" "+bIdMsg+"\n";
+                msg = tHallMakecard.getBName()+" "+bIdMsg;
             }else {
-                msg = tHallMakecard.getBName()+" "+bIdMsg+" "+aIdMsg+"\n";
+                msg = tHallMakecard.getBName()+" "+bIdMsg+" "+aIdMsg;
             }
-            resultList.add(msg);
+            resultList.add(msg+"\n");
         }
         //开始写入文件，先清空
         try {

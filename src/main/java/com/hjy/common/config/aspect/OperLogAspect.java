@@ -244,9 +244,6 @@ public class OperLogAspect {
             strbuff.append(stet + "\n");
         }
 //        String message = exceptionName + ":" + exceptionMessage + "\n\t" + strbuff.toString();
-//        System.err.println("前------------------"+message);
-//        System.err.println(message);
-//        System.err.println("后------------------");
         String message = exceptionMessage;
         return message;
     }

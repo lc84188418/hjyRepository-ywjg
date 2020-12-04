@@ -131,18 +131,14 @@ public class TListInfoServiceImpl implements TListInfoService {
         tListInfo.setApprovalTime(new Date());
         String zzjgdmzPath = null;
         String sqsPath = null;
-        System.err.println("传入前1："+tListInfo.getCodeCertificates());
         if(tListInfo.getCodeCertificates() != null){
             zzjgdmzPath = tListInfo.getCodeCertificates().replace("http://"+webIp+":"+serverPort+"/img/","");
             tListInfo.setCodeCertificates(zzjgdmzPath);
         }
-        System.err.println("传入前2："+tListInfo.getApplyBook());
         if(tListInfo.getApplyBook() != null){
             sqsPath = tListInfo.getApplyBook().replace("http://"+webIp+":"+serverPort+"/img/","");
             tListInfo.setApplyBook(sqsPath);
         }
-        System.err.println("修改后1："+tListInfo.getCodeCertificates());
-        System.err.println("修改后2："+tListInfo.getApplyBook());
 
         return tListInfoMapper.updateById(tListInfo);
     }

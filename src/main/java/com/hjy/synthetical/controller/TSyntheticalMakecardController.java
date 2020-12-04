@@ -95,6 +95,23 @@ public class TSyntheticalMakecardController {
     }
 
     /**
+     * 制作完成
+     * @param tHallMakecard 实体对象
+     * @return 修改结果
+     */
+    @OperLog(operModul = "综合管理-综合管理-制证管理",operType = "制证完成",operDesc = "证件制作完成")
+    @PutMapping("/synthetical/makeCard/makeComplete")
+    public CommonResult makeComplete(@RequestBody TSyntheticalMakecard tHallMakecard, HttpSession session) throws FebsException {
+        try {
+            return tHallMakecardService.makeComplete(tHallMakecard,session);
+        } catch (Exception e) {
+            String message = "修改失败";
+            log.error(message, e);
+            throw new FebsException(message);
+        }
+    }
+
+    /**
      * 3 删除数据-领取、弃用
      * @return 删除结果
      */
@@ -110,6 +127,7 @@ public class TSyntheticalMakecardController {
             throw new FebsException(message);
         }
     }
+
 
     /**
      * 4 通过主键查询单条数据
@@ -149,44 +167,5 @@ public class TSyntheticalMakecardController {
             throw new FebsException(message);
         }
     }
-    /**
-     * 开始制作
-     * @param tHallMakecard 实体对象
-     * @return 修改结果
-     */
-    @OperLog(operModul = "综合管理-综合管理-制证管理",operType = "制证开始",operDesc = "开始制作证件")
-    @PutMapping("/synthetical/makeCard/startMake")
-    public CommonResult startMake(@RequestBody TSyntheticalMakecard tHallMakecard, HttpSession session) throws FebsException {
-        ActiveUser activeUser = (ActiveUser) session.getAttribute("activeUser");
-        try {
-            //
-            tHallMakecard.setStartTime(new Date());
-            tHallMakecard.setOperatorPeople(activeUser.getFullName());
-            tHallMakecard.setStatus("制作中");
-            tHallMakecardService.updateById(tHallMakecard);
-            return new CommonResult(200, "success", "修改成功!", null);
-        } catch (Exception e) {
-            String message = "修改失败";
-            log.error(message, e);
-            throw new FebsException(message);
-        }
-    }
-    /**
-     * 制作完成
-     * @param tHallMakecard 实体对象
-     * @return 修改结果
-     */
-    @OperLog(operModul = "综合管理-综合管理-制证管理",operType = "制证完成",operDesc = "证件制作完成")
-    @PutMapping("/synthetical/makeCard/makeComplete")
-    public CommonResult makeComplete(@RequestBody TSyntheticalMakecard tHallMakecard, HttpSession session) throws FebsException {
-        try {
-            return tHallMakecardService.makeComplete(tHallMakecard,session);
-        } catch (Exception e) {
-            String message = "修改失败";
-            log.error(message, e);
-            throw new FebsException(message);
-        }
-    }
-
 
 }

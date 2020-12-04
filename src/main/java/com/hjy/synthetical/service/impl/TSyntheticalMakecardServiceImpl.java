@@ -161,9 +161,24 @@ public class TSyntheticalMakecardServiceImpl implements TSyntheticalMakecardServ
         StringBuffer resultBuffer = new StringBuffer();
         if(i > 0){
             resultBuffer.append("证件领取或弃用成功！");
-            //异步修改共享文件，并上传
-            String msg = ObjectAsyncTask.deleteMakeCardShareFile(tHallMakecard);
+            //修改本地制证文件
+            String msg = CardFileUtil.MakeCardShareFileDel(tHallMakecard);
             resultBuffer.append(msg);
+            //将本地文件上传至共享文件
+            String whether = PropertiesUtil.getValue("test.whether.update.share.file");
+            if(whether.equals("true")){
+                //本地文件添加完成后上传到共享文件
+                String shareDir = PropertiesUtil.getValue("share.file.directory");
+                String localFilePath = "d://hjy//ywjg//makeCard//左边.txt";
+                try {
+                    SmbFileUtil.smbPut(shareDir,localFilePath);
+                    resultBuffer.append("共享文件上传成功");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    resultBuffer.append("共享文件上传失败");
+                    throw new RuntimeException();
+                }
+            }
             return new CommonResult(200, "success", resultBuffer.toString(), null);
         }else {
             return new CommonResult(444, "error", "证件领取或弃用失败", null);
