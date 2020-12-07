@@ -63,9 +63,9 @@ public class THallQueueController {
      * 重播统一接口
      */
     @PostMapping("/hall/queue/repaly")
-    public Map<String, Object> repaly(@RequestBody String param) throws FebsException{
+    public Map<String, Object> repaly(@RequestBody String param,HttpServletRequest request) throws FebsException{
         try {
-            Map<String, Object> map = tHallQueueService.repaly(param);
+            Map<String, Object> map = tHallQueueService.repaly(request,param);
             return map;
         } catch (Exception e) {
             String message = "重新呼叫失败";
@@ -154,6 +154,8 @@ public class THallQueueController {
             log.error(message, e);
             throw new FebsException(message);
         }finally {
+            //调用LED窗口屏方法
+
             //server处理逻辑
             webSocketService.IndexData(request);
         }

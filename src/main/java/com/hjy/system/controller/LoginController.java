@@ -6,6 +6,7 @@ import com.hjy.common.annotation.OperLog;
 import com.hjy.common.domin.CommonResult;
 import com.hjy.common.exception.FebsException;
 import com.hjy.common.utils.*;
+import com.hjy.common.utils.led.PD101Ctrl_RZC2;
 import com.hjy.hall.service.THallTakenumberService;
 import com.hjy.system.entity.ActiveUser;
 import com.hjy.system.entity.TSysPerms;
@@ -101,6 +102,9 @@ public class LoginController {
             log.error(message, e);
             throw new FebsException(message);
         }finally{
+            //这里打开串口
+            int i = PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_OpenEx(0,1);
+            System.err.println(i);
             //server处理逻辑
             webSocketService.IndexData(request);
         }

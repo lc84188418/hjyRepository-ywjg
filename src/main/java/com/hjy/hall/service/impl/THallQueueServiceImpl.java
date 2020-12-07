@@ -8,6 +8,7 @@ import com.hjy.common.domin.CommonResult;
 import com.hjy.common.task.ObjectAsyncTask;
 import com.hjy.common.utils.Http.HttpClient4;
 import com.hjy.common.utils.*;
+import com.hjy.common.utils.led.PD101Ctrl_RZC2;
 import com.hjy.common.utils.page.PageResult;
 import com.hjy.common.utils.page.PageUtil;
 import com.hjy.hall.dao.THallJiashizhengMapper;
@@ -40,6 +41,7 @@ import com.hjy.tbk.statusCode.VehicleStatus;
 import com.hjy.warning.entity.Warning;
 import com.hjy.warning.manager.TbkManager;
 import com.hjy.warning.service.TWarnLnfoService;
+import com.sun.jna.WString;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -810,7 +812,7 @@ public class THallQueueServiceImpl implements THallQueueService {
             /**
              * 线程同步发送叫号信息
              */
-            String callNumMsg = this.callNumSendMsg(resultQueue.getOrdinal(),resultQueue.getWindowName());
+            String callNumMsg = this.callNumSendMsg(resultQueue.getOrdinal(),window);
             return commonResult;
         }else {
             return new CommonResult(445, "error", "该窗口已无号", null);
@@ -948,7 +950,7 @@ public class THallQueueServiceImpl implements THallQueueService {
          */
         ObjectAsyncTask.vipcallNumberHttp(vip_ordinal,windowName);
 
-        String callNumMsg = this.callNumSendMsg(vip_ordinal,windowName);
+        String callNumMsg = this.callNumSendMsg(vip_ordinal,window);
         resultJson = this.getResultJson(queueVip);
         map.put("code",200);
         map.put("status", "success");
@@ -959,17 +961,21 @@ public class THallQueueServiceImpl implements THallQueueService {
 
     //重播
     @Override
-    public Map<String, Object> repaly(String param) {
+    public Map<String, Object> repaly(HttpServletRequest request,String param) {
         Map<String, Object> map = new HashMap<>();
         JSONObject jsonObject = JSON.parseObject(param);
         String ordinal = String.valueOf(jsonObject.get("ordinal"));
-        String windowName = String.valueOf(jsonObject.get("windowName"));
+        //从token中拿到当前窗口信息
+        String tokenStr = TokenUtil.getRequestToken(request);
+        SysToken token = tSysTokenMapper.selectIpAndName(tokenStr);
+        String ip = token.getIp();
+        TSysWindow window = tSysWindowMapper.selectWindowByIp(ip);
         //异步呼叫
-        String callNumMsg = this.callNumSendMsg(ordinal,windowName);
+        String callNumMsg = this.callNumSendMsg(ordinal,window);
         if(callNumMsg.contains("成功")){
             map.put("code", 200);
             map.put("status", "success");
-            map.put("msg", "请"+ordinal+"到"+windowName);
+            map.put("msg", "请"+ordinal+"到"+window.getWindowName());
             return map;
         }else {
             map.put("code", 444);
@@ -1129,7 +1135,7 @@ public class THallQueueServiceImpl implements THallQueueService {
         Iterator<TbkVehicle> iterator = brclList.iterator();
         while(iterator.hasNext()){
             TbkVehicle obj = iterator.next();
-            if(obj.getZt().contains("E") ||obj.getZt().equals("A")){
+            if(obj.getZt().contains("E") || obj.getZt().equals("A")|| obj.getZt().contains("C")){
                 iterator.remove();
                 continue;
             }
@@ -1440,11 +1446,14 @@ public class THallQueueServiceImpl implements THallQueueService {
         }
     }
 
-    public synchronized String callNumSendMsg(String ordinal,String windowName){
+    public synchronized String callNumSendMsg(String ordinal,TSysWindow window){
         //同步处理发送叫号信息
         JSONObject json = new JSONObject();
-        json.put("call","请"+ordinal+"到"+windowName);
+        String sendTextMessage = "请"+ordinal+"到"+window.getWindowName();
+        json.put("call",sendTextMessage);
         webSocket.sendTextMessageTo(json.toJSONString());
+        //调用LED控制卡发送消息到屏幕上
+//        PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(Integer.parseInt(window.getControlCard()),new WString(sendTextMessage),0);
         return "成功！";
     }
     private synchronized String callNumHttp(String ordinal, String windowName)throws Exception {

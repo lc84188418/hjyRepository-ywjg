@@ -39,7 +39,7 @@ public class IdCardUtil {
         if (idcard == null || "".equals(idcard)) {
             return false;
         }
-        if(idcard.length()==18) {
+        if(idcard.length()==18 && !"91".equals(idcard.substring(0,2))) {
             return validate18Idcard(idcard);
         }
         return false;

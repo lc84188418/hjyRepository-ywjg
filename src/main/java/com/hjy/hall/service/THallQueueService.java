@@ -57,7 +57,7 @@ public interface THallQueueService {
     //特呼
     Map<String, Object> queueVipCall(HttpServletRequest request,HttpSession session,THallQueue tHallQueue);
     //重播
-    Map<String, Object> repaly(String param);
+    Map<String, Object> repaly(HttpServletRequest request,String param);
     //获取同步库数据
     Map<String, Object> getTbkData(String param,HttpServletRequest request)throws SQLException, ConnectException;
 

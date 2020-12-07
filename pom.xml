@@ -266,6 +266,12 @@
 <!--                    <artifactId>mybatis-plus-boot-starter</artifactId>-->
 <!--        &lt;!&ndash;            <version>${mybatis-plus.version}</version>&ndash;&gt;-->
 <!--                </dependency>-->
+        <!-- https://mvnrepository.com/artifact/net.java.dev.jna/jna -->
+        <dependency>
+            <groupId>net.java.dev.jna</groupId>
+            <artifactId>jna</artifactId>
+            <version>5.5.0</version>
+        </dependency>
 
         <dependency>
             <groupId>xml-apis</groupId>
