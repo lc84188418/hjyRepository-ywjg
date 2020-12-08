@@ -3,9 +3,6 @@ package com.hjy.common.utils.led;
 import com.sun.jna.Library;
 import com.sun.jna.Native;
 import com.sun.jna.WString;
-import com.sun.jna.Platform;
-import com.sun.jna.win32.StdCallLibrary;
-//import com.hjy.common.utils.led.PD101Ctrl_RZC2;
 
 /**
  * @author liuchun
@@ -13,10 +10,10 @@ import com.sun.jna.win32.StdCallLibrary;
  * @date 2020/12/7 11:13
  * description:如果dll是以stdcall方式输出函数，那么就继承StdCallLibrary。否则就继承默认的Library接口。
  */
-public interface PD101Ctrl_RZC2 extends StdCallLibrary {
+public interface PD101Ctrl_RZC2 extends Library {
 
-//    PD101Ctrl_RZC2 instanceDll  = (PD101Ctrl_RZC2)Native.loadLibrary("PD101Ctrl_RZC2", PD101Ctrl_RZC2.class);
-    PD101Ctrl_RZC2 instanceDll  = (PD101Ctrl_RZC2)Native.loadLibrary((Platform.isWindows() ? "PD101Ctrl_RZC2" : "c"),PD101Ctrl_RZC2.class);
+    PD101Ctrl_RZC2 instanceDll  = (PD101Ctrl_RZC2)Native.loadLibrary("PD101Ctrl_RZC2", PD101Ctrl_RZC2.class);
+//    PD101Ctrl_RZC2 instanceDll  = (PD101Ctrl_RZC2)Native.loadLibrary((Platform.isWindows() ? "PD101Ctrl_RZC2" : "c"),PD101Ctrl_RZC2.class);
     /**
      * 打开串口
      * nComPort: 串口号 1-255

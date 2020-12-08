@@ -105,20 +105,36 @@ public class TListAgentController {
     }
 
     /**
-     * 3 删除数据
+     * 3 申请删除代办信息
+     * @return 删除结果
+     */
+    @OperLog(operModul = "黑名单管理-人员黑名单-代办信息查询",operType = "删除",operDesc = "申请删除代办信息")
+    @RequiresPermissions({"agentInfo:view"})
+//    @RequiresPermissions({"agentInfo:del"})
+    @DeleteMapping("/list/agentInfo/delApproval")
+    public CommonResult delApproval(@RequestBody String param) throws FebsException{
+        try {
+            //
+            CommonResult commonResult = tListAgentService.delApproval(param);
+            return commonResult;
+        } catch (Exception e) {
+            String message = "数据删除失败";
+            log.error(message, e);
+            throw new FebsException(message);
+        }
+    }
+    /**
+     * 3 审批删除
      * @return 删除结果
      */
     @OperLog(operModul = "黑名单管理-人员黑名单-代办信息查询",operType = "删除",operDesc = "删除代办信息")
-    @RequiresPermissions({"agentInfo:view"})
+    @RequiresPermissions({"approval:view"})
 //    @RequiresPermissions({"agentInfo:del"})
-    @DeleteMapping("/list/agentInfo/del")
-    public CommonResult tListAgentDel(@RequestBody String parm) throws FebsException{
-        JSONObject jsonObject = JSON.parseObject(parm);
-        String idStr=String.valueOf(jsonObject.get("pk_id"));
+    @DeleteMapping("/list/agentInfo/del/approval")
+    public CommonResult tListAgentDel(@RequestBody String param) throws FebsException{
         try {
-            //
-            tListAgentService.deleteById(idStr);
-            return new CommonResult(200,"success","数据删除成功!",null);
+            CommonResult commonResult = tListAgentService.tListAgentDel(param);
+            return commonResult;
         } catch (Exception e) {
             String message = "数据删除失败";
             log.error(message, e);

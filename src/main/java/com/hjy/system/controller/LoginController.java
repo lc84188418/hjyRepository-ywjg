@@ -103,8 +103,8 @@ public class LoginController {
             throw new FebsException(message);
         }finally{
             //这里打开串口
-            int i = PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_OpenEx(0,1);
-            System.err.println(i);
+//            int i = PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_OpenEx(0,1);
+////            System.err.println(i);
             //server处理逻辑
             webSocketService.IndexData(request);
         }

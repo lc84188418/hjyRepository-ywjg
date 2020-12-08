@@ -61,4 +61,12 @@ public interface TListAgentMapper {
     int selectSize(TListAgent tListAgent);
 
     List<TListAgent> selectAllPage(int startRow, int endRow,@Param("businessType") String businessType,@Param("aName") String aName,@Param("aIdCard") String aIdCard,@Param("bName") String bName,@Param("bIdCard") String bIdCard,@Param("agent") String agent);
+
+    /**
+     * 代审批记录条数
+     * @return
+     */
+    int selectWaitApprovalSize();
+
+    List<TListAgent> selectWaitApproval(int startRow, int endRow);
 }

@@ -6,6 +6,7 @@ import com.hjy.common.utils.page.PageResult;
 import com.hjy.list.entity.TListInfo;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 /**
@@ -49,7 +50,16 @@ public interface TListInfoService {
      * @return 是否成功
      */
     int deleteById(String pkListId) throws Exception;
-    CommonResult tListInfoDel(String param);
+    /**
+     * 删除
+     * @return list
+     */
+    CommonResult tListInfoDel(TListInfo tListInfo);
+    /**
+     * 删除审批
+     * @return list
+     */
+    CommonResult delApproval(String param, HttpSession session);
     /**
      * 查询所有数据
      * @return list

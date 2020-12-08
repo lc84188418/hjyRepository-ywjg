@@ -62,6 +62,10 @@ public interface TListInfoMapper {
 
     List<TListInfo> selectAllPage(Integer startRow, Integer endRow,@Param("listType")String listType,@Param("fullName")String fullName,@Param("idCard")String IdCard,@Param("approvalPeople")String approvalPeople);
 
+    /**
+     * 待审批记录条数
+     * @return
+     */
     int selectWaitApprovalSize();
 
     void deleteBlackByYear(int dayNum);

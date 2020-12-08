@@ -89,16 +89,34 @@ public class TListInfoController {
     }
 
     /**
-     * 3 删除数据
+     * 先添加到审批页面
      * @return 删除结果
      */
-    @OperLog(operModul = "黑名单管理-人员黑名单-黑红名单查询",operType = "删除",operDesc = "删除黑红名单信息")
+    @OperLog(operModul = "黑名单管理-人员黑名单-黑红名单查询",operType = "删除",operDesc = "申请删除黑红名单信息")
     @RequiresPermissions({"list:view"})
 //    @RequiresPermissions({"list:del"})
-    @DeleteMapping("/list/info/del")
-    public CommonResult tListInfoDel(@RequestBody String param) throws FebsException{
+    @DeleteMapping("/list/info/delApproval")
+    public CommonResult delApproval(@RequestBody String param,HttpSession session) throws FebsException{
         try {
-            CommonResult commonResult = tListInfoService.tListInfoDel(param);
+            CommonResult commonResult = tListInfoService.delApproval(param,session);
+            return commonResult;
+        } catch (Exception e) {
+            String message = "申请删除数据失败";
+            log.error(message, e);
+            throw new FebsException(message);
+        }
+    }
+    /**
+     * 3 审批删除
+     * @return 删除结果
+     */
+    @OperLog(operModul = "黑名单管理-人员黑名单-黑红名单审批",operType = "删除",operDesc = "删除黑红名单信息")
+    @RequiresPermissions({"approval:view"})
+//    @RequiresPermissions({"list:del"})
+    @DeleteMapping("/list/info/del/approval")
+    public CommonResult tListInfoDel(@RequestBody TListInfo tListInfo) throws FebsException{
+        try {
+            CommonResult commonResult = tListInfoService.tListInfoDel(tListInfo);
             return commonResult;
         } catch (Exception e) {
             String message = "数据删除失败";

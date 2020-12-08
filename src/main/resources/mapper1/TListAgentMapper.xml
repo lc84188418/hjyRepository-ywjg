@@ -230,4 +230,18 @@
         ) t
         where t.rn &gt;= #{startRow,jdbcType=INTEGER}
     </select>
+    <!--No problem 查询待审批记录条数-->
+    <select id="selectWaitApprovalSize" resultType="java.lang.Integer">
+        select count(*) from t_list_agent
+        where remarks ='待删除'
+    </select>
+    <!--No problem 分页-查询待删除审批记录-->
+    <select id="selectWaitApproval" resultType="com.hjy.list.entity.TListAgent">
+        select t.*
+        from
+        (select rownum rn, u.*
+        from t_list_agent u
+        where rownum &lt;= #{endRow,jdbcType=INTEGER} and remarks ='待删除') t
+        where t.rn &gt;= #{startRow,jdbcType=INTEGER}
+    </select>
 </mapper>

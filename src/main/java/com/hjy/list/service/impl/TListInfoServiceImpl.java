@@ -8,15 +8,20 @@ import com.hjy.common.utils.JsonUtil;
 import com.hjy.common.utils.file.MyFileUtil;
 import com.hjy.common.utils.page.PageResult;
 import com.hjy.common.utils.page.PageUtil;
+import com.hjy.list.dao.TListAgentMapper;
 import com.hjy.list.dao.TListInfoMapper;
+import com.hjy.list.entity.TListAgent;
 import com.hjy.list.entity.TListInfo;
 import com.hjy.list.service.TListInfoService;
+import com.hjy.system.entity.ActiveUser;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpSession;
 import java.util.Date;
 import java.util.List;
 
@@ -30,6 +35,8 @@ import java.util.List;
 public class TListInfoServiceImpl implements TListInfoService {
     @Autowired
     private TListInfoMapper tListInfoMapper;
+    @Autowired
+    private TListAgentMapper tListAgentMapper;
     @Value("${server.port}")
     private String serverPort;
     @Value("${spring.boot.application.ip}")
@@ -156,14 +163,50 @@ public class TListInfoServiceImpl implements TListInfoService {
     }
     @Transactional()
     @Override
-    public CommonResult tListInfoDel(String param) {
+    public CommonResult delApproval(String param, HttpSession session) {
+        ActiveUser activeUser = (ActiveUser) session.getAttribute("activeUser");
         JSONObject jsonObject = JSON.parseObject(param);
         String idStr=String.valueOf(jsonObject.get("pk_id"));
-        int i= tListInfoMapper.deleteById(idStr);
-        if(i>0){
-            return new CommonResult(200,"success","黑红名单数据删除成功!",null);
+        TListInfo entity = tListInfoMapper.selectById(idStr);
+        if(entity.getListType().equals("黑名单")){
+            entity.setListType("黑名单删除");
         }else {
-            return new CommonResult(444,"error","黑红名单数据删除失败!",null);
+            entity.setListType("红名单删除");
+        }
+        entity.setOther(activeUser.getFullName()+"申请删除");
+        int i= tListInfoMapper.updateById(entity);
+        if(i>0){
+            return new CommonResult(200,"success","申请删除黑红名单数据成功!",null);
+        }else {
+            return new CommonResult(444,"error","申请删除黑红名单数据失败!",null);
+        }
+    }
+    @Transactional()
+    @Override
+    public CommonResult tListInfoDel(TListInfo tListInfo) {
+        String idStr = tListInfo.getPkListId();
+        String whetherPass = tListInfo.getWhetherPass();
+        int i = 0;
+        if(!StringUtils.isEmpty(whetherPass)){
+            if(whetherPass.equals("通过")){
+                //删除数据
+                i= tListInfoMapper.deleteById(idStr);
+            }else {
+                //将数据变回原数据
+                TListInfo entity = tListInfoMapper.selectById(idStr);
+                if(entity.getListType().equals("黑名单删除")){
+                    entity.setListType("黑名单");
+                }else {
+                    entity.setListType("红名单");
+                }
+                entity.setOther("删除被拒绝");
+                i= tListInfoMapper.updateById(entity);
+            }
+        }
+        if(i>0){
+            return new CommonResult(200,"success","删除数据-审批成功!",null);
+        }else {
+            return new CommonResult(444,"error","删除数据-审批失败!",null);
         }
     }
 
@@ -178,11 +221,29 @@ public class TListInfoServiceImpl implements TListInfoService {
 
     @Override
     public PageResult selectWaitApproval(String param) throws Exception{
-        int total = tListInfoMapper.selectWaitApprovalSize();
-        PageResult result = PageUtil.getPageResult(param,total);
-        List<TListInfo> listInfos = tListInfoMapper.selectWaitApproval(result.getStartRow(),result.getEndRow());
-        result.setContent(listInfos);
-        return result;
+        JSONObject json = JSON.parseObject(param);
+        String listType = "黑红名单";
+        String temp = JsonUtil.getStringParam(json,"listType");
+        if(temp != null){
+            listType = temp;
+        }
+        if(listType.contains("名单")){
+            //查询黑红名单的审批列表
+            int total = tListInfoMapper.selectWaitApprovalSize();
+            PageResult result = PageUtil.getPageResult(param,total);
+            List<TListInfo> listInfos = tListInfoMapper.selectWaitApproval(result.getStartRow(),result.getEndRow());
+            result.setContent(listInfos);
+            return result;
+
+        }else {
+            //查询代办信息删除的审批列表
+            //分页记录条数
+            int total = tListAgentMapper.selectWaitApprovalSize();
+            PageResult result = PageUtil.getPageResult(param,total);
+            List<TListAgent> agentList = tListAgentMapper.selectWaitApproval(result.getStartRow(),result.getEndRow());
+            result.setContent(agentList);
+            return result;
+        }
     }
 
 

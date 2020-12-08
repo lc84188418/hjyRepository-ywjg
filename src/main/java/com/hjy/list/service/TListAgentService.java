@@ -1,7 +1,10 @@
 package com.hjy.list.service;
 
+import com.hjy.common.domin.CommonResult;
 import com.hjy.common.utils.page.PageResult;
 import com.hjy.list.entity.TListAgent;
+
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 /**
@@ -56,4 +59,15 @@ public interface TListAgentService {
      List<TListAgent> selectAllByEntity(TListAgent tListAgent)throws Exception;
 
     PageResult selectAllPage(String param);
+
+    /**
+     * 删除申请
+     * @return list
+     */
+    CommonResult delApproval(String param);
+    /**
+     * 审批删除
+     * @return list
+     */
+    CommonResult tListAgentDel(String param);
 }

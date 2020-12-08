@@ -2,6 +2,7 @@ package com.hjy.list.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.hjy.common.domin.CommonResult;
 import com.hjy.common.utils.IDUtils;
 import com.hjy.common.utils.JsonUtil;
 import com.hjy.common.utils.page.PageResult;
@@ -10,10 +11,13 @@ import com.hjy.list.entity.TListAgent;
 import com.hjy.list.dao.TListAgentMapper;
 import com.hjy.list.entity.TListInfo;
 import com.hjy.list.service.TListAgentService;
+import com.hjy.system.entity.ActiveUser;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpSession;
 import java.util.Date;
 import java.util.List;
 
@@ -112,5 +116,44 @@ public class TListAgentServiceImpl implements TListAgentService {
         List<TListAgent> agentList = tListAgentMapper.selectAllPage(result.getStartRow(),result.getEndRow(),businessType,aName,aIdCard,bName,bIdCard,agent);
         result.setContent(agentList);
         return result;
+    }
+
+    @Transactional()
+    @Override
+    public CommonResult delApproval(String param) {
+        JSONObject jsonObject = JSON.parseObject(param);
+        String idStr=String.valueOf(jsonObject.get("pk_id"));
+        TListAgent entity = tListAgentMapper.selectById(idStr);
+        entity.setRemarks("待删除");
+        int i= tListAgentMapper.updateById(entity);
+        if(i>0){
+            return new CommonResult(200,"success","申请删除代办信息数据成功!",null);
+        }else {
+            return new CommonResult(444,"error","申请删除代办信息数据失败!",null);
+        }
+    }
+    @Transactional()
+    @Override
+    public CommonResult tListAgentDel(String param) {
+        JSONObject jsonObject = JSON.parseObject(param);
+        String idStr=String.valueOf(jsonObject.get("pk_id"));
+        String whetherPass=String.valueOf(jsonObject.get("whetherPass"));
+        int i = 0;
+        if(!StringUtils.isEmpty(whetherPass)){
+            if(whetherPass.equals("通过")){
+                //删除数据
+                i= tListAgentMapper.deleteById(idStr);
+            }else {
+                //将数据变回原数据
+                TListAgent entity = tListAgentMapper.selectById(idStr);
+                entity.setRemarks("删除被拒绝");
+                i= tListAgentMapper.updateById(entity);
+            }
+        }
+        if(i>0){
+            return new CommonResult(200,"success","删除数据-审批成功!",null);
+        }else {
+            return new CommonResult(444,"error","删除数据-审批失败!",null);
+        }
     }
 }
