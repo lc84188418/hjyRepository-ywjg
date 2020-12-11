@@ -50,7 +50,7 @@ public class TbkManager {
     public static List<TbkVehicle> getTbkVehicleList(String idcard){
         List<TbkVehicle> list = new ArrayList<>();
         TbkVehicle obj1 = new TbkVehicle();
-        String status1 = "Q";
+        String status1 = "QE";
         obj1.setStlb("机动车");
         obj1.setZt(status1);
         obj1.setLsh("1200918650861");
@@ -111,7 +111,7 @@ public class TbkManager {
         list.add(obj2);
         //机动车异常信息
         TbkVehicle obj3 = new TbkVehicle();
-        String status3 = "MO";
+        String status3 = "MOE";
         obj3.setStlb("机动车");
         obj3.setZt(status3);
         obj3.setLsh("2080108031342");

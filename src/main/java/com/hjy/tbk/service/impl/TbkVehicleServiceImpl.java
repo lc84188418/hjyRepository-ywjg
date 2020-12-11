@@ -33,7 +33,6 @@ public class TbkVehicleServiceImpl implements TbkVehicleService {
         /**
          * 查询是否需要获取同步库数据
          */
-        //查询参数配置中加入黑名单代办次数限值，如果没有就默认为5次
         String value = tSysParamMapper.selectParamById("SFHQTBKSJ");
         String SFHQTBKSJ = "否";
         if(value != null){

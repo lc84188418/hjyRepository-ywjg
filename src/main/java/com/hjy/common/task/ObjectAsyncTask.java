@@ -426,7 +426,7 @@ public class ObjectAsyncTask {
                 warningTypeBuffer.append("等待超时预警");
             }
             //预警原因
-            String waitTimeStr =DateUtil.translateLong(waitTime-maxNum);
+            String waitTimeStr =DateUtil.translateLong(waitTime);
             if(!StringUtils.isEmpty(reasonBuffer.toString())){
                 reasonBuffer.append("/"+"等待超时"+waitTimeStr);
             }else {
@@ -534,8 +534,6 @@ public class ObjectAsyncTask {
             warning.setIdCard(queue.getIdCard());
             warning.setGetTime(queue.getGetTime());
             warning.setStartTime(queue.getStartTime());
-            //等待时长
-//            warning.setWaitTime(waitTime);
             warning.setHandleStatus(queue.getWindowName()+"正在办理");
             //预警信息
             ObjectAsyncTask.insertWarning(warning);
@@ -693,186 +691,6 @@ public class ObjectAsyncTask {
     }
 
     //本人机动车和驾驶证预警
-    public static Warning warning12_2(Warning warning,List<TbkVehicle> brclList,List<TbkDrivinglicense> brjszList) {
-        StringBuffer warningTypeBuffer = new StringBuffer();
-        StringBuffer reasonBuffer = new StringBuffer();
-        StringBuffer chezhuXmBuffer = new StringBuffer();
-        StringBuffer chezhuCardBuffer = new StringBuffer();
-        StringBuffer hphmBuffer = new StringBuffer();
-        StringBuffer hpzlBuffer = new StringBuffer();
-        StringBuffer alshBuffer = new StringBuffer();
-        StringBuffer blshBuffer = new StringBuffer();
-        StringBuffer syxzBuffer = new StringBuffer();
-        StringBuffer clsbdhBuffer = new StringBuffer();
-        StringBuffer resultMsgBuffer = new StringBuffer();
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String nowDateStr = simpleDateFormat.format(new Date());
-        resultMsgBuffer.append(nowDateStr+"叫号预警："+warning.getOrdinal());
-        //返回的预警信息
-        resultMsgBuffer.append(warning.getWarningType());
-        //
-        warningTypeBuffer.append(warning.getWarningType());
-        reasonBuffer.append(warning.getWarningReason());
-        /**
-         * 预警-1.本人机动车异常
-         */
-        List<TbkVehicle> result = new ArrayList<>();
-        if(brclList != null){
-            boolean flag =true;
-            for(TbkVehicle obj:brclList){
-                String status = obj.getZt();
-                if(status != null){
-                    if(!status.contains("A")){
-                        while (flag){
-                            //预警分类
-                            if(!StringUtils.isEmpty(warningTypeBuffer.toString())){
-                                warningTypeBuffer.append("/本人机动车异常");
-                            }else {
-                                warningTypeBuffer.append("本人机动车异常");
-                            }
-                            //预警返回信息
-                            resultMsgBuffer.append("-本人机动车异常");
-                            //车主姓名
-                            chezhuXmBuffer.append(obj.getSyr());
-                            //车主证件号
-                            chezhuCardBuffer.append(obj.getSfzmhm());
-                            flag = false;
-                        }
-                        //预警原因
-                        //将所有的异常信息放入TbkVehicle对象里的exceptionReason
-                        StringBuffer statuStringBuffer = new StringBuffer();
-                        String [] strings = status.split("");
-                        int j =1;
-                        //将所有的异常信息放入reason
-                        for(String s:strings){
-                            String msg = VehicleStatus.getDesc(s);
-                            statuStringBuffer.append(j+"."+msg+".");
-                            j++;
-                        }
-                        if(!StringUtils.isEmpty(reasonBuffer.toString())){
-                            reasonBuffer.append("/"+statuStringBuffer);
-                        }else {
-                            reasonBuffer.append(statuStringBuffer);
-                        }
-                        obj.setExceptionReason(statuStringBuffer.toString());
-                        //号牌号码
-                        if(!StringUtils.isEmpty(hphmBuffer.toString())){
-                            hphmBuffer.append("/"+obj.getHphm());
-                        }else {
-                            hphmBuffer.append(obj.getHphm());
-                        }
-                        //号牌种类
-                        if(!StringUtils.isEmpty(hpzlBuffer.toString())){
-                            hpzlBuffer.append("/"+obj.getHpzl());
-                        }else {
-                            hpzlBuffer.append(obj.getHpzl());
-                        }
-                        //流水号
-                        if(!StringUtils.isEmpty(blshBuffer.toString())){
-                            blshBuffer.append("/"+obj.getLsh());
-                        }else {
-                            blshBuffer.append(obj.getLsh());
-                        }
-                        //使用性质
-                        if(!StringUtils.isEmpty(syxzBuffer.toString())){
-                            syxzBuffer.append("/"+obj.getSyxz());
-                        }else {
-                            syxzBuffer.append(obj.getSyxz());
-                        }
-//                        //车辆类型
-//                        if(!StringUtils.isEmpty(cllxBuffer.toString())){
-//                            cllxBuffer.append("/"+obj.getCllx());
-//                        }else {
-//                            cllxBuffer.append(obj.getCllx());
-//                        }
-//                        //车辆型号
-//                        if(!StringUtils.isEmpty(clxhBuffer.toString())){
-//                            clxhBuffer.append("/"+obj.getClxh());
-//                        }else {
-//                            clxhBuffer.append(obj.getClxh());
-//                        }
-                        //车辆识别代号
-                        if(!StringUtils.isEmpty(clsbdhBuffer.toString())){
-                            clsbdhBuffer.append("/"+obj.getClsbdh());
-                        }else {
-                            clsbdhBuffer.append(obj.getClsbdh());
-                        }
-                        //机动车异常信息
-                        result.add(obj);
-                    }
-                }
-            }
-            warning.setVehicleInfo(result);
-            //核查信息
-            warning.setCheckStatus("待核查");
-        }
-
-        /**
-         * 预警-2.本人驾驶证异常
-         */
-        List<TbkDrivinglicense> result2 = new ArrayList<>();
-        if(brjszList != null){
-            boolean flag =true;
-            for(TbkDrivinglicense obj:brjszList){
-                String status = obj.getZt();
-                if(status != null){
-                    if(!status.contains("A")){
-                        while (flag){
-                            //预警分类
-                            if(!StringUtils.isEmpty(warningTypeBuffer.toString())){
-                                warningTypeBuffer.append("/本人驾驶证异常");
-                            }else {
-                                warningTypeBuffer.append("本人驾驶证异常");
-                            }
-                            //预警返回信息
-                            resultMsgBuffer.append("-本人驾驶证异常");
-                            flag = false;
-                        }
-                        //将所有的异常信息放入TbkDrivinglicense对象里的exceptionReason
-                        StringBuffer statuStringBuffer = new StringBuffer();
-                        String [] strings = status.split("");
-                        int j =1;
-                        //将所有的异常信息放入reason
-                        for(String s:strings){
-                            String msg = DrivingStatus.getDesc(s);
-                            statuStringBuffer.append(j+"."+msg+".");
-                            j++;
-                        }
-                        if(!StringUtils.isEmpty(reasonBuffer.toString())){
-                            reasonBuffer.append("/"+statuStringBuffer);
-                        }else {
-                            reasonBuffer.append(statuStringBuffer);
-                        }
-                        obj.setExceptionReason(statuStringBuffer.toString());
-                        //流水号
-                        if(!StringUtils.isEmpty(alshBuffer.toString())){
-                            alshBuffer.append("/"+obj.getLsh());
-                        }else {
-                            alshBuffer.append(obj.getLsh());
-                        }
-                        //驾驶证异常信息
-                        result2.add(obj);
-                    }
-                }
-            }
-            warning.setDrivingLicenseInfo(result2);
-        }
-        //更新预警
-        warning.setResultMsg(resultMsgBuffer.toString());
-        warning.setWarningType(warningTypeBuffer.toString());
-        warning.setWarningReason(reasonBuffer.toString());
-        //机动车关联流水号-防止过长
-        warning.setSerialNumberB(StrBufferUtil.handTooLengthStrBuffer(blshBuffer.toString()));
-        warning.setSerialNumberA(alshBuffer.toString());
-        warning.setClsbdh(clsbdhBuffer.toString());
-        warning.setHpzl(StrBufferUtil.handTooLengthStrBuffer(hpzlBuffer.toString()));
-        warning.setHphm(StrBufferUtil.handTooLengthStrBuffer(hphmBuffer.toString()));
-        warning.setChezhuXm(chezhuXmBuffer.toString());
-        warning.setChezhuCard(chezhuCardBuffer.toString());
-        warning.setSyxz(syxzBuffer.toString());
-        return warning;
-    }
-    //本人机动车和驾驶证预警
     public static Warning warning12_1(THallQueue queue,List<TbkVehicle> brclList,List<TbkDrivinglicense> brjszList) {
         //如果排队叫号类型为咨询查询、满分恢复业务，就不做预警
         if("业务咨询查询".equals(queue.getBusinessType()) || "满分、恢复驾驶资格考试预约、取消预约".equals(queue.getBusinessType())){
@@ -911,7 +729,7 @@ public class ObjectAsyncTask {
          * 预警-1.本人机动车异常
          */
         List<TbkVehicle> result = new ArrayList<>();
-        if(brclList != null){
+        if(brclList != null && brclList.size() != 0){
             boolean flag =true;
             for(TbkVehicle obj:brclList){
                 String status = obj.getZt();
@@ -926,6 +744,8 @@ public class ObjectAsyncTask {
                             chezhuXmBuffer.append(obj.getSyr());
                             //车主证件号
                             chezhuCardBuffer.append(obj.getSfzmhm());
+                            //核查信息
+                            warning.setCheckStatus("待核查");
                             flag = false;
                         }
                         //预警原因
@@ -993,8 +813,6 @@ public class ObjectAsyncTask {
                 }
             }
             warning.setVehicleInfo(result);
-            //核查信息
-            warning.setCheckStatus("待核查");
         }
 
         /**

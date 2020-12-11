@@ -483,8 +483,7 @@ public class TWarnLnfoServiceImpl implements TWarnLnfoService {
         /**
          * 预警-1.本人机动车异常
          */
-//        List<TbkVehicle> result = new ArrayList<>();
-        if(brclList != null){
+        if(brclList != null && brclList.size() != 0){
             boolean flag =true;
             for(TbkVehicle obj:brclList){
                 String status = obj.getZt();
@@ -499,6 +498,8 @@ public class TWarnLnfoServiceImpl implements TWarnLnfoService {
                             chezhuXmBuffer.append(obj.getSyr());
                             //车主证件号
                             chezhuCardBuffer.append(obj.getSfzmhm());
+                            //核查信息
+                            warning.setCheckStatus("待核查");
                             flag = false;
                         }
                         //预警原因
@@ -566,8 +567,6 @@ public class TWarnLnfoServiceImpl implements TWarnLnfoService {
                 }
             }
 //            warning.setVehicleInfo(result);
-            //核查信息
-            warning.setCheckStatus("待核查");
         }
 
         /**
