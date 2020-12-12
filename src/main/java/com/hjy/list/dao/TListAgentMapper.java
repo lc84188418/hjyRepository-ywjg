@@ -60,7 +60,7 @@ public interface TListAgentMapper {
 
     int selectSize(TListAgent tListAgent);
 
-    List<TListAgent> selectAllPage(int startRow, int endRow,@Param("businessType") String businessType,@Param("aName") String aName,@Param("aIdCard") String aIdCard,@Param("bName") String bName,@Param("bIdCard") String bIdCard,@Param("agent") String agent);
+    List<TListAgent> selectAllPage(TListAgent tListAgent);
 
     /**
      * 代审批记录条数

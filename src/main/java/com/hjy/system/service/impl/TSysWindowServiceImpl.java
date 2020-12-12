@@ -92,6 +92,7 @@ public class TSysWindowServiceImpl implements TSysWindowService {
         tSysWindow.setRegistrationWindow(registrationWindow);
         String com = JsonUtil.getStringParam(jsonObject,"com");
         tSysWindow.setCom(com);
+        tSysWindow.setServiceStatus(1);
         //业务类型
         JSONArray jsonArray = jsonObject.getJSONArray("businessTypes");
         String businesstypes = jsonArray.toString();

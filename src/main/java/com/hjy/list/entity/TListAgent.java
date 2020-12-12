@@ -58,4 +58,23 @@ public class TListAgent implements Serializable {
      * 备注
      */
     private String remarks;
+
+
+
+    /**
+     * 查询开始时间
+     */
+    private Date queryStart;
+    /**
+     * 查询结束时间
+     */
+    private Date queryEnd;
+    /**
+     * 查询开始位置
+     */
+    private int startRow;
+    /**
+     * 查询结束位置
+     */
+    private int endRow;
 }

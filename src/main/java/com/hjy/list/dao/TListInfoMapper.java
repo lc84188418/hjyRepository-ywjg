@@ -51,10 +51,15 @@ public interface TListInfoMapper {
      */
     List<TListInfo> selectAll();
     /**
-     * 查询所有待审批数据
+     * 查询所有申请待审批数据
      * @return TListInfo 对象列表
      */
-    List<TListInfo> selectWaitApproval(Integer startRow, Integer endRow);
+    List<TListInfo> selectWaitApproval(Integer startRow, Integer endRow,@Param("listType")String listType);
+    /**
+     * 查询所有删除待审批数据
+     * @return TListInfo 对象列表
+     */
+    List<TListInfo> selectDelWaitApproval(Integer startRow, Integer endRow,@Param("listType")String listType);
     //根据身份证查询是否在黑红名单中
     TListInfo selectByIdCard(@Param("idCard") String IdCard);
 

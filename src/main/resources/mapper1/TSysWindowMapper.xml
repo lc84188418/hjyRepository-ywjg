@@ -203,11 +203,7 @@
     <!--暂停服务-->
     <update id="stopService" parameterType="com.hjy.system.entity.TSysWindow">
         update t_sys_window
-        <set>
-            <if test="serviceStatus != null">
-                service_status = #{serviceStatus,jdbcType=INTEGER}
-            </if>
-        </set>
+        set service_status = #{serviceStatus,jdbcType=INTEGER}
         where pk_window_id = #{pkWindowId,jdbcType=VARCHAR}
     </update>
     <!-- No problem 通过主键删除-->

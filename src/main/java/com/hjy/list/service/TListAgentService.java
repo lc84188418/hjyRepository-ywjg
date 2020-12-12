@@ -5,6 +5,7 @@ import com.hjy.common.utils.page.PageResult;
 import com.hjy.list.entity.TListAgent;
 
 import javax.servlet.http.HttpSession;
+import java.text.ParseException;
 import java.util.List;
 
 /**
@@ -58,7 +59,7 @@ public interface TListAgentService {
      */
      List<TListAgent> selectAllByEntity(TListAgent tListAgent)throws Exception;
 
-    PageResult selectAllPage(String param);
+    PageResult selectAllPage(String param) throws ParseException;
 
     /**
      * 删除申请

@@ -18,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -94,15 +96,27 @@ public class TListAgentServiceImpl implements TListAgentService {
     }
 
     @Override
-    public PageResult selectAllPage(String param) {
+    public PageResult selectAllPage(String param)throws ParseException {
         JSONObject json = JSON.parseObject(param);
-        //实体数据
+        SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
         String businessType = JsonUtil.getStringParam(json,"businessType");
         String aName = JsonUtil.getStringParam(json,"aName");
         String bName = JsonUtil.getStringParam(json,"bName");
         String aIdCard = JsonUtil.getStringParam(json,"aIdCard");
         String bIdCard = JsonUtil.getStringParam(json,"bIdCard");
         String agent = JsonUtil.getStringParam(json,"agent");
+        String queryStartStr = JsonUtil.getStringParam(json,"queryStart");
+        Date queryStart = null;
+        Date queryEnd = null;
+        if(queryStartStr != null && queryStartStr.length()>8){
+            queryStart = ft.parse(queryStartStr);
+        }
+        String queryEndStr = JsonUtil.getStringParam(json,"queryEnd");
+        if(queryEndStr != null && queryEndStr.length()>8){
+            queryEnd = ft.parse(queryEndStr);
+        }
+        //实体数据
         TListAgent tListAgent = new TListAgent();
         tListAgent.setBusinessType(businessType);
         tListAgent.setAName(aName);
@@ -110,10 +124,14 @@ public class TListAgentServiceImpl implements TListAgentService {
         tListAgent.setBName(bName);
         tListAgent.setBIdcard(bIdCard);
         tListAgent.setAgent(agent);
+        tListAgent.setQueryStart(queryStart);
+        tListAgent.setQueryEnd(queryEnd);
         //分页记录条数
         int total = tListAgentMapper.selectSize(tListAgent);
         PageResult result = PageUtil.getPageResult(param,total);
-        List<TListAgent> agentList = tListAgentMapper.selectAllPage(result.getStartRow(),result.getEndRow(),businessType,aName,aIdCard,bName,bIdCard,agent);
+        tListAgent.setStartRow(result.getStartRow());
+        tListAgent.setEndRow(result.getEndRow());
+        List<TListAgent> agentList = tListAgentMapper.selectAllPage(tListAgent);
         result.setContent(agentList);
         return result;
     }

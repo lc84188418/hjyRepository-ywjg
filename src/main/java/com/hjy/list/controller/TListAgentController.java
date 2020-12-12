@@ -86,23 +86,6 @@ public class TListAgentController {
             throw new FebsException(message);
         }
     }
-    /**
-     * 2 通过实体查询所有数据
-     * @return 所有数据
-     */
-    @OperLog(operModul = "黑名单管理-人员黑名单-代办信息查询",operType = "查询",operDesc = "条件查询代办信息")
-    @PostMapping("/agentInfo/listByEntity")
-    public CommonResult tListAgentListByEntity(@RequestBody TListAgent tListAgent) throws FebsException{
-        try {
-            //
-            List<TListAgent> tListAgentList = tListAgentService.selectAllByEntity(tListAgent);
-            return new CommonResult(200,"success","查询数据成功!",tListAgentList);
-        } catch (Exception e) {
-            String message = "查询数据失败";
-            log.error(message, e);
-            throw new FebsException(message);
-        }
-    }
 
     /**
      * 3 申请删除代办信息

@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -174,6 +175,7 @@ public class TListInfoServiceImpl implements TListInfoService {
             entity.setListType("红名单删除");
         }
         entity.setOther(activeUser.getFullName()+"申请删除");
+        System.err.println(entity);
         int i= tListInfoMapper.updateById(entity);
         if(i>0){
             return new CommonResult(200,"success","申请删除黑红名单数据成功!",null);
@@ -222,19 +224,24 @@ public class TListInfoServiceImpl implements TListInfoService {
     @Override
     public PageResult selectWaitApproval(String param) throws Exception{
         JSONObject json = JSON.parseObject(param);
-        String listType = "黑红名单";
+        String listType = "黑名单";
         String temp = JsonUtil.getStringParam(json,"listType");
         if(temp != null){
             listType = temp;
         }
         if(listType.contains("名单")){
-            //查询黑红名单的审批列表
             int total = tListInfoMapper.selectWaitApprovalSize();
             PageResult result = PageUtil.getPageResult(param,total);
-            List<TListInfo> listInfos = tListInfoMapper.selectWaitApproval(result.getStartRow(),result.getEndRow());
-            result.setContent(listInfos);
+            //查询黑红名单的删除审批列表
+            if(listType.contains("删除")){
+                List<TListInfo> listInfo2 = tListInfoMapper.selectDelWaitApproval(result.getStartRow(),result.getEndRow(),listType);
+                result.setContent(listInfo2);
+            }else {
+                //查询黑红名单的申请审批列表
+                List<TListInfo> listInfo1 = tListInfoMapper.selectWaitApproval(result.getStartRow(),result.getEndRow(),listType);
+                result.setContent(listInfo1);
+            }
             return result;
-
         }else {
             //查询代办信息删除的审批列表
             //分页记录条数

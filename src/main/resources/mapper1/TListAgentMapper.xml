@@ -198,12 +198,19 @@
         </if>
         <if test="bIdcard != null and bIdcard != '' and bIdcard != 'null'">
             and b_Idcard like '%${bIdcard}%'
-        </if><if test="agent != null and agent != '' and agent != 'null'">
+        </if>
+        <if test="agent != null and agent != '' and agent != 'null'">
             and agent like '%${agent}%'
+        </if>
+        <if test="addTime != null">
+            and add_time &gt;= #{queryStart}
+        </if>
+        <if test="addTime != null">
+            and add_time &lt;= #{queryEnd}
         </if>
     </select>
     <!--No problem 分页-查询所有代办记录-->
-    <select id="selectAllPage" resultType="com.hjy.list.entity.TListAgent">
+    <select id="selectAllPage" resultType="com.hjy.list.entity.TListAgent" parameterType="com.hjy.list.entity.TListAgent">
         select t.*
         from
         (select rownum rn, u.*
@@ -215,18 +222,24 @@
         <if test="aName != null and aName != ''and aName != 'null'">
             and a_name like '%${aName}%'
         </if>
-        <if test="aIdCard != null and aIdCard != '' and aIdCard != 'null'">
-            and a_Idcard like '%${aIdCard}%'
+        <if test="aIdcard != null and aIdcard != ''">
+            and a_Idcard like '%${aIdcard}%'
         </if>
-        <if test="bName != null and bName != '' and bName != 'null'">
+        <if test="bName != null and bName != ''">
             and b_name like '%${bName}%'
         </if>
-        <if test="bIdCard != null and bIdCard != '' and bIdCard != 'null'">
-            and b_Idcard like '%${bIdCard}%'
+        <if test="bIdcard != null and bIdcard != ''">
+            and b_Idcard like '%${bIdcard}%'
         </if>
 		<if test="agent != null and agent != '' and agent != 'null'">
 			and agent like '%${agent}%'
 		</if>
+        <if test="addTime != null">
+            and add_time &gt;= #{queryStart}
+        </if>
+        <if test="addTime != null">
+            and add_time &lt;= #{queryEnd}
+        </if>
         ) t
         where t.rn &gt;= #{startRow,jdbcType=INTEGER}
     </select>
