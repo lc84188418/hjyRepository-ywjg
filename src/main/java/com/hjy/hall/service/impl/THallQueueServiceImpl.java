@@ -701,7 +701,7 @@ public class THallQueueServiceImpl implements THallQueueService {
         SysToken token = tSysTokenMapper.findByToken(tokenStr);
         String ip = token.getIp();
         //通过ip查询窗口信息
-        TSysWindow window = tSysWindowMapper.selectWindowByIp(ip);
+        TSysWindow window = tSysWindowMapper.selectByIp(ip);
         if(window == null){
             map.put("code",445);
             map.put("status", "error");
@@ -720,7 +720,7 @@ public class THallQueueServiceImpl implements THallQueueService {
         }
         //查询当前窗口是否存在正在办理的业务
         THallQueue tHallQueue = tHallQueueMapper.getNowNumByWindowName(windowName+"正在办理");
-        if(tHallQueue!=null) {
+        if(tHallQueue != null) {
             resultJson = this.getResultJson(tHallQueue);
             map.put("code",201);
             map.put("status", "success");
@@ -728,10 +728,19 @@ public class THallQueueServiceImpl implements THallQueueService {
             map.put("data", resultJson);
             return map;
         }else {
-            map.put("code",200);
-            map.put("status", "success");
-            map.put("msg", "获取数据成功!");
+            //判断该窗口服务是否开启中
+            Integer serviceStatus = window.getServiceStatus();
+            resultJson.put("serviceStatus", serviceStatus);
             map.put("data", resultJson);
+            if(serviceStatus != null && serviceStatus == 0){
+                map.put("code",447);
+                map.put("status", "error");
+                map.put("msg", "该窗口已暂停服务！");
+            }else {
+                map.put("code",200);
+                map.put("status", "success");
+                map.put("msg", "获取数据成功!");
+            }
             return map;
         }
     }
@@ -740,16 +749,16 @@ public class THallQueueServiceImpl implements THallQueueService {
     @Override
     public CommonResult orderCall(HttpServletRequest request, HttpSession session) throws Exception{
         JSONObject resultJson = new JSONObject();
+        CommonResult commonResult = new CommonResult();
         //从token中拿到当前窗口信息
         String tokenStr = TokenUtil.getRequestToken(request);
         SysToken token = tSysTokenMapper.selectIpAndName(tokenStr);
         String ip = token.getIp();
-        TSysWindow window = tSysWindowMapper.selectWindowByIp(ip);
+        TSysWindow window = tSysWindowMapper.selectByIp(ip);
         String windowName = window.getWindowName();
         String businessType = window.getBusinessType();
         //查询当前窗口是否存在正在办理的业务
         THallQueue resultQueue = new THallQueue();
-        CommonResult commonResult = new CommonResult();
         THallQueue tHallQueue = tHallQueueMapper.getNowNumByWindowName(windowName+"正在办理");
         if(tHallQueue != null){
             resultQueue = tHallQueue;
@@ -757,6 +766,15 @@ public class THallQueueServiceImpl implements THallQueueService {
             commonResult.setStatus("success");
             commonResult.setMsg("该窗口还有未办结业务，请先处理!");
         }else {
+            //判断该窗口服务是否开启中
+            Integer serviceStatus = window.getServiceStatus();
+            if(serviceStatus != null && serviceStatus == 0){
+                commonResult.setCode(447);
+                commonResult.setStatus("success");
+                commonResult.setMsg("该窗口已暂停服务！");
+                commonResult.setData(serviceStatus);
+                return commonResult;
+            }
             //业务处理逻辑
             ActiveUser activeUser = (ActiveUser) session.getAttribute("activeUser");
             String agent = token.getFullName();

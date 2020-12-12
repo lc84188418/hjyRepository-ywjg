@@ -283,4 +283,25 @@ public class TSysWindowServiceImpl implements TSysWindowService {
             return map;
         }
     }
+    //暂停服务
+    @Transactional()
+    @Override
+    public CommonResult stopService(HttpSession session) {
+        ActiveUser activeUser = (ActiveUser) session.getAttribute("activeUser");
+        String ip = activeUser.getIp();
+        TSysWindow window = tSysWindowMapper.selectByIp(ip);
+        Integer serviceStatus = window.getServiceStatus();
+        if(serviceStatus != null && serviceStatus == 0){
+            window.setServiceStatus(1);
+        }
+        if(serviceStatus != null && serviceStatus == 1){
+            window.setServiceStatus(0);
+        }
+        int i = tSysWindowMapper.stopService(window);
+        if(i > 0){
+            return new CommonResult(200,"success","暂停服务成功!",null);
+        }else {
+            return new CommonResult(444,"error","暂停服务失败!",null);
+        }
+    }
 }

@@ -50,4 +50,8 @@ public class TSysWindow implements Serializable {
      * 评价器com号
      */
      private String com;
+    /**
+     * 服务状态
+     */
+    private Integer serviceStatus;
 }

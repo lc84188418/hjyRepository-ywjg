@@ -14,6 +14,7 @@ import com.hjy.system.dao.TSysParamMapper;
 import com.hjy.system.entity.TSysBusinesstype;
 import com.hjy.system.entity.TSysParam;
 import com.hjy.system.service.TSysBusinesstypeService;
+import com.hjy.system.service.TSysWindowService;
 import com.hjy.system.service.WebSocketService;
 import com.hjy.tbk.service.TbkDrivinglicenseService;
 import lombok.extern.slf4j.Slf4j;
@@ -55,10 +56,26 @@ public class THallQueueController {
     @Autowired
     private TbkDrivinglicenseService tbkDrivinglicenseService;
     @Autowired
-    private TSysParamMapper tSysParamMapper;
+    private TSysWindowService tSysWindowService;
     @Autowired
     private WebSocketService webSocketService;
 
+    /**
+     * 窗口暂停服务
+     * @return 修改结果
+     */
+    @PutMapping("/hall/queue/stopService")
+    public CommonResult stopService(HttpSession session) throws FebsException{
+        try {
+            //
+            CommonResult commonResult = tSysWindowService.stopService(session);
+            return commonResult;
+        } catch (Exception e) {
+            String message = "暂停服务失败！";
+            log.error(message, e);
+            throw new FebsException(message);
+        }
+    }
     /**
      * 重播统一接口
      */

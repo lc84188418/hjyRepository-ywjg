@@ -54,4 +54,6 @@ public interface TSysWindowService {
     String selectIpByPkid(String pkWindowId);
     //查询单个数据
     Map<String, Object> tSysWindowgetOne(String param);
+    //暂停服务
+    CommonResult stopService(HttpSession session);
 }

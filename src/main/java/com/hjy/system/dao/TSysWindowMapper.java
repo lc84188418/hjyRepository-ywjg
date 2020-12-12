@@ -68,4 +68,8 @@ public interface TSysWindowMapper {
     List<String> selectAllIp();
     //通过主键查询该窗口配置的ip地址
     String selectIpByPkid(String pkWindowId);
+    //通过ip查询窗口所有字段信息
+    TSysWindow selectByIp(@Param("Ip")String ip);
+    //暂停服务
+    int stopService(TSysWindow window);
 }
