@@ -1471,7 +1471,7 @@ public class THallQueueServiceImpl implements THallQueueService {
         json.put("call",sendTextMessage);
         webSocket.sendTextMessageTo(json.toJSONString());
         //调用LED控制卡发送消息到屏幕上
-//        PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(Integer.parseInt(window.getControlCard()),new WString(sendTextMessage),0);
+        PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(Integer.parseInt(window.getControlCard()),new WString(ordinal),0);
         return "成功！";
     }
     private synchronized String callNumHttp(String ordinal, String windowName)throws Exception {

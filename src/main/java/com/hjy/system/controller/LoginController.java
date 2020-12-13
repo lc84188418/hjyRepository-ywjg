@@ -96,15 +96,24 @@ public class LoginController {
             //放入快捷菜单
             List<TSysPerms> ids = userService.selectPermsByUser(activeUser.getUserId());
             activeUser.setQuickMenu(ids);
+            /**
+             * 打开串口
+             */
+            //通过ip查询窗口信息
+            TSysWindow window = tSysWindowService.selectByIp(activeUser.getIp());
+            //该窗口为叫号窗口
+            if(window != null){
+                int nComPort = Integer.parseInt(window.getControlCard());
+                int nBaudrate = 9600;
+                //这里打开串口
+                int i = PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_OpenEx(nComPort,nBaudrate);
+            }
             return new CommonResult(200,"success","获取数据成功!",activeUser);
         }catch (Exception e) {
             String message = "系统内部异常";
             log.error(message, e);
             throw new FebsException(message);
         }finally{
-            //这里打开串口
-//            int i = PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_OpenEx(0,1);
-////            System.err.println(i);
             //server处理逻辑
             webSocketService.IndexData(request);
         }

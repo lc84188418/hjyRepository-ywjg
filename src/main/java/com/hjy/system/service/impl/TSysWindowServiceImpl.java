@@ -305,4 +305,9 @@ public class TSysWindowServiceImpl implements TSysWindowService {
             return new CommonResult(444,"error","暂停服务失败!",null);
         }
     }
+
+    @Override
+    public TSysWindow selectByIp(String ip) {
+        return tSysWindowMapper.selectByIp(ip);
+    }
 }

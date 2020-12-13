@@ -54,12 +54,12 @@ public interface PD101Ctrl_RZC2 extends Library {
      * 	szText: 要发送的字串
      * 	nColor：该字串显示颜色
      * 	0：红色
-     *  	1：绿色
-     *  	2：黄色
-     *  	3：蓝色
-     *  	4：洋红色
-     *  	5：青色
-     *  	6：白色
+     *  1：绿色
+     *  2：黄色
+     *  3：蓝色
+     *  4：洋红色
+     *  5：青色
+     *  6：白色
      */
     void pd101a_rzc2_SendSingleColorText(int nCardId,WString value, int nColor);
 

@@ -56,4 +56,6 @@ public interface TSysWindowService {
     Map<String, Object> tSysWindowgetOne(String param);
     //暂停服务
     CommonResult stopService(HttpSession session);
+
+    TSysWindow selectByIp(String ip);
 }
