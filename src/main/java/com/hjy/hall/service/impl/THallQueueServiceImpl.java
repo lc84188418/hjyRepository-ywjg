@@ -240,7 +240,8 @@ public class THallQueueServiceImpl implements THallQueueService {
         String tokenStr = TokenUtil.getRequestToken(request);
         SysToken token = tSysTokenMapper.findByToken(tokenStr);
         String ip = token.getIp();
-        String windowName = tSysWindowMapper.selectWindowNameByIp(ip);
+        TSysWindow window = tSysWindowMapper.selectByIp(ip);
+        String windowName = window.getWindowName();
         //是否制证标识whether
         String whether = JsonUtil.getStringParam(jsonObject,"whether");
         //代办次数agentNum
@@ -299,6 +300,9 @@ public class THallQueueServiceImpl implements THallQueueService {
             //是否自动录入黑名单
             msgBuffer = ObjectAsyncTask.insertBlackList(nowQueue.getAName(),nowQueue.getAIdcard(),agentNum,msgBuffer);
         }
+        //将窗口led的原显示内容变为相应窗口号
+//        PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(Integer.parseInt(window.getControlCard()),new WString(windowName),0);
+//        PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(Integer.parseInt(window.getControlCard()),windowName,0);
         map.put("code", 200);
         map.put("status", "success");
         map.put("msg", msgBuffer.toString());
@@ -967,7 +971,9 @@ public class THallQueueServiceImpl implements THallQueueService {
          * 异步处理-led大屏文件信息-特呼
          */
         ObjectAsyncTask.vipcallNumberHttp(vip_ordinal,windowName);
-
+        /**
+         * 同步处理-led窗口屏信息
+         */
         String callNumMsg = this.callNumSendMsg(vip_ordinal,window);
         resultJson = this.getResultJson(queueVip);
         map.put("code",200);
@@ -1471,7 +1477,8 @@ public class THallQueueServiceImpl implements THallQueueService {
         json.put("call",sendTextMessage);
         webSocket.sendTextMessageTo(json.toJSONString());
         //调用LED控制卡发送消息到屏幕上
-//        PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(Integer.parseInt(window.getControlCard()),new WString(sendTextMessage),0);
+//        PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(Integer.parseInt(window.getControlCard()),new WString("请"+ordinal+"号办理"),0);
+//        PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(Integer.parseInt(window.getControlCard()),"请"+ordinal+"号办理",0);
         return "成功！";
     }
     private synchronized String callNumHttp(String ordinal, String windowName)throws Exception {

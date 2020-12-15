@@ -69,7 +69,6 @@ public class TListInfoServiceImpl implements TListInfoService {
 
     /**
      * 新增数据
-     *
      * @param tListInfo 实例对象
      * @return 实例对象
      */
@@ -129,7 +128,6 @@ public class TListInfoServiceImpl implements TListInfoService {
     }
     /**
      * 修改数据
-     *
      * @param tListInfo 实例对象
      * @return 实例对象
      */
@@ -151,17 +149,6 @@ public class TListInfoServiceImpl implements TListInfoService {
         return tListInfoMapper.updateById(tListInfo);
     }
 
-    /**
-     * 通过主键删除数据
-     *
-     * @param pkListId 主键
-     * @return 是否成功
-     */
-    @Transactional()
-    @Override
-    public int deleteById(String pkListId) throws Exception{
-        return tListInfoMapper.deleteById(pkListId);
-    }
     @Transactional()
     @Override
     public CommonResult delApproval(String param, HttpSession session) {
@@ -213,14 +200,9 @@ public class TListInfoServiceImpl implements TListInfoService {
     }
 
     /**
-     * 查询多条数据
-     * @return 对象列表
+     * 待审批列表
+     * @return PageResult
      */
-    @Override
-    public List<TListInfo> selectAll() throws Exception{
-        return this.tListInfoMapper.selectAll();
-    }
-
     @Override
     public PageResult selectWaitApproval(String param) throws Exception{
         JSONObject json = JSON.parseObject(param);
@@ -253,7 +235,10 @@ public class TListInfoServiceImpl implements TListInfoService {
         }
     }
 
-
+    /**
+     * 通过实体查询所有数据
+     * @return PageResult
+     */
     @Override
     public PageResult selectAllPage(String param) {
         JSONObject json = JSON.parseObject(param);
@@ -274,10 +259,53 @@ public class TListInfoServiceImpl implements TListInfoService {
         result.setContent(listInfos);
         return result;
     }
+    /**
+     * 综合查询
+     * @return CommonResult
+     */
+    @Override
+    public CommonResult syntheticalSelect(String param) {
+        JSONObject json = JSON.parseObject(param);
+        //实体数据
+        String businessType = "机动车业务";
+        String temp = JsonUtil.getStringParam(json,"businessType");
+        if(!StringUtils.isEmpty(temp)){
+            businessType = temp;
+        }
+        if(businessType.equals("机动车业务")){
+            //机动车业务
 
+        }else {
+            //驾驶证业务
+
+        }
+        return null;
+    }
+    /**
+     * 通过证件号查询黑红名单信息
+     * @return TListInfo
+     */
     @Override
     public TListInfo selectByIdCard(String bIdcard) {
         return tListInfoMapper.selectByIdCard(bIdcard);
+    }
+    /**
+     * 查询多条数据
+     * @return 对象列表
+     */
+    @Override
+    public List<TListInfo> selectAll() throws Exception{
+        return this.tListInfoMapper.selectAll();
+    }
+    /**
+     * 通过主键删除数据
+     * @param pkListId 主键
+     * @return 是否成功
+     */
+    @Transactional()
+    @Override
+    public int deleteById(String pkListId) throws Exception{
+        return tListInfoMapper.deleteById(pkListId);
     }
 
 }

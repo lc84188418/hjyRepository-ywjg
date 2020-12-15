@@ -5,6 +5,7 @@ import com.hjy.system.entity.TSysBusinesstype;
 import com.hjy.system.entity.TSysWindow;
 
 import javax.servlet.http.HttpSession;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
 
@@ -55,5 +56,7 @@ public interface TSysWindowService {
     //查询单个数据
     Map<String, Object> tSysWindowgetOne(String param);
     //暂停服务
-    CommonResult stopService(HttpSession session);
+    CommonResult stopService(HttpSession session)throws UnsupportedEncodingException;
+
+    TSysWindow selectByIp(String ip);
 }

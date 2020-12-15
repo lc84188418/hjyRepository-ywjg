@@ -65,17 +65,17 @@ public class TSysWindowController {
      }
     /**
      * 1 新增数据
-     * @param parm
+     * @param param
      * @return 新增结果
      */
     @OperLog(operModul = "系统管理-参数设置-窗口管理",operType = "添加",operDesc = "添加窗口信息")
     @RequiresPermissions({"window:view"})
 //    @RequiresPermissions({"window:add"})
     @PostMapping("/system/window/add")
-    public CommonResult tSysWindowAdd(@RequestBody String parm ) throws FebsException{
+    public CommonResult tSysWindowAdd(@RequestBody String param ) throws FebsException{
         try {
             //添加窗口数据
-            CommonResult commonResult = tSysWindowService.insert(parm);
+            CommonResult commonResult = tSysWindowService.insert(param);
             return commonResult;
         } catch (Exception e) {
             String message = "数据添加失败";

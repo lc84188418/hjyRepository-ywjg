@@ -207,4 +207,21 @@ public class TListInfoController {
         }
     }
 
+    /**
+     * 综合查询
+     */
+    @OperLog(operModul = "黑名单管理-人员黑名单-黑红名单查询",operType = "查看",operDesc = "综合查询")
+    @RequiresPermissions({"approval:view"})
+    @PostMapping("/list/info/syntheticalSelect")
+    public CommonResult syntheticalSelect(@RequestBody String param) throws FebsException{
+        try {
+            //
+            CommonResult commonResult = tListInfoService.syntheticalSelect(param);
+            return commonResult;
+        } catch (Exception e) {
+            String message = "待审批记录获取失败";
+            log.error(message, e);
+            throw new FebsException(message);
+        }
+    }
 }

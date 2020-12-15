@@ -65,7 +65,10 @@ public interface TListInfoService {
      * @return list
      */
      List<TListInfo> selectAll() throws Exception;
-
+    /**
+     * 待审批列表
+     * @return PageResult
+     */
     PageResult selectWaitApproval(String param)throws Exception;
 
     /**
@@ -75,5 +78,6 @@ public interface TListInfoService {
     PageResult selectAllPage(String param);
 
     TListInfo selectByIdCard(String bIdcard);
-
+    //综合查询
+    CommonResult syntheticalSelect(String param);
 }

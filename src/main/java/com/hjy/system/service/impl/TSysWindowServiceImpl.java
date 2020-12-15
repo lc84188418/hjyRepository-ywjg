@@ -6,18 +6,24 @@ import com.alibaba.fastjson.JSONObject;
 import com.hjy.common.domin.CommonResult;
 import com.hjy.common.utils.IDUtils;
 import com.hjy.common.utils.JsonUtil;
+import com.hjy.common.utils.led.CharReference;
+import com.hjy.common.utils.led.MD5Encoder;
+import com.hjy.common.utils.led.PD101Ctrl_RZC2;
 import com.hjy.system.dao.TSysBusinesstypeMapper;
 import com.hjy.system.entity.ActiveUser;
 import com.hjy.system.entity.TSysBusinesstype;
 import com.hjy.system.entity.TSysWindow;
 import com.hjy.system.dao.TSysWindowMapper;
 import com.hjy.system.service.TSysWindowService;
+import com.sun.jna.Pointer;
+import com.sun.jna.WString;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
 import java.util.*;
 
@@ -210,7 +216,6 @@ public class TSysWindowServiceImpl implements TSysWindowService {
 
     /**
      * 通过主键删除数据
-     *
      * @param pkWindowId 主键
      * @return 是否成功
      */
@@ -287,22 +292,64 @@ public class TSysWindowServiceImpl implements TSysWindowService {
     //暂停服务
     @Transactional()
     @Override
-    public CommonResult stopService(HttpSession session) {
+    public CommonResult stopService(HttpSession session) throws UnsupportedEncodingException {
         ActiveUser activeUser = (ActiveUser) session.getAttribute("activeUser");
         String ip = activeUser.getIp();
         TSysWindow window = tSysWindowMapper.selectByIp(ip);
-        Integer serviceStatus = window.getServiceStatus();
-        if(serviceStatus != null && serviceStatus == 0){
-            window.setServiceStatus(1);
-        }
-        if(serviceStatus != null && serviceStatus == 1){
-            window.setServiceStatus(0);
-        }
-        int i = tSysWindowMapper.stopService(window);
-        if(i > 0){
-            return new CommonResult(200,"success","暂停服务成功!",null);
+        if(window != null){
+            Integer serviceStatus = window.getServiceStatus();
+            if(serviceStatus != null && serviceStatus == 0){
+                window.setServiceStatus(1);
+            }
+            if(serviceStatus != null && serviceStatus == 1){
+                window.setServiceStatus(0);
+            }
+            int i = tSysWindowMapper.stopService(window);
+            if(i > 0){
+                /**
+                 * 发送提示到窗口上
+                 */
+                if(!StringUtils.isEmpty(window.getControlCard())){
+                    int nCardId = Integer.parseInt(window.getControlCard());
+                    String msg = "暂停服务";
+                    //在窗口LED屏上展示暂停服务的提示
+                    //-1
+//                    PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(nCardId,new WString("1"),0);
+//                    PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(nCardId,new WString("a"),0);
+//                    PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(nCardId,new WString(msg),0);
+//                    PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(nCardId,new WString("#"),0);
+//                    PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(nCardId,new WString("F001"),0);
+                    //-2
+                    msg.getBytes();
+                    PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(nCardId,msg.getBytes(),0);
+                    //-3
+//                    CharReference input=new CharReference();
+//                    input.Init(MD5Encoder.getBytes(msg));
+//                    PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(nCardId,input,0);
+                    //-4
+//                    Pointer a = Pointer.NULL;
+//                    Pointer a = new Pointer(MemoryBlockFactory.createMemoryBlock(4 * 10));
+                    //-5
+                    byte[] temp = {0};
+                    byte[] smscontentdb = msg.getBytes("utf-8");
+                    byte[] smscontent = new byte[smscontentdb.length + temp.length];
+                    System.arraycopy(smscontentdb, 0, smscontent, 0, smscontentdb.length);
+                    System.arraycopy(temp, 0, smscontent, smscontentdb.length, temp.length);
+
+                    return new CommonResult(200,"success","暂停服务成功!",null);
+                }else {
+                    return new CommonResult(446,"error","暂停服务成功！该窗口未配置控制卡地址，无法展示‘暂停服务’",null);
+                }
+            }else {
+                return new CommonResult(444,"error","暂停服务失败!",null);
+            }
         }else {
-            return new CommonResult(444,"error","暂停服务失败!",null);
+            return new CommonResult(445,"error","该窗口非业务窗口，操作无效!",null);
         }
+    }
+
+    @Override
+    public TSysWindow selectByIp(String ip) {
+        return tSysWindowMapper.selectByIp(ip);
     }
 }

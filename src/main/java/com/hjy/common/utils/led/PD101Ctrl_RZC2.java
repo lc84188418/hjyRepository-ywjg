@@ -2,7 +2,9 @@ package com.hjy.common.utils.led;
 
 import com.sun.jna.Library;
 import com.sun.jna.Native;
+import com.sun.jna.Pointer;
 import com.sun.jna.WString;
+import sun.awt.CharsetString;
 
 /**
  * @author liuchun
@@ -13,7 +15,6 @@ import com.sun.jna.WString;
 public interface PD101Ctrl_RZC2 extends Library {
 
     PD101Ctrl_RZC2 instanceDll  = (PD101Ctrl_RZC2)Native.loadLibrary("PD101Ctrl_RZC2", PD101Ctrl_RZC2.class);
-//    PD101Ctrl_RZC2 instanceDll  = (PD101Ctrl_RZC2)Native.loadLibrary((Platform.isWindows() ? "PD101Ctrl_RZC2" : "c"),PD101Ctrl_RZC2.class);
     /**
      * 打开串口
      * nComPort: 串口号 1-255
@@ -50,18 +51,22 @@ public interface PD101Ctrl_RZC2 extends Library {
 
     /**
      * 发送单一颜色的字串
-     * nCardId: 卡号 0-255
-     * 	szText: 要发送的字串
-     * 	nColor：该字串显示颜色
+     * int nCardId: 卡号 0-255
+     * char* szText: 要发送的字串
+     * int	nColor：该字串显示颜色
      * 	0：红色
-     *  	1：绿色
-     *  	2：黄色
-     *  	3：蓝色
-     *  	4：洋红色
-     *  	5：青色
-     *  	6：白色
+     *  1：绿色
+     *  2：黄色
+     *  3：蓝色
+     *  4：洋红色
+     *  5：青色
+     *  6：白色
      */
-    void pd101a_rzc2_SendSingleColorText(int nCardId,WString value, int nColor);
+    //原方法void pd101a_rzc2_SendSingleColorText(int nCardId,char* value, int nColor);
+//    void pd101a_rzc2_SendSingleColorText(int nCardId,WString value, int nColor);
+//    void pd101a_rzc2_SendSingleColorText(int nCardId,String value, int nColor);
+    void pd101a_rzc2_SendSingleColorText(int nCardId,byte[] value, int nColor);
+//    void pd101a_rzc2_SendSingleColorText(int nCardId, Pointer value, int nColor);
 
 
 }

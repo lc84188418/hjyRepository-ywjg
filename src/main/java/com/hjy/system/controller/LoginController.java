@@ -96,15 +96,17 @@ public class LoginController {
             //放入快捷菜单
             List<TSysPerms> ids = userService.selectPermsByUser(activeUser.getUserId());
             activeUser.setQuickMenu(ids);
+            /**
+             * 打开串口
+             */
+            //实际串口为com1,默认不写com
+            int i = PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_OpenEx(1,9600);
             return new CommonResult(200,"success","获取数据成功!",activeUser);
         }catch (Exception e) {
             String message = "系统内部异常";
             log.error(message, e);
             throw new FebsException(message);
         }finally{
-            //这里打开串口
-//            int i = PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_OpenEx(0,1);
-////            System.err.println(i);
             //server处理逻辑
             webSocketService.IndexData(request);
         }
@@ -157,7 +159,6 @@ public class LoginController {
         JSONObject jsonObject = JSON.parseObject(param);
         //参数示列
         String lengthStr = JsonUtil.getStringParam(jsonObject,"lengthStr");
-
         //UUID
         String id = IDUtils.getUUID();
         resultJson.put("id",id);
