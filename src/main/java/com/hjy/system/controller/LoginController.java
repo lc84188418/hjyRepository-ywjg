@@ -100,7 +100,8 @@ public class LoginController {
              * 打开串口
              */
             //实际串口为com1,默认不写com
-            int i = PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_OpenEx(1,9600);
+//            int i = PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_OpenEx(1,9600);
+            PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_Open(1,9600);
             return new CommonResult(200,"success","获取数据成功!",activeUser);
         }catch (Exception e) {
             String message = "系统内部异常";

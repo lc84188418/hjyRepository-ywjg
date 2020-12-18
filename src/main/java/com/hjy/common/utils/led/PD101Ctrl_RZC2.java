@@ -2,9 +2,6 @@ package com.hjy.common.utils.led;
 
 import com.sun.jna.Library;
 import com.sun.jna.Native;
-import com.sun.jna.Pointer;
-import com.sun.jna.WString;
-import sun.awt.CharsetString;
 
 /**
  * @author liuchun
@@ -45,9 +42,13 @@ public interface PD101Ctrl_RZC2 extends Library {
      *  	'5'：青色
      *  	'6'：白色
      *  例如: 中0国1A2   显示内容为中国A,颜色依次为红绿黄
-     *  C语言的函数参数是：wchar_t*。 JNA中对应的Java类型是WStirng
+     *  C语言的函数参数是：wchar_t*。 JNA中对应的类型是WStirng
      */
-    void pd101a_rzc2_SendText(int nCardId, WString value);
+//    void pd101a_rzc2_SendText(int nCardId, char* value);
+//    void pd101a_rzc2_SendText(int nCardId, String value);
+//    void pd101a_rzc2_SendText(int nCardId, CharReference value);
+//    void pd101a_rzc2_SendText(int nCardId, char[] value);
+    void pd101a_rzc2_SendText(int nCardId, byte[] value);
 
     /**
      * 发送单一颜色的字串
@@ -66,6 +67,8 @@ public interface PD101Ctrl_RZC2 extends Library {
 //    void pd101a_rzc2_SendSingleColorText(int nCardId,WString value, int nColor);
 //    void pd101a_rzc2_SendSingleColorText(int nCardId,String value, int nColor);
     void pd101a_rzc2_SendSingleColorText(int nCardId,byte[] value, int nColor);
+//    void pd101a_rzc2_SendSingleColorText(int nCardId,char[] value, int nColor);
+//    void pd101a_rzc2_SendSingleColorText(int nCardId,CharReference value, int nColor);
 //    void pd101a_rzc2_SendSingleColorText(int nCardId, Pointer value, int nColor);
 
 
