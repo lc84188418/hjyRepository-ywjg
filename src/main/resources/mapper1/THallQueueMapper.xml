@@ -712,6 +712,10 @@ ORDER BY
         select A_NAME from T_HALL_QUEUE where A_IDCARD = #{bIdCard,jdbcType=VARCHAR}
         and rownum = 1
     </select>
+<!--    查询代理人代办信息-->
+    <select id="selectAB_Card_date" resultType="com.hjy.hall.entity.THallQueue">
+        select A_NAME,A_IDCARD,B_IDCARD,END_TIME from T_HALL_QUEUE where A_IDCARD = #{idCard,jdbcType=VARCHAR}
+    </select>
     <delete id="deteleBeforeData">
         DELETE
         FROM

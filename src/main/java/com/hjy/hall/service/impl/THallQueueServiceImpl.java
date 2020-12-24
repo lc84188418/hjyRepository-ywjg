@@ -8,6 +8,9 @@ import com.hjy.common.domin.CommonResult;
 import com.hjy.common.task.ObjectAsyncTask;
 import com.hjy.common.utils.Http.HttpClient4;
 import com.hjy.common.utils.*;
+import com.hjy.common.utils.led.CharReference;
+import com.hjy.common.utils.led.LEDUtil;
+import com.hjy.common.utils.led.MD5Encoder;
 import com.hjy.common.utils.led.PD101Ctrl_RZC2;
 import com.hjy.common.utils.page.PageResult;
 import com.hjy.common.utils.page.PageUtil;
@@ -50,6 +53,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -240,7 +244,8 @@ public class THallQueueServiceImpl implements THallQueueService {
         String tokenStr = TokenUtil.getRequestToken(request);
         SysToken token = tSysTokenMapper.findByToken(tokenStr);
         String ip = token.getIp();
-        String windowName = tSysWindowMapper.selectWindowNameByIp(ip);
+        TSysWindow window = tSysWindowMapper.selectByIp(ip);
+        String windowName = window.getWindowName();
         //是否制证标识whether
         String whether = JsonUtil.getStringParam(jsonObject,"whether");
         //代办次数agentNum
@@ -299,6 +304,9 @@ public class THallQueueServiceImpl implements THallQueueService {
             //是否自动录入黑名单
             msgBuffer = ObjectAsyncTask.insertBlackList(nowQueue.getAName(),nowQueue.getAIdcard(),agentNum,msgBuffer);
         }
+        //将窗口led的原显示内容变为相应窗口号
+//        PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(Integer.parseInt(window.getControlCard()),new WString(windowName),0);
+//        PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(Integer.parseInt(window.getControlCard()),windowName,0);
         map.put("code", 200);
         map.put("status", "success");
         map.put("msg", msgBuffer.toString());
@@ -840,7 +848,7 @@ public class THallQueueServiceImpl implements THallQueueService {
     //特呼
     @Transactional()
     @Override
-    public Map<String, Object> queueVipCall(HttpServletRequest request,HttpSession session,THallQueue tHallQueue){
+    public Map<String, Object> queueVipCall(HttpServletRequest request,HttpSession session,THallQueue tHallQueue)throws Exception{
         ActiveUser activeUser = (ActiveUser) session.getAttribute("activeUser");
         Map<String, Object> map = new HashMap<>();
         JSONObject resultJson = new JSONObject();
@@ -967,7 +975,9 @@ public class THallQueueServiceImpl implements THallQueueService {
          * 异步处理-led大屏文件信息-特呼
          */
         ObjectAsyncTask.vipcallNumberHttp(vip_ordinal,windowName);
-
+        /**
+         * 同步处理-led窗口屏信息
+         */
         String callNumMsg = this.callNumSendMsg(vip_ordinal,window);
         resultJson = this.getResultJson(queueVip);
         map.put("code",200);
@@ -979,7 +989,7 @@ public class THallQueueServiceImpl implements THallQueueService {
 
     //重播
     @Override
-    public Map<String, Object> repaly(HttpServletRequest request,String param) {
+    public Map<String, Object> repaly(HttpServletRequest request,String param)  throws Exception{
         Map<String, Object> map = new HashMap<>();
         JSONObject jsonObject = JSON.parseObject(param);
         String ordinal = String.valueOf(jsonObject.get("ordinal"));
@@ -1464,14 +1474,24 @@ public class THallQueueServiceImpl implements THallQueueService {
         }
     }
 
-    public synchronized String callNumSendMsg(String ordinal,TSysWindow window){
+    public synchronized String callNumSendMsg(String ordinal,TSysWindow window) throws Exception{
         //同步处理发送叫号信息
         JSONObject json = new JSONObject();
         String sendTextMessage = "请"+ordinal+"到"+window.getWindowName();
         json.put("call",sendTextMessage);
         webSocket.sendTextMessageTo(json.toJSONString());
         //调用LED控制卡发送消息到屏幕上
-        PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(Integer.parseInt(window.getControlCard()),new WString(ordinal),0);
+        String msg = "请"+ordinal+"号办理";
+        System.err.println("发送单一颜色的字串："+msg);
+        PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(1,msg,0);
+        PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(2,msg,0);
+        PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(3,msg,0);
+        PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(4,msg,0);
+        PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(5,msg,0);
+        PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(6,msg,0);
+        PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(7,msg,0);
+        PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(8,msg,0);
+
         return "成功！";
     }
     private synchronized String callNumHttp(String ordinal, String windowName)throws Exception {

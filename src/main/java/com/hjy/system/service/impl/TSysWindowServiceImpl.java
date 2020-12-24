@@ -6,18 +6,23 @@ import com.alibaba.fastjson.JSONObject;
 import com.hjy.common.domin.CommonResult;
 import com.hjy.common.utils.IDUtils;
 import com.hjy.common.utils.JsonUtil;
+import com.hjy.common.utils.led.*;
 import com.hjy.system.dao.TSysBusinesstypeMapper;
 import com.hjy.system.entity.ActiveUser;
 import com.hjy.system.entity.TSysBusinesstype;
 import com.hjy.system.entity.TSysWindow;
 import com.hjy.system.dao.TSysWindowMapper;
 import com.hjy.system.service.TSysWindowService;
+import com.sun.jna.Memory;
+import com.sun.jna.Pointer;
+import com.sun.jna.WString;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
 import java.util.*;
 
@@ -33,16 +38,6 @@ public class TSysWindowServiceImpl implements TSysWindowService {
     private TSysWindowMapper tSysWindowMapper;
     @Autowired
     private TSysBusinesstypeMapper tSysBusinesstypeMapper;
-    /**
-     * 通过ID查询单条数据
-     *
-     * @param pkWindowId 主键
-     * @return 实例对象
-     */
-    @Override
-    public TSysWindow selectById(Object pkWindowId) throws Exception{
-        return this.tSysWindowMapper.selectById(pkWindowId);
-    }
 
     /**
      * 新增数据
@@ -128,7 +123,6 @@ public class TSysWindowServiceImpl implements TSysWindowService {
 
     /**
      * 修改数据
-     *
      * @param param 实例对象
      * @return 实例对象
      */
@@ -207,50 +201,6 @@ public class TSysWindowServiceImpl implements TSysWindowService {
             return new CommonResult(444,"error","窗口数据修改失败!",null);
         }
     }
-
-    /**
-     * 通过主键删除数据
-     *
-     * @param pkWindowId 主键
-     * @return 是否成功
-     */
-    @Override
-    public int deleteById(Object pkWindowId) throws Exception{
-        return tSysWindowMapper.deleteById(pkWindowId);
-    }
-    
-    /**
-     * 查询多条数据
-     * @return 对象列表
-     */
-    @Override
-    public List<TSysWindow> selectAll() throws Exception{
-        return this.tSysWindowMapper.selectAll();
-    }
-    /**
-     * 通过实体查询多条数据
-     * @return 对象列表
-     */
-    @Override
-    public List<TSysWindow> selectAllByEntity(TSysWindow tSysWindow) throws Exception{
-        return this.tSysWindowMapper.selectAllByEntity(tSysWindow);
-    }
-
-    @Override
-    public List<String> selectWindowName() {
-        return tSysWindowMapper.selectWindowName();
-    }
-
-    @Override
-    public int updateOperatorPeople(TSysWindow tSysWindow) {
-        return tSysWindowMapper.updateOperatorPeople(tSysWindow);
-    }
-    //通过主键查询该窗口配置的ip地址
-    @Override
-    public String selectIpByPkid(String pkWindowId) {
-        return tSysWindowMapper.selectIpByPkid(pkWindowId);
-    }
-
     @Override
     public Map<String, Object> tSysWindowgetOne(String param) {
         Map<String, Object> map = new HashMap<>();
@@ -287,27 +237,114 @@ public class TSysWindowServiceImpl implements TSysWindowService {
     //暂停服务
     @Transactional()
     @Override
-    public CommonResult stopService(HttpSession session) {
+    public CommonResult stopService(HttpSession session) throws Exception {
         ActiveUser activeUser = (ActiveUser) session.getAttribute("activeUser");
         String ip = activeUser.getIp();
         TSysWindow window = tSysWindowMapper.selectByIp(ip);
-        Integer serviceStatus = window.getServiceStatus();
-        if(serviceStatus != null && serviceStatus == 0){
-            window.setServiceStatus(1);
-        }
-        if(serviceStatus != null && serviceStatus == 1){
-            window.setServiceStatus(0);
-        }
-        int i = tSysWindowMapper.stopService(window);
-        if(i > 0){
-            return new CommonResult(200,"success","暂停服务成功!",null);
+        if(window != null){
+            //unicode 暂停服务=\u6682\u505c\u670d\u52a10
+//            String msg = "你好123";
+            Integer serviceStatus = window.getServiceStatus();
+            if(serviceStatus != null && serviceStatus == 0){
+                window.setServiceStatus(1);
+                //
+//                msg = window.getWindowName();
+            }
+            if(serviceStatus != null && serviceStatus == 1){
+                window.setServiceStatus(0);
+            }
+            int i = tSysWindowMapper.stopService(window);
+            if(i > 0){
+                /**
+                 * 发送提示到窗口上
+                 */
+                if(!StringUtils.isEmpty(window.getControlCard())){
+//                    int nCardId = Integer.parseInt(window.getControlCard());
+                    //在窗口LED屏上展示暂停服务的提示
+                    String msg = "你好123";
+                    byte[] bytes = LEDUtil.sendSingleColorText(msg);
+                    //C4 E3 BA C3 31 32  33 00
+                    byte[] bytes1 = {(byte) 0xC4, (byte) 0xE3, (byte) 0xBA, (byte) 0xC3,31,32,33,00};
+                    String temp = LEDUtil.sendSingleColorText2(bytes);
+                    String temp2 = LEDUtil.sendSingleColorText3(bytes);
+                    String temp3 = temp.toUpperCase();
+                    System.out.println("temp：" + temp);
+                    System.out.println("temp2：" + temp2);
+                    System.out.println("temp3：" + temp3);
+                    PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(2,bytes,0);
+                    PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(3,bytes1,0);
+                    PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(4,temp,0);
+                    PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(5,temp2,0);
+                    PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(6,temp3,0);
+                    PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(7,bytes1,0);
+                    PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(8,temp,0);
+
+                    return new CommonResult(200,"success","暂停服务成功!",null);
+                }else {
+                    return new CommonResult(446,"error","暂停服务成功！该窗口未配置控制卡地址，无法展示‘暂停服务’",null);
+                }
+            }else {
+                return new CommonResult(444,"error","暂停服务失败!",null);
+            }
         }else {
-            return new CommonResult(444,"error","暂停服务失败!",null);
+            return new CommonResult(445,"error","该窗口非业务窗口，操作无效!",null);
         }
+    }
+
+    /**
+     * 通过ID查询单条数据
+     *
+     * @param pkWindowId 主键
+     * @return 实例对象
+     */
+    @Override
+    public TSysWindow selectById(Object pkWindowId) throws Exception{
+        return this.tSysWindowMapper.selectById(pkWindowId);
     }
 
     @Override
     public TSysWindow selectByIp(String ip) {
         return tSysWindowMapper.selectByIp(ip);
+    }
+    /**
+     * 通过主键删除数据
+     * @param pkWindowId 主键
+     * @return 是否成功
+     */
+    @Override
+    public int deleteById(Object pkWindowId) throws Exception{
+        return tSysWindowMapper.deleteById(pkWindowId);
+    }
+
+    /**
+     * 查询多条数据
+     * @return 对象列表
+     */
+    @Override
+    public List<TSysWindow> selectAll() throws Exception{
+        return this.tSysWindowMapper.selectAll();
+    }
+    /**
+     * 通过实体查询多条数据
+     * @return 对象列表
+     */
+    @Override
+    public List<TSysWindow> selectAllByEntity(TSysWindow tSysWindow) throws Exception{
+        return this.tSysWindowMapper.selectAllByEntity(tSysWindow);
+    }
+
+    @Override
+    public List<String> selectWindowName() {
+        return tSysWindowMapper.selectWindowName();
+    }
+
+    @Override
+    public int updateOperatorPeople(TSysWindow tSysWindow) {
+        return tSysWindowMapper.updateOperatorPeople(tSysWindow);
+    }
+    //通过主键查询该窗口配置的ip地址
+    @Override
+    public String selectIpByPkid(String pkWindowId) {
+        return tSysWindowMapper.selectIpByPkid(pkWindowId);
     }
 }

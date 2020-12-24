@@ -8,12 +8,24 @@ import com.hjy.common.utils.JsonUtil;
 import com.hjy.common.utils.file.MyFileUtil;
 import com.hjy.common.utils.page.PageResult;
 import com.hjy.common.utils.page.PageUtil;
+import com.hjy.hall.dao.THallQueueMapper;
+import com.hjy.hall.entity.THallQueue;
 import com.hjy.list.dao.TListAgentMapper;
 import com.hjy.list.dao.TListInfoMapper;
 import com.hjy.list.entity.TListAgent;
 import com.hjy.list.entity.TListInfo;
 import com.hjy.list.service.TListInfoService;
+import com.hjy.synthetical.entity.TSyntheticalRecord;
+import com.hjy.synthetical.service.TSyntheticalRecordService;
 import com.hjy.system.entity.ActiveUser;
+import com.hjy.tbk.dao.TbkDrivinglicenseMapper;
+import com.hjy.tbk.dao.TbkVehicleMapper;
+import com.hjy.tbk.entity.TbkDrivinglicense;
+import com.hjy.tbk.entity.TbkVehicle;
+import com.hjy.tbk.service.TbkVehicleService;
+import com.hjy.tbk.statusCode.HPStatus;
+import com.hjy.tbk.statusCode.SYXZStatus;
+import com.hjy.tbk.statusCode.VehicleStatus;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,10 +33,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * (TListInfo)表服务实现类
@@ -38,6 +49,14 @@ public class TListInfoServiceImpl implements TListInfoService {
     private TListInfoMapper tListInfoMapper;
     @Autowired
     private TListAgentMapper tListAgentMapper;
+    @Autowired
+    private THallQueueMapper tHallQueueMapper;
+    @Autowired
+    private TSyntheticalRecordService tSyntheticalRecordService;
+    @Autowired
+    private TbkVehicleMapper tbkVehicleMapper;
+    @Autowired
+    private TbkDrivinglicenseMapper tbkDrivinglicenseMapper;
     @Value("${server.port}")
     private String serverPort;
     @Value("${spring.boot.application.ip}")
@@ -69,7 +88,6 @@ public class TListInfoServiceImpl implements TListInfoService {
 
     /**
      * 新增数据
-     *
      * @param tListInfo 实例对象
      * @return 实例对象
      */
@@ -129,7 +147,6 @@ public class TListInfoServiceImpl implements TListInfoService {
     }
     /**
      * 修改数据
-     *
      * @param tListInfo 实例对象
      * @return 实例对象
      */
@@ -151,17 +168,6 @@ public class TListInfoServiceImpl implements TListInfoService {
         return tListInfoMapper.updateById(tListInfo);
     }
 
-    /**
-     * 通过主键删除数据
-     *
-     * @param pkListId 主键
-     * @return 是否成功
-     */
-    @Transactional()
-    @Override
-    public int deleteById(String pkListId) throws Exception{
-        return tListInfoMapper.deleteById(pkListId);
-    }
     @Transactional()
     @Override
     public CommonResult delApproval(String param, HttpSession session) {
@@ -213,14 +219,9 @@ public class TListInfoServiceImpl implements TListInfoService {
     }
 
     /**
-     * 查询多条数据
-     * @return 对象列表
+     * 待审批列表
+     * @return PageResult
      */
-    @Override
-    public List<TListInfo> selectAll() throws Exception{
-        return this.tListInfoMapper.selectAll();
-    }
-
     @Override
     public PageResult selectWaitApproval(String param) throws Exception{
         JSONObject json = JSON.parseObject(param);
@@ -253,7 +254,10 @@ public class TListInfoServiceImpl implements TListInfoService {
         }
     }
 
-
+    /**
+     * 通过实体查询所有数据
+     * @return PageResult
+     */
     @Override
     public PageResult selectAllPage(String param) {
         JSONObject json = JSON.parseObject(param);
@@ -274,10 +278,197 @@ public class TListInfoServiceImpl implements TListInfoService {
         result.setContent(listInfos);
         return result;
     }
+    /**
+     * 综合查询
+     * @return CommonResult
+     */
+    @Override
+    public CommonResult syntheticalSelect(THallQueue tHallQueue) {
+        JSONObject resultJson = new JSONObject();
+        //实体数据
+        //当事人
+        String bIdCard = tHallQueue.getBIdcard();
+        boolean flag = true;
+        if(!StringUtils.isEmpty(bIdCard)){
+            String bName = "";
+            while (flag){
+                //3.1从排队信息去查受理人姓名
+                String resultBName = tHallQueueMapper.selectBNameByIdCard(bIdCard);
+                if(!StringUtils.isEmpty(resultBName)){
+                    bName = resultBName;
+                    break;
+                }
+                //3.2从排队信息去查代理人姓名
+                String resultAName = tHallQueueMapper.selectANameByIdCard(bIdCard);
+                if(!StringUtils.isEmpty(resultAName)){
+                    bName = resultAName;
+                    break;
+                }
+                //1从黑红名单找
+                TListInfo infoB = tListInfoMapper.selectByIdCard(bIdCard);
+                if(infoB != null){
+                    bName = infoB.getFullName();
+                    break;
+                }
+                //2从备案信息去找
+                List<TSyntheticalRecord> tSyntheticalRecords = tSyntheticalRecordService.selectByZzjgdm(bIdCard);
+                if(tSyntheticalRecords.size()>=1){
+                    bName = tSyntheticalRecords.get(0).getDwMc();
+                    break;
+                }
+                flag =false;
+                break;
+            }
+            resultJson.put("bName",bName);
 
+        }
+        //代理人
+        String aIdCard = tHallQueue.getIdCard();
+        if(!StringUtils.isEmpty(aIdCard)){
+            String aName = "";
+            //查询代办信息
+            List<THallQueue> queues = tHallQueueMapper.selectAB_Card_date(aIdCard);
+            resultJson.put("queue",queues);
+            aName = queues.get(0).getAName();
+            //从排队信息去查受理人姓名
+            if(!StringUtils.isEmpty(aName)){
+                String resultBName = tHallQueueMapper.selectBNameByIdCard(bIdCard);
+                if(!StringUtils.isEmpty(resultBName)){
+                    aName = resultBName;
+                }
+            }
+            //查询代理人黑红名单信息
+            TListInfo infoB = tListInfoMapper.selectByIdCard(aIdCard);
+            if(infoB != null){
+                resultJson.put("list",infoB);
+                aName = infoB.getFullName();
+            }
+            resultJson.put("aName",aName);
+        }
+        return new CommonResult(200, "success", "查询成功!", resultJson);
+
+    }
+
+    @Transactional()
+    @Override
+    public Map<String, Object> getTbkData(THallQueue tHallQueue) {
+        Map<String, Object> map = new HashMap<>();
+        JSONObject resultJson = new JSONObject();
+        String bIdCard = tHallQueue.getBIdcard();
+//        String businessType = "机动车业务";
+//        String tempBusinessType = JsonUtil.getStringParam(json,"businessType");
+//        if(!StringUtils.isEmpty(tempBusinessType)){
+//            businessType = tempBusinessType;
+//        }
+        //当事人驾驶证信息
+        List<TbkDrivinglicense> brjszList = tbkDrivinglicenseMapper.selectByIdCard(bIdCard);
+        resultJson.put("license",brjszList);
+        //当事人车辆信息
+        List<TbkVehicle> brclList = tbkVehicleMapper.selectByIdCard(bIdCard);
+        //除开A的不显示
+        brclList = this.getBRCLQK(brclList);
+        resultJson.put("car",brclList);
+        map.put("code",202);
+        map.put("data",resultJson);
+        map.put("msg","获取同步库数据成功！");
+        return map;
+
+    }
+
+    //将本人车辆信息做修饰
+    private List<TbkVehicle> getBRCLQK(List<TbkVehicle> brclList) {
+        if(brclList == null){
+            return null;
+        }
+        Iterator<TbkVehicle> iterator = brclList.iterator();
+        while(iterator.hasNext()){
+            TbkVehicle obj = iterator.next();
+            if(obj.getZt().equals("A")){
+                iterator.remove();
+                continue;
+            }
+            StringBuffer cllxBuffer = new StringBuffer();
+            StringBuffer ztBuffer = new StringBuffer();
+            StringBuffer syxzBuffer = new StringBuffer();
+//            StringBuffer tempBuffer1 = new StringBuffer();
+//            //准驾车型
+//            String [] zjcxstrings = obj.getZjcx().split("");
+//            int i =1;
+//            //翻译
+//            for(String zjcx:zjcxstrings){
+//                String msg = CLLXStatus.getDesc(zjcx);
+//                tempBuffer1.append(i+"."+msg);
+//                i++;
+//            }
+//            if(!StringUtils.isEmpty(cllxBuffer.toString())){
+//                cllxBuffer.append("/"+tempBuffer1.toString());
+//            }else {
+//                cllxBuffer.append(tempBuffer1.toString());
+//            }
+            StringBuffer tempBuffer2 = new StringBuffer();
+            //机动车状态
+            String [] ztstrings = obj.getZt().split("");
+            int j =1;
+            //翻译
+            for(String zt:ztstrings){
+                String msg = VehicleStatus.getDesc(zt);
+                tempBuffer2.append(j+"."+msg);
+                j++;
+            }
+            if(!StringUtils.isEmpty(ztBuffer.toString())){
+                ztBuffer.append("/"+tempBuffer2.toString());
+            }else {
+                ztBuffer.append(tempBuffer2.toString());
+            }
+            //号牌种类
+            obj.setHpzl(HPStatus.getDesc(obj.getHpzl()));
+            StringBuffer tempBuffer4 = new StringBuffer();
+            //使用性质
+            String [] syxzstrings = obj.getSyxz().split("");
+            int m =1;
+            //翻译
+            for(String syxz:syxzstrings){
+                String msg = SYXZStatus.getDesc(syxz);
+                tempBuffer4.append(m+"."+msg);
+                m++;
+            }
+            if(!StringUtils.isEmpty(syxzBuffer.toString())){
+                syxzBuffer.append("/"+tempBuffer4.toString());
+            }else {
+                syxzBuffer.append(tempBuffer4.toString());
+            }
+            //---------
+            obj.setExceptionReason(ztBuffer.toString());
+            obj.setSyxz(syxzBuffer.toString());
+        }
+        return brclList;
+    }
+
+    /**
+     * 通过证件号查询黑红名单信息
+     * @return TListInfo
+     */
     @Override
     public TListInfo selectByIdCard(String bIdcard) {
         return tListInfoMapper.selectByIdCard(bIdcard);
+    }
+    /**
+     * 查询多条数据
+     * @return 对象列表
+     */
+    @Override
+    public List<TListInfo> selectAll() throws Exception{
+        return this.tListInfoMapper.selectAll();
+    }
+    /**
+     * 通过主键删除数据
+     * @param pkListId 主键
+     * @return 是否成功
+     */
+    @Transactional()
+    @Override
+    public int deleteById(String pkListId) throws Exception{
+        return tListInfoMapper.deleteById(pkListId);
     }
 
 }

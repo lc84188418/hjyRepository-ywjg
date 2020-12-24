@@ -47,7 +47,7 @@
             <if test="operatorTime != null">
                 and operator_time = #{operatorTime,jdbcType=DATE}
             </if>
-            <if test="controlCard != null and controlCard != ''">
+            <if test="controlCard != null">
                 and control_card = #{controlCard,jdbcType=VARCHAR}
             </if>
             <if test="remarks != null and remarks != ''">
@@ -88,7 +88,7 @@
         <if test="operatorTime != null">
                 operator_time,
         </if>
-        <if test="controlCard != null and controlCard != ''">
+        <if test="controlCard != null">
                 control_card,
         </if>
         <if test="remarks != null and remarks != ''">
@@ -129,7 +129,7 @@
             <if test="operatorTime != null">
                 #{operatorTime,jdbcType=DATE},
             </if>
-                    <if test="controlCard != null and controlCard != ''">
+            <if test="controlCard != null">
                 #{controlCard,jdbcType=VARCHAR},
             </if>
                     <if test="remarks != null and remarks != ''">
@@ -170,7 +170,7 @@
             <if test="operatorTime != null">
                 operator_time = #{operatorTime,jdbcType=DATE},
             </if>
-            <if test="controlCard != null and controlCard != ''">
+            <if test="controlCard != null">
                 control_card = #{controlCard,jdbcType=VARCHAR},
             </if>
             <if test="remarks != null and remarks != ''">
