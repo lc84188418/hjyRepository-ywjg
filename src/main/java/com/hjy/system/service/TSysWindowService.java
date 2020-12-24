@@ -56,7 +56,7 @@ public interface TSysWindowService {
     //查询单个数据
     Map<String, Object> tSysWindowgetOne(String param);
     //暂停服务
-    CommonResult stopService(HttpSession session)throws UnsupportedEncodingException;
+    CommonResult stopService(HttpSession session)throws Exception;
 
     TSysWindow selectByIp(String ip);
 }

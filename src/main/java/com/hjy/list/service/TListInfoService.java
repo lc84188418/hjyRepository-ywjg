@@ -3,11 +3,14 @@ package com.hjy.list.service;
 import com.hjy.common.domin.CommonResult;
 import com.hjy.common.utils.page.PageRequest;
 import com.hjy.common.utils.page.PageResult;
+import com.hjy.hall.entity.THallQueue;
 import com.hjy.list.entity.TListInfo;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.List;
+import java.util.Map;
 
 /**
  * (TListInfo)表服务接口
@@ -79,5 +82,7 @@ public interface TListInfoService {
 
     TListInfo selectByIdCard(String bIdcard);
     //综合查询
-    CommonResult syntheticalSelect(String param);
+    CommonResult syntheticalSelect(THallQueue tHallQueue);
+    //综合查询后访问同步库数据
+    Map<String, Object> getTbkData(THallQueue tHallQueue);
 }

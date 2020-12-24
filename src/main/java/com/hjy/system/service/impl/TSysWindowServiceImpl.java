@@ -6,9 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.hjy.common.domin.CommonResult;
 import com.hjy.common.utils.IDUtils;
 import com.hjy.common.utils.JsonUtil;
-import com.hjy.common.utils.led.CharReference;
-import com.hjy.common.utils.led.MD5Encoder;
-import com.hjy.common.utils.led.PD101Ctrl_RZC2;
+import com.hjy.common.utils.led.*;
 import com.hjy.system.dao.TSysBusinesstypeMapper;
 import com.hjy.system.entity.ActiveUser;
 import com.hjy.system.entity.TSysBusinesstype;
@@ -239,17 +237,18 @@ public class TSysWindowServiceImpl implements TSysWindowService {
     //暂停服务
     @Transactional()
     @Override
-    public CommonResult stopService(HttpSession session) throws UnsupportedEncodingException {
+    public CommonResult stopService(HttpSession session) throws Exception {
         ActiveUser activeUser = (ActiveUser) session.getAttribute("activeUser");
         String ip = activeUser.getIp();
         TSysWindow window = tSysWindowMapper.selectByIp(ip);
         if(window != null){
-            String msg = "暂停服务0";
+            //unicode 暂停服务=\u6682\u505c\u670d\u52a10
+//            String msg = "你好123";
             Integer serviceStatus = window.getServiceStatus();
             if(serviceStatus != null && serviceStatus == 0){
                 window.setServiceStatus(1);
                 //
-                msg = window.getWindowName()+"0";
+//                msg = window.getWindowName();
             }
             if(serviceStatus != null && serviceStatus == 1){
                 window.setServiceStatus(0);
@@ -262,49 +261,23 @@ public class TSysWindowServiceImpl implements TSysWindowService {
                 if(!StringUtils.isEmpty(window.getControlCard())){
 //                    int nCardId = Integer.parseInt(window.getControlCard());
                     //在窗口LED屏上展示暂停服务的提示
-                    System.err.println("发送单一颜色的字串:"+msg);
-                    byte []bytes1 = msg.getBytes("gb2312");
-                    byte[] bytes2 = new byte[1024];
-                    bytes2 = msg.getBytes("gb2312");
-                    PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(1,msg.getBytes("GBK"),0);
-                    PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(2,msg.getBytes("GBK"),0);
-                    PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(3,msg.getBytes("GB2312"),0);
-                    PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(4,msg.getBytes("GB2312"),0);
-                    PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(5,bytes1,0);
-                    PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(6,bytes1,0);
-                    PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(7,bytes2,0);
-                    PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(8,bytes2,0);
-
-                    //-1
-//                    System.err.println("result1");
-//                    PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(nCardId,new WString("1"),0);
-//                    System.err.println("result2");
-//                    PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(nCardId,new WString("a"),0);
-//                    System.err.println("result3");
-//                    PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(nCardId,new WString(msg),0);
-//                    System.err.println("result4");
-//                    PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(nCardId,new WString("#"),0);
-//                    System.err.println("result5");
-//                    PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(nCardId,new WString("F001"),0);
-                    //-2
-//                    msg.getBytes();
-//                    PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(nCardId,msg.getBytes(),0);
-                    //-3
-//                    PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(nCardId,input,0);
-//                    PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendText(nCardId,msg2);
-
-                    //-4
-//                    System.setProperty("jna.encoding", "utf-8");
-//                    // 首先定义指针，开辟内存空间，这里的内存空间根据返回的字符串来决定
-//                    Pointer p = new Memory(11) ;
-                    //-5
-//                    byte[] temp = {0};
-//                    byte[] smscontentdb = msg.getBytes("utf-8");
-//                    byte[] smscontent = new byte[smscontentdb.length + temp.length];
-//                    System.arraycopy(smscontentdb, 0, smscontent, 0, smscontentdb.length);
-//                    System.arraycopy(temp, 0, smscontent, smscontentdb.length, temp.length);
-                    //-6
-//                    PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendText(nCardId,msg2.toCharArray());
+                    String msg = "你好123";
+                    byte[] bytes = LEDUtil.sendSingleColorText(msg);
+                    //C4 E3 BA C3 31 32  33 00
+                    byte[] bytes1 = {(byte) 0xC4, (byte) 0xE3, (byte) 0xBA, (byte) 0xC3,31,32,33,00};
+                    String temp = LEDUtil.sendSingleColorText2(bytes);
+                    String temp2 = LEDUtil.sendSingleColorText3(bytes);
+                    String temp3 = temp.toUpperCase();
+                    System.out.println("temp：" + temp);
+                    System.out.println("temp2：" + temp2);
+                    System.out.println("temp3：" + temp3);
+                    PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(2,bytes,0);
+                    PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(3,bytes1,0);
+                    PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(4,temp,0);
+                    PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(5,temp2,0);
+                    PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(6,temp3,0);
+                    PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(7,bytes1,0);
+                    PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(8,temp,0);
 
                     return new CommonResult(200,"success","暂停服务成功!",null);
                 }else {

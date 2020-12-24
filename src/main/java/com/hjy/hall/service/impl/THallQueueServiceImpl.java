@@ -9,6 +9,7 @@ import com.hjy.common.task.ObjectAsyncTask;
 import com.hjy.common.utils.Http.HttpClient4;
 import com.hjy.common.utils.*;
 import com.hjy.common.utils.led.CharReference;
+import com.hjy.common.utils.led.LEDUtil;
 import com.hjy.common.utils.led.MD5Encoder;
 import com.hjy.common.utils.led.PD101Ctrl_RZC2;
 import com.hjy.common.utils.page.PageResult;
@@ -1480,19 +1481,17 @@ public class THallQueueServiceImpl implements THallQueueService {
         json.put("call",sendTextMessage);
         webSocket.sendTextMessageTo(json.toJSONString());
         //调用LED控制卡发送消息到屏幕上
-        String msg = "请"+ordinal+"号办理0";
-        System.err.println("发送单一颜色的字串:"+msg);
-        byte[] bytes2 = new byte[1024];
-        bytes2 = msg.getBytes("gb2312");
-//        int nCardId = Integer.parseInt(window.getControlCard());
-        PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(1,msg.getBytes("gb2312"),0);
-        PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(2,msg.getBytes("gbk"),0);
-        PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(3,msg.getBytes("gbk"),0);
-        PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(4,msg.getBytes("gb2312"),0);
-        PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(5,msg.getBytes("gb2312"),0);
-        PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(6,bytes2,0);
-        PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(7,bytes2,0);
-        PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(7,bytes2,0);
+        String msg = "请"+ordinal+"号办理";
+        System.err.println("发送单一颜色的字串："+msg);
+        PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(1,msg,0);
+        PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(2,msg,0);
+        PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(3,msg,0);
+        PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(4,msg,0);
+        PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(5,msg,0);
+        PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(6,msg,0);
+        PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(7,msg,0);
+        PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(8,msg,0);
+
         return "成功！";
     }
     private synchronized String callNumHttp(String ordinal, String windowName)throws Exception {
