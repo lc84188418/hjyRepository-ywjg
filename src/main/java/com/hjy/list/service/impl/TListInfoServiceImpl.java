@@ -22,6 +22,7 @@ import com.hjy.tbk.dao.TbkDrivinglicenseMapper;
 import com.hjy.tbk.dao.TbkVehicleMapper;
 import com.hjy.tbk.entity.TbkDrivinglicense;
 import com.hjy.tbk.entity.TbkVehicle;
+import com.hjy.tbk.service.TbkDrivinglicenseService;
 import com.hjy.tbk.service.TbkVehicleService;
 import com.hjy.tbk.statusCode.HPStatus;
 import com.hjy.tbk.statusCode.SYXZStatus;
@@ -54,9 +55,9 @@ public class TListInfoServiceImpl implements TListInfoService {
     @Autowired
     private TSyntheticalRecordService tSyntheticalRecordService;
     @Autowired
-    private TbkVehicleMapper tbkVehicleMapper;
+    private TbkVehicleService tbkVehicleService;
     @Autowired
-    private TbkDrivinglicenseMapper tbkDrivinglicenseMapper;
+    private TbkDrivinglicenseService tbkDrivinglicenseService;
     @Value("${server.port}")
     private String serverPort;
     @Value("${spring.boot.application.ip}")
@@ -104,6 +105,11 @@ public class TListInfoServiceImpl implements TListInfoService {
         if(tListInfo.getApplyBook() != null){
             sqsPath = tListInfo.getApplyBook().replace("http://"+webIp+":"+serverPort+"/img/","");
         }
+        //说明、其他字段较长时
+        String temp1 = this.strBufferUtil(tListInfo.getExplain());
+        String temp2 = this.strBufferUtil(tListInfo.getOther());
+        tListInfo.setExplain(temp1);
+        tListInfo.setOther(temp2);
         //先查询此人是否在黑名单或者红名单中
         TListInfo obj = tListInfoMapper.selectByIdCard(tListInfo.getIdCard());
         if(obj ==null){
@@ -120,6 +126,23 @@ public class TListInfoServiceImpl implements TListInfoService {
             return tListInfoMapper.updateById(tListInfo);
         }
     }
+
+    private String strBufferUtil(String param) {
+        StringBuffer resultBuffer = new StringBuffer();
+        //
+        int byteLength = param.getBytes().length;
+        if(byteLength >3999){
+            //字节过长，只取其中一部分
+            resultBuffer.append("输入字段已超过4000字节，固只录入部分");
+            if(param.length() > 1300){
+                resultBuffer.append(param.substring(0,1200));
+            }
+            return resultBuffer.toString();
+        }else {
+            return param;
+        }
+    }
+
     @Transactional()
     @Override
     public int insertFile(TListInfo tListInfo, MultipartFile[] files)throws Exception {
@@ -154,6 +177,12 @@ public class TListInfoServiceImpl implements TListInfoService {
     @Override
     public int updateById(TListInfo tListInfo) throws Exception{
         tListInfo.setApprovalTime(new Date());
+        //说明、其他字段较长时
+        String temp1 = this.strBufferUtil(tListInfo.getExplain());
+        String temp2 = this.strBufferUtil(tListInfo.getOther());
+        tListInfo.setExplain(temp1);
+        tListInfo.setOther(temp2);
+        //修改图片和路径
         String zzjgdmzPath = null;
         String sqsPath = null;
         if(tListInfo.getCodeCertificates() != null){
@@ -348,7 +377,10 @@ public class TListInfoServiceImpl implements TListInfoService {
         return new CommonResult(200, "success", "查询成功!", resultJson);
 
     }
-
+    /**
+     * 综合查询后访问同步库数据
+     * @return Map
+     */
     @Transactional()
     @Override
     public Map<String, Object> getTbkData(THallQueue tHallQueue) {
@@ -361,14 +393,14 @@ public class TListInfoServiceImpl implements TListInfoService {
 //            businessType = tempBusinessType;
 //        }
         //当事人驾驶证信息
-        List<TbkDrivinglicense> brjszList = tbkDrivinglicenseMapper.selectByIdCard(bIdCard);
+        List<TbkDrivinglicense> brjszList = tbkDrivinglicenseService.selectByIdCard(bIdCard);
         resultJson.put("license",brjszList);
         //当事人车辆信息
-        List<TbkVehicle> brclList = tbkVehicleMapper.selectByIdCard(bIdCard);
+        List<TbkVehicle> brclList = tbkVehicleService.selectByIdCard(bIdCard);
         //除开A的不显示
         brclList = this.getBRCLQK(brclList);
         resultJson.put("car",brclList);
-        map.put("code",202);
+        map.put("code",200);
         map.put("data",resultJson);
         map.put("msg","获取同步库数据成功！");
         return map;
