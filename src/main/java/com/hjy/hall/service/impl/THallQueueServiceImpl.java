@@ -1481,16 +1481,16 @@ public class THallQueueServiceImpl implements THallQueueService {
         json.put("call",sendTextMessage);
         webSocket.sendTextMessageTo(json.toJSONString());
         //调用LED控制卡发送消息到屏幕上
-        String msg = "请"+ordinal+"号办理";
-        System.err.println("发送单一颜色的字串："+msg);
-        PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(1,msg,0);
-        PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(2,msg,0);
-        PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(3,msg,0);
-        PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(4,msg,0);
-        PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(5,msg,0);
-        PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(6,msg,0);
-        PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(7,msg,0);
-        PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(8,msg,0);
+//        String msg = "请"+ordinal+"号办理";
+//        System.err.println("发送单一颜色的字串："+msg);
+//        PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(1,msg,0);
+//        PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(2,msg,0);
+//        PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(3,msg,0);
+//        PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(4,msg,0);
+//        PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(5,msg,0);
+//        PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(6,msg,0);
+//        PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(7,msg,0);
+//        PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(8,msg,0);
 
         return "成功！";
     }

@@ -128,18 +128,22 @@ public class TListInfoServiceImpl implements TListInfoService {
     }
 
     private String strBufferUtil(String param) {
-        StringBuffer resultBuffer = new StringBuffer();
-        //
-        int byteLength = param.getBytes().length;
-        if(byteLength >3999){
-            //字节过长，只取其中一部分
-            resultBuffer.append("输入字段已超过4000字节，固只录入部分");
-            if(param.length() > 1300){
-                resultBuffer.append(param.substring(0,1200));
-            }
-            return resultBuffer.toString();
+        if(StringUtils.isEmpty(param)){
+            return null;
         }else {
-            return param;
+            StringBuffer resultBuffer = new StringBuffer();
+            //
+            int byteLength = param.getBytes().length;
+            if(byteLength >3999){
+                //字节过长，只取其中一部分
+                resultBuffer.append("输入字段已超过4000字节，固只录入部分");
+                if(param.length() > 1300){
+                    resultBuffer.append(param.substring(0,1200));
+                }
+                return resultBuffer.toString();
+            }else {
+                return param;
+            }
         }
     }
 
