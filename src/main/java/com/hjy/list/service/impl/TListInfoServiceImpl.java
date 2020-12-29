@@ -356,13 +356,15 @@ public class TListInfoServiceImpl implements TListInfoService {
 
         }
         //代理人
-        String aIdCard = tHallQueue.getIdCard();
+        String aIdCard = tHallQueue.getAIdcard();
         if(!StringUtils.isEmpty(aIdCard)){
             String aName = "";
             //查询代办信息
             List<THallQueue> queues = tHallQueueMapper.selectAB_Card_date(aIdCard);
-            resultJson.put("queue",queues);
-            aName = queues.get(0).getAName();
+            if(queues.size() > 0){
+                resultJson.put("queue",queues);
+                aName = queues.get(0).getAName();
+            }
             //从排队信息去查受理人姓名
             if(!StringUtils.isEmpty(aName)){
                 String resultBName = tHallQueueMapper.selectBNameByIdCard(bIdCard);

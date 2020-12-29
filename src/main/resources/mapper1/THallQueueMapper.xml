@@ -447,7 +447,7 @@
     </select>
 <!--    这是统计包括空号，退号，办结，正在办理的，如果要统计办结的   remarks='办结' 并且同一个人一个号码可以算多次的话count(*)-->
     <select id="indexDataWindowNumToday" resultType="com.hjy.hall.entity.THallQueueCount">
-        SELECT a.window_name, NVL(b.num,0)as realCount 
+        SELECT a.window_name, NVL(b.num,0)as realCount,a.operator_people as agent
 		FROM t_sys_window a
         LEFT JOIN (SELECT window_name,COUNT(DISTINCT(ordinal)) as num
 		from t_hall_queue
@@ -714,7 +714,7 @@ ORDER BY
     </select>
 <!--    查询代理人代办信息-->
     <select id="selectAB_Card_date" resultType="com.hjy.hall.entity.THallQueue">
-        select A_NAME,A_IDCARD,B_IDCARD,END_TIME from T_HALL_QUEUE where A_IDCARD = #{idCard,jdbcType=VARCHAR}
+        select A_NAME,A_IDCARD,B_IDCARD,END_TIME from T_HALL_QUEUE where A_IDCARD = #{aIdCard,jdbcType=VARCHAR}
     </select>
     <delete id="deteleBeforeData">
         DELETE

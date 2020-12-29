@@ -240,7 +240,7 @@ public class TListInfoController {
             CommonResult commonResult = tListInfoService.syntheticalSelect(tHallQueue);
             return commonResult;
         } catch (Exception e) {
-            String message = "待审批记录获取失败";
+            String message = "综合查询失败";
             log.error(message, e);
             throw new FebsException(message);
         }
