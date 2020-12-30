@@ -353,7 +353,8 @@ public class TListInfoServiceImpl implements TListInfoService {
                 break;
             }
             resultJson.put("bName",bName);
-
+        }else {
+            resultJson.put("bName",null);
         }
         //代理人
         String aIdCard = tHallQueue.getAIdcard();
@@ -364,10 +365,12 @@ public class TListInfoServiceImpl implements TListInfoService {
             if(queues.size() > 0){
                 resultJson.put("queue",queues);
                 aName = queues.get(0).getAName();
+            }else {
+                resultJson.put("queue",null);
             }
             //从排队信息去查受理人姓名
             if(!StringUtils.isEmpty(aName)){
-                String resultBName = tHallQueueMapper.selectBNameByIdCard(bIdCard);
+                String resultBName = tHallQueueMapper.selectBNameByIdCard(aIdCard);
                 if(!StringUtils.isEmpty(resultBName)){
                     aName = resultBName;
                 }
@@ -377,8 +380,14 @@ public class TListInfoServiceImpl implements TListInfoService {
             if(infoB != null){
                 resultJson.put("list",infoB);
                 aName = infoB.getFullName();
+            }else {
+                resultJson.put("list",null);
             }
             resultJson.put("aName",aName);
+        }else {
+            resultJson.put("queue",null);
+            resultJson.put("list",null);
+            resultJson.put("aName",null);
         }
         return new CommonResult(200, "success", "查询成功!", resultJson);
 
