@@ -8,10 +8,6 @@ import com.hjy.common.domin.CommonResult;
 import com.hjy.common.task.ObjectAsyncTask;
 import com.hjy.common.utils.Http.HttpClient4;
 import com.hjy.common.utils.*;
-import com.hjy.common.utils.led.CharReference;
-import com.hjy.common.utils.led.LEDUtil;
-import com.hjy.common.utils.led.MD5Encoder;
-import com.hjy.common.utils.led.PD101Ctrl_RZC2;
 import com.hjy.common.utils.page.PageResult;
 import com.hjy.common.utils.page.PageUtil;
 import com.hjy.hall.dao.THallJiashizhengMapper;
@@ -44,7 +40,6 @@ import com.hjy.tbk.statusCode.VehicleStatus;
 import com.hjy.warning.entity.Warning;
 import com.hjy.warning.manager.TbkManager;
 import com.hjy.warning.service.TWarnLnfoService;
-import com.sun.jna.WString;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -53,7 +48,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -1483,14 +1477,6 @@ public class THallQueueServiceImpl implements THallQueueService {
         //调用LED控制卡发送消息到屏幕上
 //        String msg = "请"+ordinal+"号办理";
 //        System.err.println("发送单一颜色的字串："+msg);
-//        PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(1,msg,0);
-//        PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(2,msg,0);
-//        PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(3,msg,0);
-//        PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(4,msg,0);
-//        PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(5,msg,0);
-//        PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(6,msg,0);
-//        PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(7,msg,0);
-//        PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(8,msg,0);
 
         return "成功！";
     }

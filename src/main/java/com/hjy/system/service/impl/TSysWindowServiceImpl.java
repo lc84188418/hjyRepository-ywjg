@@ -242,12 +242,10 @@ public class TSysWindowServiceImpl implements TSysWindowService {
         String ip = activeUser.getIp();
         TSysWindow window = tSysWindowMapper.selectByIp(ip);
         if(window != null){
-            //unicode 暂停服务=\u6682\u505c\u670d\u52a10
             String msg = "暂停服务";
             Integer serviceStatus = window.getServiceStatus();
             if(serviceStatus != null && serviceStatus == 0){
                 window.setServiceStatus(1);
-                //
                 msg = window.getWindowName();
             }
             if(serviceStatus != null && serviceStatus == 1){
@@ -261,23 +259,6 @@ public class TSysWindowServiceImpl implements TSysWindowService {
                 if(!StringUtils.isEmpty(window.getControlCard())){
 //                    int nCardId = Integer.parseInt(window.getControlCard());
                     //在窗口LED屏上展示暂停服务的提示
-//                    String msg = "你好123";
-//                    byte[] bytes = LEDUtil.sendSingleColorText(msg);
-//                    //C4 E3 BA C3 31 32  33 00
-//                    byte[] bytes1 = {(byte) 0xC4, (byte) 0xE3, (byte) 0xBA, (byte) 0xC3,31,32,33,00};
-//                    String temp = LEDUtil.sendSingleColorText2(bytes);
-//                    String temp2 = LEDUtil.sendSingleColorText3(bytes);
-//                    String temp3 = temp.toUpperCase();
-//                    System.out.println("temp：" + temp);
-//                    System.out.println("temp2：" + temp2);
-//                    System.out.println("temp3：" + temp3);
-//                    PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(2,bytes,0);
-//                    PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(3,bytes1,0);
-//                    PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(4,temp,0);
-//                    PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(5,temp2,0);
-//                    PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(6,temp3,0);
-//                    PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(7,bytes1,0);
-//                    PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(8,temp,0);
 
                     return new CommonResult(200,"success","暂停服务成功!",null);
                 }else {
