@@ -284,7 +284,12 @@
             <artifactId>log4j</artifactId>
             <version>1.2.16</version>
         </dependency>
-
+        <!--        手动引入的jar包-->
+        <dependency>
+            <groupId>com.lc.led</groupId>
+            <artifactId>com.lc.led.RXTXcomm</artifactId>
+            <version>1.0.0</version>
+        </dependency>
     </dependencies>
 
     <build>

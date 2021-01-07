@@ -16,6 +16,7 @@ import com.hjy.system.service.TSysWindowService;
 import com.sun.jna.Memory;
 import com.sun.jna.Pointer;
 import com.sun.jna.WString;
+import gnu.io.SerialPort;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -259,7 +260,12 @@ public class TSysWindowServiceImpl implements TSysWindowService {
                 if(!StringUtils.isEmpty(window.getControlCard())){
 //                    int nCardId = Integer.parseInt(window.getControlCard());
                     //在窗口LED屏上展示暂停服务的提示
-
+                    //讲字符串转化为字节数组
+                    byte[] bytes = util.stringToBytes(msg);
+                    //发送数据
+                    SerialPort serial = appConfig.serial;
+                    serial.setFlowControlMode(1);
+                    SerialPortManager.sendToPort(serial,bytes);
                     return new CommonResult(200,"success","暂停服务成功!",null);
                 }else {
                     return new CommonResult(446,"error","暂停服务成功！该窗口未配置控制卡地址，无法展示‘暂停服务’",null);

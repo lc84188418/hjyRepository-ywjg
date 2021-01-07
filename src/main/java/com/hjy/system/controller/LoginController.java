@@ -6,6 +6,8 @@ import com.hjy.common.annotation.OperLog;
 import com.hjy.common.domin.CommonResult;
 import com.hjy.common.exception.FebsException;
 import com.hjy.common.utils.*;
+import com.hjy.common.utils.led.SerialPortManager;
+import com.hjy.common.utils.led.appConfig;
 import com.hjy.hall.service.THallTakenumberService;
 import com.hjy.system.entity.ActiveUser;
 import com.hjy.system.entity.TSysPerms;
@@ -30,6 +32,7 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -95,6 +98,23 @@ public class LoginController {
             //放入快捷菜单
             List<TSysPerms> ids = userService.selectPermsByUser(activeUser.getUserId());
             activeUser.setQuickMenu(ids);
+            /**
+             * 打开串口，只需打开一次
+             */
+            //查询配置文件中，导办取号电脑的ip地址
+            String getOrdinalIp = PropertiesUtil.getValue("webSocket.getqueue.ip");
+            if(getOrdinalIp.contains(activeUser.getIp())){
+                //1.查看所有可用端口
+                ArrayList<String> ports = SerialPortManager.findPorts();
+                System.err.println(ports);
+                if(ports != null && ports.size() > 0){
+                    //2开始打开串口
+                    appConfig.serial = SerialPortManager.openPort(ports.get(0),9600);
+                }
+                //直接打开串口
+                System.err.println("直接打开串口！COM1");
+                appConfig.serial = SerialPortManager.openPort("COM1",9600);
+            }
             return new CommonResult(200,"success","获取数据成功!",activeUser);
         }catch (Exception e) {
             String message = "系统内部异常";
