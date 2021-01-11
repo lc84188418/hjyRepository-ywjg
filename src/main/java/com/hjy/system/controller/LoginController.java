@@ -17,6 +17,7 @@ import com.hjy.system.service.ShiroService;
 import com.hjy.system.service.TSysUserService;
 import com.hjy.system.service.TSysWindowService;
 import com.hjy.system.service.WebSocketService;
+import gnu.io.SerialPort;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -99,21 +100,27 @@ public class LoginController {
             List<TSysPerms> ids = userService.selectPermsByUser(activeUser.getUserId());
             activeUser.setQuickMenu(ids);
             /**
-             * 打开串口，只需打开一次
+             * 打开串口，只需打开一次,导办取号电脑打开即可
              */
             //查询配置文件中，导办取号电脑的ip地址
-            String getOrdinalIp = PropertiesUtil.getValue("webSocket.getqueue.ip");
+            String getOrdinalIp = PropertiesUtil.getValue("webSocket.callNum.ip");
             if(getOrdinalIp.contains(activeUser.getIp())){
                 //1.查看所有可用端口
                 ArrayList<String> ports = SerialPortManager.findPorts();
-                System.err.println(ports);
+                System.err.println("导办取号处-可用端口："+ports);
                 if(ports != null && ports.size() > 0){
                     //2开始打开串口
-                    appConfig.serial = SerialPortManager.openPort(ports.get(0),9600);
+                    System.err.println("导办取号处-开始打开串口");
+                    appConfig.serial = SerialPortManager.openPort(ports.get(0),57600);
                 }
-                //直接打开串口
-                System.err.println("直接打开串口！COM1");
-                appConfig.serial = SerialPortManager.openPort("COM1",9600);
+            }
+            //1.查看所有可用端口
+            ArrayList<String> ports = SerialPortManager.findPorts();
+            System.err.println(ports);
+            if(ports != null && ports.size() > 0){
+                //2开始打开串口
+                System.err.println("开始打开串口");
+                appConfig.serial = SerialPortManager.openPort(ports.get(0),57600);
             }
             return new CommonResult(200,"success","获取数据成功!",activeUser);
         }catch (Exception e) {
@@ -121,9 +128,6 @@ public class LoginController {
             log.error(message, e);
             throw new FebsException(message);
         }finally{
-            //这里打开串口
-//            int i = PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_OpenEx(0,1);
-////            System.err.println(i);
             //server处理逻辑
             webSocketService.IndexData(request);
         }
@@ -159,6 +163,14 @@ public class LoginController {
             if(activeUser != null){
                 //更新最后一次登录时间
                 shiroService.updateLoginTime(activeUser.getUserId());
+                /**
+                 * 关闭串口
+                 */
+                String getOrdinalIp = PropertiesUtil.getValue("webSocket.callNum.ip");
+                if(getOrdinalIp.contains(activeUser.getIp())){
+                    SerialPort serial = appConfig.serial;
+                    SerialPortManager.closePort(serial);
+                }
             }
             return new CommonResult(200,"success","成功退出系统!",null);
         }catch (Exception e) {

@@ -40,6 +40,8 @@ public class TimeTask1 {
         takenumberMapper.deleteAll();
         tHallQueueService.deteleNoHandBeforeData();
         tWarnLnfoMapper.deteleNoHandBeforeData();
+        //还有文件
+        ObjectAsyncTask.systemMaintain();
     }
     //清除前一天的取号数据
     @PostConstruct

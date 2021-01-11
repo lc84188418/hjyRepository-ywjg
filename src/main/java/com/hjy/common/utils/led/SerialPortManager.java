@@ -49,12 +49,18 @@ public class SerialPortManager {
      * @return 串口对象
      * @throws PortInUseException 串口已被占用
      */
-    public static final SerialPort openPort(String portName, int baudrate) throws PortInUseException {
+    public static final SerialPort openPort(String portName, int baudrate) throws Exception {
         try {
             // 通过端口名识别端口
             CommPortIdentifier portIdentifier = CommPortIdentifier.getPortIdentifier(portName);
             // 打开端口，并给端口名字和一个timeout（打开操作的超时时间）
-            CommPort commPort = portIdentifier.open(portName, 2000);
+            CommPort commPort = null;
+            try {
+                commPort = portIdentifier.open(portName, 2000);
+            }catch (PortInUseException e){
+                //说明串口已被打开
+                System.err.println("说明串口已被打开");
+            }
             // 判断是不是串口
             if (commPort instanceof SerialPort) {
                 SerialPort serialPort = (SerialPort) commPort;

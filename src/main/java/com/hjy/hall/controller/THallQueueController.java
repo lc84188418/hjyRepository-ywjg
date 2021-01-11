@@ -171,8 +171,6 @@ public class THallQueueController {
             log.error(message, e);
             throw new FebsException(message);
         }finally {
-            //调用LED窗口屏方法
-
             //server处理逻辑
             webSocketService.IndexData(request);
         }

@@ -256,16 +256,20 @@ public class TSysWindowServiceImpl implements TSysWindowService {
             if(i > 0){
                 /**
                  * 发送提示到窗口上
+                 * 示例： 发送消息（值日警官），LED屏地址（1）
+                 * 发送指令：3A 01 14 00 0F 00 01 00 18 52 01 00 D6 B5 C8 D5 BE AF B9 D9 B7 0A
+                 * 应答指令：2A 01 14 15 0A
                  */
                 if(!StringUtils.isEmpty(window.getControlCard())){
 //                    int nCardId = Integer.parseInt(window.getControlCard());
                     //在窗口LED屏上展示暂停服务的提示
-                    //讲字符串转化为字节数组
-                    byte[] bytes = util.stringToBytes(msg);
+                    //将字符串转化为字节数组
+//                    byte[] bytes = util.stringToBytes(msg);
+//                    byte[] bytes2 = {3A,01,14,00,0F,00,01,00,18,52,01,00,D6,B5,C8,D5,BE,AF,B9,D9,B7,0A};
                     //发送数据
                     SerialPort serial = appConfig.serial;
-                    serial.setFlowControlMode(1);
-                    SerialPortManager.sendToPort(serial,bytes);
+//                    serial.setFlowControlMode(1);
+//                    SerialPortManager.sendToPort(serial,bytes);
                     return new CommonResult(200,"success","暂停服务成功!",null);
                 }else {
                     return new CommonResult(446,"error","暂停服务成功！该窗口未配置控制卡地址，无法展示‘暂停服务’",null);

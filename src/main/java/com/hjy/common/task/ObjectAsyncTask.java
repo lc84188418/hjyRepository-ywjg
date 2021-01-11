@@ -238,6 +238,25 @@ public class ObjectAsyncTask {
 
         }
     }
+    //异步处理-维护led文件
+    public static String systemMaintain() {
+        String turnon = PropertiesUtil.getValue("test.whether.turn.on.httpClient");
+        if(!turnon.equals("true")){
+            return "成功";
+        }
+
+        Map<String,Object> paramMap = new HashMap<>();
+        paramMap.put("ordinal",null);
+        String msg = null;
+        try {
+            String url = PropertiesUtil.getValue("httpClient.request.url");
+            msg = HttpClient4.sendPost(url+"/systemMaintain",paramMap);
+            return msg;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException();
+        }
+    }
     //异步处理更新排队信息表
     public static THallQueue updateQueue(String ordinal,String windowName,String agent,String idCard){
         THallQueue queueUpdate = ntClient.tHallQueueService.getCallNum(ordinal);
