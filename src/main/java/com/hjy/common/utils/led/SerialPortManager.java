@@ -106,7 +106,6 @@ public class SerialPortManager {
             out.write(order);
             //out.flush();
         } catch (IOException e) {
-            System.out.println(e.getMessage());
             e.printStackTrace();
         } finally {
             try {
@@ -115,7 +114,6 @@ public class SerialPortManager {
                     out = null;
                 }
             } catch (IOException e) {
-                System.out.println(e.getMessage());
                 e.printStackTrace();
             }
         }

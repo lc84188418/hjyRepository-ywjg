@@ -40,10 +40,13 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+
+import static com.hjy.common.utils.led.util.sendMsg;
 
 @Component
 @Async
@@ -928,6 +931,13 @@ public class ObjectAsyncTask {
         }else {
             return null;
         }
+    }
+
+    /**
+     * 异步处理-窗口led屏显示信息换为几号窗口
+     */
+    public static void ledContextReturn(String kzkId, String msg) throws UnsupportedEncodingException {
+        sendMsg(kzkId,msg);
     }
 
     //初始化所有服务

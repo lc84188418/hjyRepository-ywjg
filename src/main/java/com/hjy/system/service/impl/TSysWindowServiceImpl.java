@@ -4,8 +4,10 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.hjy.common.domin.CommonResult;
+import com.hjy.common.utils.Http.HttpClient4;
 import com.hjy.common.utils.IDUtils;
 import com.hjy.common.utils.JsonUtil;
+import com.hjy.common.utils.PropertiesUtil;
 import com.hjy.common.utils.led.*;
 import com.hjy.system.dao.TSysBusinesstypeMapper;
 import com.hjy.system.entity.ActiveUser;
@@ -26,6 +28,8 @@ import javax.servlet.http.HttpSession;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
 import java.util.*;
+
+import static com.hjy.common.utils.led.util.sendMsg;
 
 /**
  * (TSysWindow)表服务实现类
@@ -247,7 +251,7 @@ public class TSysWindowServiceImpl implements TSysWindowService {
             Integer serviceStatus = window.getServiceStatus();
             if(serviceStatus != null && serviceStatus == 0){
                 window.setServiceStatus(1);
-                msg = window.getWindowName();
+                msg = "号窗口";
             }
             if(serviceStatus != null && serviceStatus == 1){
                 window.setServiceStatus(0);
@@ -261,15 +265,8 @@ public class TSysWindowServiceImpl implements TSysWindowService {
                  * 应答指令：2A 01 14 15 0A
                  */
                 if(!StringUtils.isEmpty(window.getControlCard())){
-//                    int nCardId = Integer.parseInt(window.getControlCard());
-                    //在窗口LED屏上展示暂停服务的提示
-                    //将字符串转化为字节数组
-//                    byte[] bytes = util.stringToBytes(msg);
-//                    byte[] bytes2 = {3A,01,14,00,0F,00,01,00,18,52,01,00,D6,B5,C8,D5,BE,AF,B9,D9,B7,0A};
-                    //发送数据
-                    SerialPort serial = appConfig.serial;
-//                    serial.setFlowControlMode(1);
-//                    SerialPortManager.sendToPort(serial,bytes);
+//                    sendMsg(window.getControlCard(),msg);
+                    this.ledHttp(window.getControlCard(),msg);
                     return new CommonResult(200,"success","暂停服务成功!",null);
                 }else {
                     return new CommonResult(446,"error","暂停服务成功！该窗口未配置控制卡地址，无法展示‘暂停服务’",null);
@@ -282,6 +279,22 @@ public class TSysWindowServiceImpl implements TSysWindowService {
         }
     }
 
+    private String ledHttp(String kzkId, String msg) throws Exception {
+        String turnon = PropertiesUtil.getValue("test.whether.turn.on.httpClient");
+        if(!turnon.equals("true")){
+            return "成功！";
+        }
+        Map<String,Object> paramMap = new HashMap<>();
+        paramMap.put("kzk",kzkId);
+        paramMap.put("msg",msg);
+        String url = PropertiesUtil.getValue("httpClient.led.url");
+        msg = HttpClient4.sendPost(url+"/ledHttp",paramMap);
+        if(msg.contains("失败")){
+            return "失败！";
+        }else {
+            return "成功！";
+        }
+    }
     /**
      * 通过ID查询单条数据
      *
@@ -338,4 +351,5 @@ public class TSysWindowServiceImpl implements TSysWindowService {
     public String selectIpByPkid(String pkWindowId) {
         return tSysWindowMapper.selectIpByPkid(pkWindowId);
     }
+
 }

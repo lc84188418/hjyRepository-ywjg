@@ -103,25 +103,21 @@ public class LoginController {
              * 打开串口，只需打开一次,导办取号电脑打开即可
              */
             //查询配置文件中，导办取号电脑的ip地址
-            String getOrdinalIp = PropertiesUtil.getValue("webSocket.callNum.ip");
-            if(getOrdinalIp.contains(activeUser.getIp())){
-                //1.查看所有可用端口
-                ArrayList<String> ports = SerialPortManager.findPorts();
-                System.err.println("导办取号处-可用端口："+ports);
-                if(ports != null && ports.size() > 0){
-                    //2开始打开串口
-                    System.err.println("导办取号处-开始打开串口");
-                    appConfig.serial = SerialPortManager.openPort(ports.get(0),57600);
-                }
-            }
-            //1.查看所有可用端口
-            ArrayList<String> ports = SerialPortManager.findPorts();
-            System.err.println(ports);
-            if(ports != null && ports.size() > 0){
-                //2开始打开串口
-                System.err.println("开始打开串口");
-                appConfig.serial = SerialPortManager.openPort(ports.get(0),57600);
-            }
+//            String getOrdinalIp = PropertiesUtil.getValue("webSocket.callNum.ip");
+//            if(getOrdinalIp.contains(activeUser.getIp())){
+//                //1.查看所有可用端口
+//                ArrayList<String> ports = SerialPortManager.findPorts();
+//                System.err.println("ports:"+ports);
+//                if(ports != null && ports.size() > 0){
+//                    //2开始打开串口
+////                    appConfig.serial = SerialPortManager.openPort(ports.get(0),57600);
+//                    if(ports.contains("COM3")){
+//                        System.err.println("打开com3");
+//                        appConfig.serial = SerialPortManager.openPort("COM3",57600);
+//                    }
+//                }
+//            }
+//            appConfig.serial = SerialPortManager.openPort("COM5",57600);
             return new CommonResult(200,"success","获取数据成功!",activeUser);
         }catch (Exception e) {
             String message = "系统内部异常";

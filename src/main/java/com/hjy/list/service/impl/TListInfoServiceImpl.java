@@ -214,7 +214,6 @@ public class TListInfoServiceImpl implements TListInfoService {
             entity.setListType("红名单删除");
         }
         entity.setOther(activeUser.getFullName()+"申请删除");
-        System.err.println(entity);
         int i= tListInfoMapper.updateById(entity);
         if(i>0){
             return new CommonResult(200,"success","申请删除黑红名单数据成功!",null);

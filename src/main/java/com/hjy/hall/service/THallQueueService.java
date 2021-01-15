@@ -49,11 +49,11 @@ public interface THallQueueService {
     //顺序叫号
     CommonResult orderCall(HttpServletRequest request, HttpSession session) throws Exception;
     //设置空号
-    Map<String, Object> nullNum(HttpServletRequest request,HttpSession session);
+    Map<String, Object> nullNum(HttpServletRequest request,HttpSession session) throws Exception;
     //退号
-    Map<String, Object> backNum(HttpServletRequest request,HttpSession session,String param);
+    Map<String, Object> backNum(HttpServletRequest request,HttpSession session,String param) throws Exception;
     //办结
-    Map<String ,Object> downNum(HttpServletRequest request,HttpSession session,String param);
+    Map<String ,Object> downNum(HttpServletRequest request,HttpSession session,String param) throws Exception;
     //特呼
     Map<String, Object> queueVipCall(HttpServletRequest request,HttpSession session,THallQueue tHallQueue) throws Exception;
     //重播

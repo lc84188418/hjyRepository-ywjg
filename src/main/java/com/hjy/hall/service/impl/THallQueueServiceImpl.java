@@ -52,6 +52,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static com.hjy.common.utils.led.util.sendMsg;
+
 /**
  * (THallQueue)表服务实现类
  *
@@ -228,7 +230,7 @@ public class THallQueueServiceImpl implements THallQueueService {
     //办结
     @Transactional()
     @Override
-    public Map<String ,Object> downNum(HttpServletRequest request,HttpSession session,String param) {
+    public Map<String ,Object> downNum(HttpServletRequest request,HttpSession session,String param) throws Exception{
         JSONObject jsonObject = JSON.parseObject(param);
         Map<String ,Object> map = new HashMap<>();
         StringBuffer msgBuffer = new StringBuffer();
@@ -280,6 +282,11 @@ public class THallQueueServiceImpl implements THallQueueService {
         if(otherMsg.contains("失败")){
             msgBuffer.append(otherMsg);
         }
+        /**
+         * 异步处理-窗口led屏显示信息换为几号窗口
+         */
+        ObjectAsyncTask.ledContextReturn(window.getControlCard(),"号窗口");
+
         //是否制证
         if(!StringUtils.isEmpty(whether)){
             if("1".equals(whether)){
@@ -298,9 +305,6 @@ public class THallQueueServiceImpl implements THallQueueService {
             //是否自动录入黑名单
             msgBuffer = ObjectAsyncTask.insertBlackList(nowQueue.getAName(),nowQueue.getAIdcard(),agentNum,msgBuffer);
         }
-        //将窗口led的原显示内容变为相应窗口号
-//        PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(Integer.parseInt(window.getControlCard()),new WString(windowName),0);
-//        PD101Ctrl_RZC2.instanceDll.pd101a_rzc2_SendSingleColorText(Integer.parseInt(window.getControlCard()),windowName,0);
         map.put("code", 200);
         map.put("status", "success");
         map.put("msg", msgBuffer.toString());
@@ -310,14 +314,15 @@ public class THallQueueServiceImpl implements THallQueueService {
     //退号
     @Transactional()
     @Override
-    public Map<String ,Object> backNum(HttpServletRequest request,HttpSession session,String param) {
+    public Map<String ,Object> backNum(HttpServletRequest request,HttpSession session,String param) throws Exception{
         Map<String,Object> map = new HashMap<>();
         StringBuffer msgBuffer = new StringBuffer();
         //从token中拿到当前窗口号
         String tokenStr = TokenUtil.getRequestToken(request);
         SysToken token = tSysTokenMapper.findByToken(tokenStr);
         String ip = token.getIp();
-        String windowName = tSysWindowMapper.selectWindowNameByIp(ip);
+        TSysWindow window = tSysWindowMapper.selectByIp(ip);
+        String windowName = window.getWindowName();
         //查询当前窗口正在办理的业务
         THallQueue nowQueue = tHallQueueMapper.getNowNumByWindowName(windowName+"正在办理");
         if (nowQueue == null) {
@@ -345,6 +350,11 @@ public class THallQueueServiceImpl implements THallQueueService {
          * 异步处理-led大屏文件信息-退号
          */
         ObjectAsyncTask.downNumberHttp(ordinal);
+        /**
+         * 异步处理-窗口led屏显示信息换为几号窗口
+         */
+        ObjectAsyncTask.ledContextReturn(window.getControlCard(),"号窗口");
+
         /**
          * 同步处理，生成告知书
          */
@@ -481,13 +491,15 @@ public class THallQueueServiceImpl implements THallQueueService {
     //空号
     @Transactional()
     @Override
-    public Map<String, Object> nullNum(HttpServletRequest request,HttpSession session) {
+    public Map<String, Object> nullNum(HttpServletRequest request,HttpSession session) throws Exception{
         Map<String, Object> map = new HashMap<>();
         //从token中拿到当前窗口号
         String tokenStr = TokenUtil.getRequestToken(request);
         SysToken token = tSysTokenMapper.findByToken(tokenStr);
         String ip = token.getIp();
-        String windowName = tSysWindowMapper.selectWindowNameByIp(ip);
+        TSysWindow window = tSysWindowMapper.selectByIp(ip);
+        String windowName = window.getWindowName();
+
         //查询当前窗口正在办理的业务
         THallQueue nowQueue = tHallQueueMapper.getNowNumByWindowName(windowName+"正在办理");
         if (nowQueue == null) {
@@ -514,6 +526,10 @@ public class THallQueueServiceImpl implements THallQueueService {
             map.put("msg", "设置空号失败！");
             return map;
         }
+        /**
+         * 异步处理-窗口led屏显示信息换为几号窗口
+         */
+        ObjectAsyncTask.ledContextReturn(window.getControlCard(),"号窗口");
         map.put("code", 200);
         map.put("status", "success");
         map.put("msg", "设置空号成功！");
@@ -811,6 +827,7 @@ public class THallQueueServiceImpl implements THallQueueService {
              * 线程同步处理-led大屏文件信息-顺序叫号
              */
             String callMsg = this.callNumHttp(ordinal,windowName);
+
             //异步处理更新排队信息表
             resultQueue = ObjectAsyncTask.updateQueue(ordinal,windowName,agent,idCard);
         }
@@ -1475,11 +1492,34 @@ public class THallQueueServiceImpl implements THallQueueService {
         json.put("call",sendTextMessage);
         webSocket.sendTextMessageTo(json.toJSONString());
         //调用LED控制卡发送消息到屏幕上
-//        String msg = "请"+ordinal+"号办理";
-//        System.err.println("发送单一颜色的字串："+msg);
-
+        String msg = "请"+ordinal+"号办理";
+        String kzkId = window.getControlCard();
+//        sendMsg(kzkId,msg);
+        /**
+         * led屏窗口信息
+         */
+        String ledMsg = this.ledHttp(kzkId,msg);
         return "成功！";
     }
+
+    private String ledHttp(String kzkId, String msg) throws Exception {
+        String turnon = PropertiesUtil.getValue("test.whether.turn.on.httpClient");
+        if(!turnon.equals("true")){
+            return "成功！";
+        }
+
+        Map<String,Object> paramMap = new HashMap<>();
+        paramMap.put("kzk",kzkId);
+        paramMap.put("msg",msg);
+        String url = PropertiesUtil.getValue("httpClient.led.url");
+        msg = HttpClient4.sendPost(url+"/callNumHttp",paramMap);
+        if(msg.contains("失败")){
+            return "失败！";
+        }else {
+            return "成功！";
+        }
+    }
+
     private synchronized String callNumHttp(String ordinal, String windowName)throws Exception {
         String turnon = PropertiesUtil.getValue("test.whether.turn.on.httpClient");
         if(!turnon.equals("true")){
@@ -1491,7 +1531,7 @@ public class THallQueueServiceImpl implements THallQueueService {
         paramMap.put("windowName",windowName);
         String msg = null;
         String url = PropertiesUtil.getValue("httpClient.request.url");
-        msg = HttpClient4.sendPost(url+"/callNumHttp",paramMap);
+        msg = HttpClient4.sendPost(url+"/ledHttp",paramMap);
         if(msg.contains("失败")){
             return "失败！";
         }else {

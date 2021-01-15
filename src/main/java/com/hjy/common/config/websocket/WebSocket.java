@@ -57,12 +57,10 @@ public class WebSocket {
     @OnClose
     public void onClose() {
         webSockets.remove(this);
-//        System.out.println("【websocket消息】连接断开，总数为:"+webSockets.size());
     }
 
     @OnMessage
     public void onMessage(String message) {
-        System.out.println("【websocket消息】收到客户端消息:"+message);
     }
 
     // 此为广播消息
