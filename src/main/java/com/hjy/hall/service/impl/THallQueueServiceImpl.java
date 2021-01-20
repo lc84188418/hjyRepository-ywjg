@@ -52,7 +52,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static com.hjy.common.utils.led.util.sendMsg;
 
 /**
  * (THallQueue)表服务实现类
@@ -285,7 +284,7 @@ public class THallQueueServiceImpl implements THallQueueService {
         /**
          * 异步处理-窗口led屏显示信息换为几号窗口
          */
-        ObjectAsyncTask.ledContextReturn(window.getControlCard(),"号窗口");
+        ObjectAsyncTask.ledHttp(window.getControlCard(),"号窗口");
 
         //是否制证
         if(!StringUtils.isEmpty(whether)){
@@ -353,7 +352,7 @@ public class THallQueueServiceImpl implements THallQueueService {
         /**
          * 异步处理-窗口led屏显示信息换为几号窗口
          */
-        ObjectAsyncTask.ledContextReturn(window.getControlCard(),"号窗口");
+        ObjectAsyncTask.ledHttp(window.getControlCard(),"号窗口");
 
         /**
          * 同步处理，生成告知书
@@ -529,7 +528,7 @@ public class THallQueueServiceImpl implements THallQueueService {
         /**
          * 异步处理-窗口led屏显示信息换为几号窗口
          */
-        ObjectAsyncTask.ledContextReturn(window.getControlCard(),"号窗口");
+        ObjectAsyncTask.ledHttp(window.getControlCard(),"号窗口");
         map.put("code", 200);
         map.put("status", "success");
         map.put("msg", "设置空号成功！");
@@ -827,7 +826,6 @@ public class THallQueueServiceImpl implements THallQueueService {
              * 线程同步处理-led大屏文件信息-顺序叫号
              */
             String callMsg = this.callNumHttp(ordinal,windowName);
-
             //异步处理更新排队信息表
             resultQueue = ObjectAsyncTask.updateQueue(ordinal,windowName,agent,idCard);
         }
@@ -1494,7 +1492,6 @@ public class THallQueueServiceImpl implements THallQueueService {
         //调用LED控制卡发送消息到屏幕上
         String msg = "请"+ordinal+"号办理";
         String kzkId = window.getControlCard();
-//        sendMsg(kzkId,msg);
         /**
          * led屏窗口信息
          */
@@ -1512,7 +1509,7 @@ public class THallQueueServiceImpl implements THallQueueService {
         paramMap.put("kzk",kzkId);
         paramMap.put("msg",msg);
         String url = PropertiesUtil.getValue("httpClient.led.url");
-        msg = HttpClient4.sendPost(url+"/callNumHttp",paramMap);
+        msg = HttpClient4.sendPost(url+"/ledHttp",paramMap);
         if(msg.contains("失败")){
             return "失败！";
         }else {
@@ -1531,7 +1528,7 @@ public class THallQueueServiceImpl implements THallQueueService {
         paramMap.put("windowName",windowName);
         String msg = null;
         String url = PropertiesUtil.getValue("httpClient.request.url");
-        msg = HttpClient4.sendPost(url+"/ledHttp",paramMap);
+        msg = HttpClient4.sendPost(url+"/callNumHttp",paramMap);
         if(msg.contains("失败")){
             return "失败！";
         }else {

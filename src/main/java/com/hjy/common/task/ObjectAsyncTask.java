@@ -936,10 +936,22 @@ public class ObjectAsyncTask {
     /**
      * 异步处理-窗口led屏显示信息换为几号窗口
      */
-    public static void ledContextReturn(String kzkId, String msg) throws UnsupportedEncodingException {
-        sendMsg(kzkId,msg);
+    public static String ledHttp(String kzkId, String msg) throws Exception {
+        String turnon = PropertiesUtil.getValue("test.whether.turn.on.httpClient");
+        if(!turnon.equals("true")){
+            return "成功！";
+        }
+        Map<String,Object> paramMap = new HashMap<>();
+        paramMap.put("kzk",kzkId);
+        paramMap.put("msg",msg);
+        String url = PropertiesUtil.getValue("httpClient.led.url");
+        msg = HttpClient4.sendPost(url+"/ledHttp",paramMap);
+        if(msg.contains("失败")){
+            return "失败！";
+        }else {
+            return "成功！";
+        }
     }
-
     //初始化所有服务
     @PostConstruct
     public void init() {
