@@ -1500,7 +1500,7 @@ public class THallQueueServiceImpl implements THallQueueService {
     }
 
     private String ledHttp(String kzkId, String msg) throws Exception {
-        String turnon = PropertiesUtil.getValue("test.whether.turn.on.httpClient");
+        String turnon = PropertiesUtil.getValue("test.whether.turn.on.ledHttpClient");
         if(!turnon.equals("true")){
             return "成功！";
         }

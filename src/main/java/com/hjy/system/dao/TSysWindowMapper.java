@@ -2,6 +2,7 @@ package com.hjy.system.dao;
 
 import com.hjy.system.entity.TSysWindow;
 import org.apache.ibatis.annotations.Param;
+
 import java.util.List;
 
 /**
@@ -59,7 +60,7 @@ public interface TSysWindowMapper {
     //通过ip查询窗口名称
     String selectWindowNameByIp(@Param("Ip") String Ip);
     //通过ip查询窗口信息
-    TSysWindow selectWindowByIp(@Param("Ip")String ip);
+    TSysWindow selectWindowByIp(@Param("Ip") String ip);
     //查询所有窗口的窗口名
     List<String> selectWindowName();
     //登录时修改窗口操作用户
@@ -69,7 +70,7 @@ public interface TSysWindowMapper {
     //通过主键查询该窗口配置的ip地址
     String selectIpByPkid(String pkWindowId);
     //通过ip查询窗口所有字段信息
-    TSysWindow selectByIp(@Param("Ip")String ip);
+    TSysWindow selectByIp(@Param("Ip") String ip);
     //暂停服务
     int stopService(TSysWindow window);
 }

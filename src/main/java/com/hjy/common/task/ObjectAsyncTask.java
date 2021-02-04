@@ -937,7 +937,7 @@ public class ObjectAsyncTask {
      * 异步处理-窗口led屏显示信息换为几号窗口
      */
     public static String ledHttp(String kzkId, String msg) throws Exception {
-        String turnon = PropertiesUtil.getValue("test.whether.turn.on.httpClient");
+        String turnon = PropertiesUtil.getValue("test.whether.turn.on.ledHttpClient");
         if(!turnon.equals("true")){
             return "成功！";
         }
