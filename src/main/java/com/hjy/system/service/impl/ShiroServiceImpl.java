@@ -151,10 +151,8 @@ public class ShiroServiceImpl implements ShiroService {
         Date now = new Date();
         //过期时间
         Date expireTime = DateUtil.addTime(now,1);
-        //判断是否生成过token
-        SysToken tokenEntity = tSysTokenMapper.selectByUserId(tSysUser.getPkUserId());
-        //将该ip之前的token删除
-        int i = tSysTokenMapper.deleteTokenByIp(tSysUser.getIp());
+        //判断该ip是否生成过token
+        SysToken tokenEntity = tSysTokenMapper.selectByIp(tSysUser.getIp());
         if (tokenEntity == null) {
             tokenEntity = new SysToken();
             tokenEntity.setFkUserId(tSysUser.getPkUserId());
@@ -171,9 +169,13 @@ public class ShiroServiceImpl implements ShiroService {
         } else {
             //更新token
             tokenEntity.setPkTokenId(token);
+            tokenEntity.setUsername(tSysUser.getUsername());
+            tokenEntity.setPassword(tSysUser.getPassword());
+            tokenEntity.setFullName(tSysUser.getFullName());
+            tokenEntity.setPoliceNum(tSysUser.getPoliceNum());
+            tokenEntity.setFkUserId(tSysUser.getPkUserId());
             tokenEntity.setUpdateTime(now);
             tokenEntity.setExpireTime(expireTime);
-            tokenEntity.setIp(tSysUser.getIp());
             tSysTokenMapper.updateToken(tokenEntity);
         }
         result.put("token", token);

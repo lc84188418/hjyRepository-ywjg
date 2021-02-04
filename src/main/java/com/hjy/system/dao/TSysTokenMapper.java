@@ -8,8 +8,19 @@ public interface TSysTokenMapper {
     SysToken findByToken(@Param("accessToken") String accessToken);
 
     SysToken selectIpAndName(@Param("accessToken") String accessToken);
-
+    /**
+     * 通过userId查找token
+     * @param fkUserId
+     * @return
+     */
     SysToken selectByUserId(@Param("fkUserId") String fkUserId);
+    /**
+     * 通过ip查找token
+     * @param ip
+     * @return
+     */
+    SysToken selectByIp(@Param("ip") String ip);
+
 
     int insertToken(SysToken tokenEntity);
 
@@ -24,4 +35,5 @@ public interface TSysTokenMapper {
     String selectIpByTokenId(@Param("tokenId")String tokenId);
 
     int deleteTokenByIp(@Param("ip")String ip);
+
 }
