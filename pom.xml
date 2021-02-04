@@ -11,6 +11,7 @@
     <groupId>com.lc</groupId>
     <artifactId>ywjg-system</artifactId>
     <version>0.0.1-SNAPSHOT</version>
+
     <name>ywjg-system</name>
     <packaging>jar</packaging>
     <description>Demo project for Spring Boot</description>
@@ -284,6 +285,17 @@
             <artifactId>log4j</artifactId>
             <version>1.2.16</version>
         </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.springframework.boot</groupId>-->
+<!--            <artifactId>spring-boot-starter-test</artifactId>-->
+<!--            <scope>test</scope>-->
+<!--            <exclusions>-->
+<!--                <exclusion>-->
+<!--                    <groupId>org.junit.vintage</groupId>-->
+<!--                    <artifactId>junit-vintage-engine</artifactId>-->
+<!--                </exclusion>-->
+<!--            </exclusions>-->
+<!--        </dependency>-->
         <!--        手动引入的jar包-->
         <dependency>
             <groupId>com.lc.led</groupId>

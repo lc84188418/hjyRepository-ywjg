@@ -23,6 +23,7 @@ import com.hjy.synthetical.service.TSyntheticalMakecardService;
 import com.hjy.synthetical.service.TSyntheticalRecordService;
 import com.hjy.system.entity.ReUserRole;
 import com.hjy.system.entity.TSysParam;
+import com.hjy.system.entity.TSysWindow;
 import com.hjy.system.service.TSysParamService;
 import com.hjy.system.service.TSysRoleService;
 import com.hjy.system.service.TSysUserService;
@@ -952,6 +953,28 @@ public class ObjectAsyncTask {
             return "成功！";
         }
     }
+
+    public static void callNumSendMsg(String ordinal, TSysWindow window) throws Exception {
+        /**
+         * 不通过前端websocket接收消息播放
+         */
+        //调用LED控制卡发送消息到屏幕上
+        String msg = "请"+ordinal+"号到"+window.getWindowName();
+        String kzkId = window.getControlCard();
+        /**
+         * led屏窗口信息+语音播放
+         */
+        String turnon = PropertiesUtil.getValue("test.whether.turn.on.ledHttpClient");
+        if(turnon.equals("true")){
+            Map<String,Object> paramMap = new HashMap<>();
+            paramMap.put("kzk",kzkId);
+            paramMap.put("msg",msg);
+            String url = PropertiesUtil.getValue("httpClient.led.url");
+            msg = HttpClient4.sendPost(url+"/ledHttp",paramMap);
+        }
+
+    }
+
     //初始化所有服务
     @PostConstruct
     public void init() {

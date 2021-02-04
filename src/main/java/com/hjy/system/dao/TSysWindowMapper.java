@@ -73,4 +73,6 @@ public interface TSysWindowMapper {
     TSysWindow selectByIp(@Param("Ip") String ip);
     //暂停服务
     int stopService(TSysWindow window);
+
+    TSysWindow selectWindowByName(@Param("windowName")String windowName);
 }

@@ -237,5 +237,8 @@
     <select id="selectIpByPkid" resultType="java.lang.String">
         select ip from t_sys_window where pk_window_id = #{pkWindowId,jdbcType=VARCHAR}
     </select>
+    <select id="selectWindowByName" resultType="com.hjy.system.entity.TSysWindow">
+        select * from t_sys_window where window_name = #{windowName,jdbcType=VARCHAR}
+    </select>
 
 </mapper>
