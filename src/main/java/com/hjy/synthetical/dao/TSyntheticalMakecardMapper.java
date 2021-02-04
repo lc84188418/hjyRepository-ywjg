@@ -1,7 +1,10 @@
 package com.hjy.synthetical.dao;
 
 import com.hjy.synthetical.entity.TSyntheticalMakecard;
+import com.hjy.system.entity.ReRolePerms;
+import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -63,4 +66,19 @@ public interface TSyntheticalMakecardMapper {
      * @return 对象列表
      */
     List<TSyntheticalMakecard> selectAllMaintain();
+    /**
+     * 批量修改制证完成
+     * @return 修改数据量
+     */
+    int makeCompleteBatchUpdate(@Param("idList")List<String> idList, @Param("operatorPeople")String operatorPeople, Date sysdate);
+    /**
+     * 批量获取制证信息
+     * @return 制证信息列表
+     */
+    List<TSyntheticalMakecard> selectAllById(@Param("idList")List<String> idList);
+    /**
+     * 批量删除数据
+     * @return 制证信息列表
+     */
+    int deleteByIdList(@Param("idList")List<String> idList);
 }

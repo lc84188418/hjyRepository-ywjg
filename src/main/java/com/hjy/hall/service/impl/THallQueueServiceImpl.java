@@ -847,8 +847,8 @@ public class THallQueueServiceImpl implements THallQueueService {
             /**
              * 线程同步发送叫号信息
              */
-//            String callNumMsg = this.callNumSendMsg(resultQueue.getOrdinal(),window);
-            ObjectAsyncTask.callNumSendMsg(resultQueue.getOrdinal(),window);
+            String callNumMsg = this.callNumSendMsg(resultQueue.getOrdinal(),window);
+//            ObjectAsyncTask.callNumSendMsg(resultQueue.getOrdinal(),window);
             return commonResult;
         }else {
             return new CommonResult(445, "error", "该窗口已无号", null);
@@ -988,8 +988,8 @@ public class THallQueueServiceImpl implements THallQueueService {
         /**
          * 同步处理-led窗口屏信息
          */
-//        String callNumMsg = this.callNumSendMsg(vip_ordinal,window);
-        ObjectAsyncTask.callNumSendMsg(vip_ordinal,window);
+        String callNumMsg = this.callNumSendMsg(vip_ordinal,window);
+//        ObjectAsyncTask.callNumSendMsg(vip_ordinal,window);
         resultJson = this.getResultJson(queueVip);
         map.put("code",200);
         map.put("status", "success");
@@ -1007,8 +1007,8 @@ public class THallQueueServiceImpl implements THallQueueService {
         String windowName = String.valueOf(jsonObject.get("windowName"));
         TSysWindow window = tSysWindowMapper.selectWindowByName(windowName);
         //异步呼叫
-//        String callNumMsg = this.callNumSendMsg(ordinal,window);
-        ObjectAsyncTask.callNumSendMsg(ordinal,window);
+        String callNumMsg = this.callNumSendMsg(ordinal,window);
+//        ObjectAsyncTask.callNumSendMsg(ordinal,window);
         map.put("code", 200);
         map.put("status", "success");
         map.put("msg", "请"+ordinal+"到"+window.getWindowName());
@@ -1484,39 +1484,39 @@ public class THallQueueServiceImpl implements THallQueueService {
         }
     }
     //synchronized-通过前端websocket接收消息播放有
-    public String callNumSendMsg(String ordinal,TSysWindow window) throws Exception{
+    public synchronized String callNumSendMsg(String ordinal,TSysWindow window) throws Exception{
         /**
          * 通过前端websocket接收消息播放
          */
-//        JSONObject json = new JSONObject();
-//        String sendTextMessage = "请"+ordinal+"到"+window.getWindowName();
-//        json.put("call",sendTextMessage);
-//        webSocket.sendTextMessageTo(json.toJSONString());
-//        //调用LED控制卡发送消息到屏幕上
-//        String msg = "请"+ordinal+"号办理";
-//        String kzkId = window.getControlCard();
-//        /**
-//         * led屏窗口信息
-//         */
-//        try{
-//            String ledMsg = this.ledHttp(kzkId,msg);
-//        }catch (Exception e){
-//
-//        }
-//        return "成功！";
+        JSONObject json = new JSONObject();
+        String sendTextMessage = "请"+ordinal+"到"+window.getWindowName();
+        json.put("call",sendTextMessage);
+        webSocket.sendTextMessageTo(json.toJSONString());
+        //调用LED控制卡发送消息到屏幕上
+        String msg = "请"+ordinal+"号办理";
+        String kzkId = window.getControlCard();
+        /**
+         * led屏窗口信息
+         */
+        try{
+            String ledMsg = this.ledHttp(kzkId,msg);
+        }catch (Exception e){
+
+        }
+        return "成功！";
         /**
          * 不通过前端websocket接收消息播放
          */
-        //调用LED控制卡发送消息到屏幕上
-        String msg = "请"+ordinal+"号到"+window.getWindowName();
-        String kzkId = window.getControlCard();
-        System.err.println(msg+kzkId);
-
-        /**
-         * led屏窗口信息+语音播放
-         */
-        String ledMsg = this.ledHttp(kzkId,msg);
-        return "成功！";
+//        //调用LED控制卡发送消息到屏幕上
+//        String msg = "请"+ordinal+"号到"+window.getWindowName();
+//        String kzkId = window.getControlCard();
+//        System.err.println(msg+kzkId);
+//
+//        /**
+//         * led屏窗口信息+语音播放
+//         */
+//        String ledMsg = this.ledHttp(kzkId,msg);
+//        return "成功！";
     }
 
     private String ledHttp(String kzkId, String msg) throws Exception {

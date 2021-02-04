@@ -205,10 +205,33 @@
         </set>
         where pk_card_id = #{pkCardId,jdbcType=VARCHAR}
     </update>
+<!--    批量修改制作完成-->
+    <update id="makeCompleteBatchUpdate">
+        update t_synthetical_makeCard
+        set end_time = #{sysdate,jdbcType=DATE},
+        status = '已完成',
+        OPERATOR_PEOPLE = #{operatorPeople,jdbcType=VARCHAR}
+        where pk_card_id
+        in(
+        <foreach collection="idList" item="item" separator=",">
+            #{item,jdbcType=VARCHAR}
+        </foreach>
+        )
+
+    </update>
 
     <!--通过主键删除-->
     <delete id="deleteById" parameterType="com.hjy.synthetical.entity.TSyntheticalMakecard">
         delete from t_synthetical_makeCard where pk_card_id = #{pkCardId,jdbcType=VARCHAR}
+    </delete>
+    <delete id="deleteByIdList">
+        delete from t_synthetical_makeCard
+        where pk_card_id
+        in(
+        <foreach collection="idList" item="item" separator=",">
+            #{item,jdbcType=VARCHAR}
+        </foreach>
+        )
     </delete>
     <!--查询所有行数据-->
     <select id="selectAll" resultType="com.hjy.synthetical.entity.TSyntheticalMakecard">
@@ -218,6 +241,15 @@
         select a_name,a_Idcard,b_name,b_Idcard from t_synthetical_makeCard
         where STATUS = '已完成'
         ORDER BY END_TIME ASC
+    </select>
+    <select id="selectAllById" resultType="com.hjy.synthetical.entity.TSyntheticalMakecard">
+        select * from t_synthetical_makeCard
+        where pk_card_id
+        in(
+        <foreach collection="idList" item="item" separator=",">
+            #{item,jdbcType=VARCHAR}
+        </foreach>
+        )
     </select>
 
 </mapper>

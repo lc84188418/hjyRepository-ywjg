@@ -112,6 +112,23 @@ public class TSyntheticalMakecardController {
     }
 
     /**
+     * 批量制作完成
+     * @param param 实体对象
+     * @return 修改结果
+     */
+    @OperLog(operModul = "综合管理-综合管理-制证管理",operType = "制证完成",operDesc = "批量证件制作完成")
+    @PutMapping("/synthetical/makeCard/makeComplete_batch")
+    public CommonResult makeCompleteBatch(@RequestBody String param, HttpSession session) throws FebsException {
+        try {
+            return tHallMakecardService.makeCompleteBatch(param,session);
+        } catch (Exception e) {
+            String message = "修改失败";
+            log.error(message, e);
+            throw new FebsException(message);
+        }
+    }
+
+    /**
      * 3 删除数据-领取、弃用
      * @return 删除结果
      */
@@ -120,7 +137,7 @@ public class TSyntheticalMakecardController {
     public CommonResult tHallMakecardDel(@RequestBody TSyntheticalMakecard tHallMakecard) throws FebsException {
         try {
             //
-            return tHallMakecardService.delete(tHallMakecard);
+            return tHallMakecardService.tHallMakecardDel(tHallMakecard);
         } catch (Exception e) {
             String message = "数据删除失败";
             log.error(message, e);
@@ -128,6 +145,22 @@ public class TSyntheticalMakecardController {
         }
     }
 
+    /**
+     * 3 批量领取-删除数据-领取、弃用
+     * @return 删除结果
+     */
+    @OperLog(operModul = "综合管理-综合管理-制证管理",operType = "领取/弃用",operDesc = "制证领用/弃用")
+    @DeleteMapping("/synthetical/makeCard/del_batch")
+    public CommonResult tHallMakecardDelBatch(@RequestBody String param) throws FebsException {
+        try {
+            //
+            return tHallMakecardService.tHallMakecardDelBatch(param);
+        } catch (Exception e) {
+            String message = "数据删除失败";
+            log.error(message, e);
+            throw new FebsException(message);
+        }
+    }
 
     /**
      * 4 通过主键查询单条数据
