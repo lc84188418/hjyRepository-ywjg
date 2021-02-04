@@ -22,4 +22,6 @@ public interface TSysTokenMapper {
     String selectIpByUsername(@Param("username")String username);
     //通过tokenId获取ip
     String selectIpByTokenId(@Param("tokenId")String tokenId);
+
+    int deleteTokenByIp(@Param("ip")String ip);
 }

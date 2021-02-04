@@ -1482,18 +1482,24 @@ public class THallQueueServiceImpl implements THallQueueService {
             return ordinal;
         }
     }
+    //synchronized-通过前端websocket接收消息播放有
+    public  String callNumSendMsg(String ordinal,TSysWindow window) throws Exception{
+        /**
+         * 通过前端websocket接收消息播放
+         */
+//        JSONObject json = new JSONObject();
+//        String sendTextMessage = "请"+ordinal+"到"+window.getWindowName();
+//        json.put("call",sendTextMessage);
+//        webSocket.sendTextMessageTo(json.toJSONString());
 
-    public synchronized String callNumSendMsg(String ordinal,TSysWindow window) throws Exception{
-        //同步处理发送叫号信息
-        JSONObject json = new JSONObject();
-        String sendTextMessage = "请"+ordinal+"到"+window.getWindowName();
-        json.put("call",sendTextMessage);
-        webSocket.sendTextMessageTo(json.toJSONString());
+        /**
+         * 不通过前端websocket接收消息播放
+         */
         //调用LED控制卡发送消息到屏幕上
-        String msg = "请"+ordinal+"号办理";
+        String msg = "请"+ordinal+"号到"+window.getWindowName();
         String kzkId = window.getControlCard();
         /**
-         * led屏窗口信息
+         * led屏窗口信息+语音播放
          */
         String ledMsg = this.ledHttp(kzkId,msg);
         return "成功！";

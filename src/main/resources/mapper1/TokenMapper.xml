@@ -114,6 +114,9 @@
     <delete id="deleteToken" parameterType="java.lang.String">
         delete from t_sys_token where pk_token_id = #{tokenId,jdbcType=VARCHAR}
     </delete>
+    <delete id="deleteTokenByIp">
+        delete from t_sys_token where ip = #{ip,jdbcType=VARCHAR}
+    </delete>
     <!--No problem    通过tokenid查找token-->
     <select id="findByToken" resultType="com.hjy.system.entity.SysToken" parameterType="java.lang.String">
     select * from t_sys_token where pk_token_id = #{accessToken,jdbcType=VARCHAR}
