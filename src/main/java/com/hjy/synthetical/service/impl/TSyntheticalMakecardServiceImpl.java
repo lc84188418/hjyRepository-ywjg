@@ -204,12 +204,10 @@ public class TSyntheticalMakecardServiceImpl implements TSyntheticalMakecardServ
         JSONArray jsonArray = json.getJSONArray("ids");
         String permsIdsStr = jsonArray.toString();
         List<String> idList = JSONArray.parseArray(permsIdsStr,String.class);
-        if(idList != null){
-            System.err.println("批量删除时idlist"+idList);
+        if(idList != null && idList.size()>0){
             List<TSyntheticalMakecard> list = tHallMakecardMapper.selectAllById(idList);
             //批量删除数据库数据
             int i = tHallMakecardMapper.deleteByIdList(idList);
-//            int i = idList.size();
             StringBuffer resultBuffer = new StringBuffer();
             if(i > 0){
                 resultBuffer.append("证件领取或弃用成功！");
@@ -285,8 +283,7 @@ public class TSyntheticalMakecardServiceImpl implements TSyntheticalMakecardServ
         JSONArray jsonArray = json.getJSONArray("ids");
         String permsIdsStr = jsonArray.toString();
         List<String> idList = JSONArray.parseArray(permsIdsStr,String.class);
-        System.err.println("idList:"+idList);
-        if(idList != null){
+        if(idList != null && idList.size()>0){
             int i = tHallMakecardMapper.makeCompleteBatchUpdate(idList,activeUser.getFullName(),new Date());
             //制证完成
             if(i>0){

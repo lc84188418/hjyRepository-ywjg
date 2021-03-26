@@ -34,7 +34,9 @@ public interface TListInfoService {
      * @param tListInfo 实例对象
      * @return 实例对象
      */
+    CommonResult insertList(TListInfo tListInfo, HttpSession session)throws Exception;
     int insert(TListInfo tListInfo);
+
     int insertFile(TListInfo tListInfo, MultipartFile[] files)throws Exception;
 
 
@@ -57,7 +59,7 @@ public interface TListInfoService {
      * 删除
      * @return list
      */
-    CommonResult tListInfoDel(TListInfo tListInfo);
+    CommonResult tListInfoDel(TListInfo tListInfo,HttpSession session);
     /**
      * 删除审批
      * @return list

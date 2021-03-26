@@ -94,7 +94,9 @@ public class TListInfoServiceImpl implements TListInfoService {
      */
     @Transactional()
     @Override
-    public int insert(TListInfo tListInfo){
+    public CommonResult insertList(TListInfo tListInfo, HttpSession session){
+        ActiveUser activeUser = (ActiveUser) session.getAttribute("activeUser");
+        tListInfo.setOperator(activeUser.getFullName());
         tListInfo.setPkListId(IDUtils.getUUID());
         tListInfo.setCreateTime(new Date());
         String zzjgdmzPath = null;
@@ -112,19 +114,33 @@ public class TListInfoServiceImpl implements TListInfoService {
         tListInfo.setOther(temp2);
         //先查询此人是否在黑名单或者红名单中
         TListInfo obj = tListInfoMapper.selectByIdCard(tListInfo.getIdCard());
-        if(obj ==null){
+        StringBuffer stringBuffer = new StringBuffer();
+        if(obj == null){
             //新增数据
             tListInfo.setPkListId(IDUtils.getUUID());
             tListInfo.setApplyBook(sqsPath);
             tListInfo.setCodeCertificates(zzjgdmzPath);
-            return tListInfoMapper.insertSelective(tListInfo);
+            int i = tListInfoMapper.insertSelective(tListInfo);
+            if(i > 0){
+                stringBuffer.append("黑/红名单新增成功，待审批!");
+            }
         }else {
             //修改数据
             tListInfo.setPkListId(obj.getPkListId());
             tListInfo.setApplyBook(sqsPath);
             tListInfo.setCodeCertificates(zzjgdmzPath);
-            return tListInfoMapper.updateById(tListInfo);
+            //清楚审批数据
+            int j =  tListInfoMapper.updateById(tListInfo);
+            if(j > 0){
+                stringBuffer.append("名单库已存在 "+tListInfo.getFullName()+",已变更数据,待审批！");
+            }
         }
+        return new CommonResult(200, "success", stringBuffer.toString(), null);
+    }
+    @Transactional()
+    @Override
+    public int insert(TListInfo tListInfo){
+        return tListInfoMapper.insertSelective(tListInfo);
     }
 
     private String strBufferUtil(String param) {
@@ -197,7 +213,6 @@ public class TListInfoServiceImpl implements TListInfoService {
             sqsPath = tListInfo.getApplyBook().replace("http://"+webIp+":"+serverPort+"/img/","");
             tListInfo.setApplyBook(sqsPath);
         }
-
         return tListInfoMapper.updateById(tListInfo);
     }
 
@@ -214,37 +229,55 @@ public class TListInfoServiceImpl implements TListInfoService {
             entity.setListType("红名单删除");
         }
         entity.setOther(activeUser.getFullName()+"申请删除");
+        entity.setWhetherPass(null);
+        entity.setApprovalPeople(null);
+        entity.setApprovalTime(null);
         int i= tListInfoMapper.updateById(entity);
         if(i>0){
-            return new CommonResult(200,"success","申请删除黑红名单数据成功!",null);
+            return new CommonResult(200,"success","已申请删除黑红名单数据成功，待审批！",null);
         }else {
             return new CommonResult(444,"error","申请删除黑红名单数据失败!",null);
         }
     }
     @Transactional()
     @Override
-    public CommonResult tListInfoDel(TListInfo tListInfo) {
+    public CommonResult tListInfoDel(TListInfo tListInfo,HttpSession session) {
+
         String idStr = tListInfo.getPkListId();
         String whetherPass = tListInfo.getWhetherPass();
         int i = 0;
+        StringBuffer stringBuffer = new StringBuffer();
         if(!StringUtils.isEmpty(whetherPass)){
             if(whetherPass.equals("通过")){
                 //删除数据
                 i= tListInfoMapper.deleteById(idStr);
+                if(i > 0){
+                    stringBuffer.append("审批通过,已将该数据移除！");
+                }
             }else {
                 //将数据变回原数据
                 TListInfo entity = tListInfoMapper.selectById(idStr);
+                String listType = "";
                 if(entity.getListType().equals("黑名单删除")){
                     entity.setListType("黑名单");
+                    listType = "黑名单数据还原！";
                 }else {
                     entity.setListType("红名单");
+                    listType = "红名单数据还原！";
                 }
                 entity.setOther("删除被拒绝");
+                entity.setWhetherPass("通过");
+                entity.setApprovalTime(new Date());
+                ActiveUser activeUser = (ActiveUser) session.getAttribute("activeUser");
+                entity.setApprovalPeople(activeUser.getFullName());
                 i= tListInfoMapper.updateById(entity);
+                if(i > 0){
+                    stringBuffer.append("审批拒绝,已将"+listType);
+                }
             }
         }
         if(i>0){
-            return new CommonResult(200,"success","删除数据-审批成功!",null);
+            return new CommonResult(200,"success",stringBuffer.toString(),null);
         }else {
             return new CommonResult(444,"error","删除数据-审批失败!",null);
         }
@@ -257,21 +290,23 @@ public class TListInfoServiceImpl implements TListInfoService {
     @Override
     public PageResult selectWaitApproval(String param) throws Exception{
         JSONObject json = JSON.parseObject(param);
-        String listType = "黑名单";
+        String listType = "名单";
         String temp = JsonUtil.getStringParam(json,"listType");
-        if(temp != null){
+        String fullName = JsonUtil.getStringParam(json,"fullName");
+        String idCard = JsonUtil.getStringParam(json,"idCard");
+        if(!StringUtils.isEmpty(temp)){
             listType = temp;
         }
         if(listType.contains("名单")){
-            int total = tListInfoMapper.selectWaitApprovalSize();
+            int total = tListInfoMapper.selectWaitApprovalSize(listType,fullName,idCard);
             PageResult result = PageUtil.getPageResult(param,total);
             //查询黑红名单的删除审批列表
             if(listType.contains("删除")){
-                List<TListInfo> listInfo2 = tListInfoMapper.selectDelWaitApproval(result.getStartRow(),result.getEndRow(),listType);
+                List<TListInfo> listInfo2 = tListInfoMapper.selectDelWaitApproval(result.getStartRow(),result.getEndRow(),listType,fullName,idCard);
                 result.setContent(listInfo2);
             }else {
                 //查询黑红名单的申请审批列表
-                List<TListInfo> listInfo1 = tListInfoMapper.selectWaitApproval(result.getStartRow(),result.getEndRow(),listType);
+                List<TListInfo> listInfo1 = tListInfoMapper.selectWaitApproval(result.getStartRow(),result.getEndRow(),listType,fullName,idCard);
                 result.setContent(listInfo1);
             }
             return result;

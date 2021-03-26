@@ -65,13 +65,10 @@ public class TListInfoController {
 //    @RequiresPermissions({"list:add"})
     @PostMapping("/list/info/add")
     public CommonResult tListInfoAdd(@RequestBody TListInfo tListInfo, HttpSession session) throws FebsException {
-        ActiveUser activeUser = (ActiveUser) session.getAttribute("activeUser");
-        tListInfo.setOperator(activeUser.getFullName());
         try {
             //
-            tListInfoService.insert(tListInfo);
+            return tListInfoService.insertList(tListInfo,session);
 //            tListInfoService.insertFile(tListInfo,files);
-            return new CommonResult(200, "success", "黑/红名单添加成功!", null);
         } catch (Exception e) {
             String message = "黑/红名单添加失败";
             log.error(message, e);
@@ -128,9 +125,9 @@ public class TListInfoController {
     @RequiresPermissions({"approval:view"})
 //    @RequiresPermissions({"list:del"})
     @DeleteMapping("/list/info/del/approval")
-    public CommonResult tListInfoDel(@RequestBody TListInfo tListInfo) throws FebsException {
+    public CommonResult tListInfoDel(@RequestBody TListInfo tListInfo,HttpSession session) throws FebsException {
         try {
-            CommonResult commonResult = tListInfoService.tListInfoDel(tListInfo);
+            CommonResult commonResult = tListInfoService.tListInfoDel(tListInfo,session);
             return commonResult;
         } catch (Exception e) {
             String message = "数据删除失败";
@@ -199,8 +196,12 @@ public class TListInfoController {
         tListInfo.setApprovalPeople(activeUser.getFullName());
         try {
             //
-            tListInfoService.updateById(tListInfo);
-            return new CommonResult(200, "success", "审批成功!", null);
+            int i = tListInfoService.updateById(tListInfo);
+            if (i > 0) {
+                return new CommonResult(200, "success", "审批成功!", null);
+            } else {
+                return new CommonResult(444, "error", "修改失败!", null);
+            }
         } catch (Exception e) {
             String message = "审批失败";
             log.error(message, e);

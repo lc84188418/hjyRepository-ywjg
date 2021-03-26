@@ -150,33 +150,21 @@ public class ShiroServiceImpl implements ShiroService {
         Date now = new Date();
         //过期时间
         Date expireTime = DateUtil.addTime(now,1);
-        //判断该ip是否生成过token
-        SysToken tokenEntity = tSysTokenMapper.selectByIp(tSysUser.getIp());
-        if (tokenEntity == null) {
-            tokenEntity = new SysToken();
-            tokenEntity.setFkUserId(tSysUser.getPkUserId());
-            //保存token
-            tokenEntity.setPkTokenId(token);
-            tokenEntity.setUpdateTime(now);
-            tokenEntity.setExpireTime(expireTime);
-            tokenEntity.setUsername(tSysUser.getUsername());
-            tokenEntity.setPassword(tSysUser.getPassword());
-            tokenEntity.setIp(tSysUser.getIp());
-            tokenEntity.setFullName(tSysUser.getFullName());
-            tokenEntity.setPoliceNum(tSysUser.getPoliceNum());
-            tSysTokenMapper.insertToken(tokenEntity);
-        } else {
-            //更新token
-            tokenEntity.setPkTokenId(token);
-            tokenEntity.setUsername(tSysUser.getUsername());
-            tokenEntity.setPassword(tSysUser.getPassword());
-            tokenEntity.setFullName(tSysUser.getFullName());
-            tokenEntity.setPoliceNum(tSysUser.getPoliceNum());
-            tokenEntity.setFkUserId(tSysUser.getPkUserId());
-            tokenEntity.setUpdateTime(now);
-            tokenEntity.setExpireTime(expireTime);
-            tSysTokenMapper.updateToken(tokenEntity);
-        }
+        //先删除
+        tSysTokenMapper.deleteTokenByIp(tSysUser.getIp());
+        //再添加
+        SysToken tokenEntity = new SysToken();
+        tokenEntity.setFkUserId(tSysUser.getPkUserId());
+        //保存token
+        tokenEntity.setPkTokenId(token);
+        tokenEntity.setUpdateTime(now);
+        tokenEntity.setExpireTime(expireTime);
+        tokenEntity.setUsername(tSysUser.getUsername());
+        tokenEntity.setPassword(tSysUser.getPassword());
+        tokenEntity.setIp(tSysUser.getIp());
+        tokenEntity.setFullName(tSysUser.getFullName());
+        tokenEntity.setPoliceNum(tSysUser.getPoliceNum());
+        tSysTokenMapper.insertToken(tokenEntity);
         result.put("token", token);
         result.put("expire", expireTime);
         return result;

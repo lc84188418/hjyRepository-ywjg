@@ -104,7 +104,7 @@
                 update_time = #{updateTime,jdbcType=DATE},
             </if>
         </set>
-        where fk_user_id = #{fkUserId,jdbcType=VARCHAR}
+        where pk_token_id = #{pkTokenId,jdbcType=VARCHAR}
     </update>
     <!--No problem    删除所有token-->
     <delete id="deleteAll">
