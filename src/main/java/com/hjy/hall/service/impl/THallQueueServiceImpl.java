@@ -40,6 +40,7 @@ import com.hjy.tbk.statusCode.VehicleStatus;
 import com.hjy.warning.entity.Warning;
 import com.hjy.warning.manager.TbkManager;
 import com.hjy.warning.service.TWarnLnfoService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -59,6 +60,7 @@ import java.util.*;
  * @author liuchun
  * @since 2020-07-29 14:33:20
  */
+@Slf4j
 @Service
 public class THallQueueServiceImpl implements THallQueueService {
 
@@ -274,17 +276,17 @@ public class THallQueueServiceImpl implements THallQueueService {
          * 预警处理-办结超时
          */
         String warningMsg = ObjectAsyncTask.warning5(nowQueue,warning0);
-        /**
-         * 异步处理-led大屏文件信息-办结
-         */
-        String otherMsg = ObjectAsyncTask.downNumberHttp(ordinal);
-        if(otherMsg.contains("失败")){
-            msgBuffer.append(otherMsg);
-        }
-        /**
-         * 异步处理-窗口led屏显示信息换为几号窗口
-         */
-        ObjectAsyncTask.ledHttp(window.getControlCard(),"号窗口");
+//        /**
+//         * 异步处理-led大屏文件信息-办结
+//         */
+//        String otherMsg = ObjectAsyncTask.downNumberHttp(ordinal);
+//        if(otherMsg.contains("失败")){
+//            msgBuffer.append(otherMsg);
+//        }
+//        /**
+//         * 异步处理-窗口led屏显示信息换为几号窗口
+//         */
+//        ObjectAsyncTask.ledHttp(window.getControlCard(),"号窗口");
 
         //是否制证
         if(!StringUtils.isEmpty(whether)){
@@ -307,6 +309,8 @@ public class THallQueueServiceImpl implements THallQueueService {
         map.put("code", 200);
         map.put("status", "success");
         map.put("msg", msgBuffer.toString());
+        map.put("kzkId", window.getControlCard());
+        map.put("ordinal", ordinal);
         return map;
     }
 
@@ -336,6 +340,8 @@ public class THallQueueServiceImpl implements THallQueueService {
         if(i > 0){
             map.put("code", 200);
             map.put("status", "success");
+            map.put("kzkId", window.getControlCard());
+            map.put("ordinal", nowQueue.getOrdinal());
             msgBuffer.append("退办成功！");
         }else {
             map.put("code", 444);
@@ -345,14 +351,14 @@ public class THallQueueServiceImpl implements THallQueueService {
         //更新取号表状态flag
         String ordinal = nowQueue.getOrdinal();
         ObjectAsyncTask.updateTakeNumberFlag(ordinal,2);
-        /**
-         * 异步处理-led大屏文件信息-退号
-         */
-        ObjectAsyncTask.downNumberHttp(ordinal);
-        /**
-         * 异步处理-窗口led屏显示信息换为几号窗口
-         */
-        ObjectAsyncTask.ledHttp(window.getControlCard(),"号窗口");
+//        /**
+//         * 异步处理-led大屏文件信息-退号
+//         */
+//        ObjectAsyncTask.downNumberHttp(ordinal);
+//        /**
+//         * 异步处理-窗口led屏显示信息换为几号窗口
+//         */
+//        ObjectAsyncTask.ledHttp(window.getControlCard(),"号窗口");
 
         /**
          * 同步处理，生成告知书
@@ -498,7 +504,6 @@ public class THallQueueServiceImpl implements THallQueueService {
         String ip = token.getIp();
         TSysWindow window = tSysWindowMapper.selectByIp(ip);
         String windowName = window.getWindowName();
-
         //查询当前窗口正在办理的业务
         THallQueue nowQueue = tHallQueueMapper.getNowNumByWindowName(windowName+"正在办理");
         if (nowQueue == null) {
@@ -518,20 +523,22 @@ public class THallQueueServiceImpl implements THallQueueService {
         /**
          * 异步处理-led大屏文件信息-空号
          */
-        String resultStr = ObjectAsyncTask.downNumberHttp(ordinal);
-        if(resultStr.equals("失败")){
-            map.put("code", 444);
-            map.put("status", "error");
-            map.put("msg", "设置空号失败！");
-            return map;
-        }
-        /**
-         * 异步处理-窗口led屏显示信息换为几号窗口
-         */
-        ObjectAsyncTask.ledHttp(window.getControlCard(),"号窗口");
+//        String resultStr = ObjectAsyncTask.downNumberHttp(ordinal);
+//        if(resultStr.equals("失败")){
+//            map.put("code", 444);
+//            map.put("status", "error");
+//            map.put("msg", "设置空号失败！");
+//            return map;
+//        }
+//        /**
+//         * 异步处理-窗口led屏显示信息换为几号窗口
+//         */
+//        ObjectAsyncTask.ledHttp(window.getControlCard(),"号窗口");
         map.put("code", 200);
         map.put("status", "success");
         map.put("msg", "设置空号成功！");
+        map.put("kzkId", window.getControlCard());
+        map.put("ordinal", ordinal);
         return map;
     }
 
@@ -548,19 +555,16 @@ public class THallQueueServiceImpl implements THallQueueService {
         //查询参数配置中等待业务办理人数标准限值（单位：个），如果没有就默认为100次
         String DDYWBLRSBZXZ = tSysParamMapper.selectParamById("DDYWBLRSBZXZ");
         int max1 = 100;
-        if(DDYWBLRSBZXZ != null){
+        if(!StringUtils.isEmpty(DDYWBLRSBZXZ)){
             max1 = Integer.parseInt(DDYWBLRSBZXZ);
         }
         String xianzhi1 = String.valueOf(max1);
-        if(waitAllNum>= max1){
+        if(waitAllNum >= max1){
             map.put("code", 447);
             map.put("status", "error");
             map.put("msg", "大厅待办理业务量已达限值("+xianzhi1+")，不予取号，请等待");
             return map;
         }
-        /**
-         * 二、单人单日办理业务空号数超过最大限值（8）超过就不予取号
-         */
         JSONObject jsonObject = JSON.parseObject(param);
         String bIdCard = JsonUtil.getStringParam(jsonObject,"bIdCard");
         if(StringUtils.isEmpty(bIdCard)){
@@ -569,16 +573,23 @@ public class THallQueueServiceImpl implements THallQueueService {
             map.put("msg", "受理人证件号为空");
             return map;
         }
-        //查询参数配置中单人单日办理业务空号数超过最大限值（8）超过就不予取号，如果没有就默认为8次
+        /**
+         * 二、单人单日办理业务空号数超过最大限值（8）超过就不予取号,如果没有就默认为8次
+         */
+        //查询参数配置中单人单日办理业务空号数超过最大限值（8）超过就不予取号
         String DRDRZDKHS = tSysParamMapper.selectParamById("DRDRZDKHS");
         int max2 = 8;
         if(DRDRZDKHS != null){
-            max2 = Integer.parseInt(DRDRZDKHS);
+            try {
+                max2 = Integer.parseInt(DRDRZDKHS);
+            }catch (Exception e){
+                max2 = 8;
+            }
         }
         String xianzhi2 = String.valueOf(max2);
         //查询单人单日办理业务空号数
         int nullNum = tHallQueueMapper.selectNullNumToday(bIdCard);
-        if(nullNum>= max2){
+        if(nullNum >= max2){
             map.put("code", 448);
             map.put("status", "error");
             map.put("msg", "单人单日办理业务空号数已达限值("+xianzhi2+")，不予取号，请明天再来！");
@@ -590,18 +601,28 @@ public class THallQueueServiceImpl implements THallQueueService {
         String DRDRZDTBS = tSysParamMapper.selectParamById("DRDRZDTBS");
         int max3 = 10;
         if(DRDRZDTBS != null){
-            max3 = Integer.parseInt(DRDRZDTBS);
+            try {
+                max3 = Integer.parseInt(DRDRZDTBS);
+            }catch (Exception e){
+                max3 = 10;
+            }
         }
         String xianzhi3 = String.valueOf(max3);
         //查询单人单日办理业务退办数
         int backNum = tHallQueueMapper.selectBackNumToday(bIdCard);
-        if(backNum>= max3){
+        if(backNum >= max3){
             map.put("code", 449);
             map.put("status", "error");
             map.put("msg", "单人单日办理业务退办数已达限值("+xianzhi3+")，不予取号，请明天再来！");
             return map;
         }
         ActiveUser activeUser = (ActiveUser) session.getAttribute("activeUser");
+        if(activeUser == null){
+            map.put("code", 450);
+            map.put("status", "error");
+            map.put("msg", "操作用户session已消失，请登录后重试！");
+            return map;
+        }
         /**
          * 一、线程同步方法-取号，存入取号
          */
@@ -773,6 +794,7 @@ public class THallQueueServiceImpl implements THallQueueService {
         String ip = token.getIp();
         TSysWindow window = tSysWindowMapper.selectByIp(ip);
         String windowName = window.getWindowName();
+        String kzkId = window.getControlCard();
         String businessType = window.getBusinessType();
         //查询当前窗口是否存在正在办理的业务
         THallQueue resultQueue = new THallQueue();
@@ -822,10 +844,10 @@ public class THallQueueServiceImpl implements THallQueueService {
             }
             //异步处理取号表的flag标识
             ObjectAsyncTask.updateTakeNumberFlag(ordinal,1);
-            /**
-             * 线程同步处理-led大屏文件信息-顺序叫号
-             */
-            String callMsg = this.callNumHttp(ordinal,windowName);
+//            /**
+//             * 线程同步处理-led大屏文件信息-顺序叫号
+//             */
+//            String callMsg = this.callNumHttp(ordinal,windowName);
             //异步处理更新排队信息表
             resultQueue = ObjectAsyncTask.updateQueue(ordinal,windowName,agent,idCard);
         }
@@ -834,6 +856,9 @@ public class THallQueueServiceImpl implements THallQueueService {
             commonResult.setCode(200);
             commonResult.setStatus("success");
             commonResult.setMsg(resultQueue.getWindowName()+":叫号成功！"+resultQueue.getOrdinal());
+            resultJson.put("windowName",resultQueue.getWindowName());
+            resultJson.put("ordinal",resultQueue.getOrdinal());
+            resultJson.put("kzkId",kzkId);
             commonResult.setData(resultJson);
             /**
              * 预警处理-叫号预警
@@ -848,13 +873,57 @@ public class THallQueueServiceImpl implements THallQueueService {
              * 线程同步发送叫号信息
              */
             String callNumMsg = this.callNumSendMsg(resultQueue.getOrdinal(),window);
-//            ObjectAsyncTask.callNumSendMsg(resultQueue.getOrdinal(),window);
             return commonResult;
         }else {
             return new CommonResult(445, "error", "该窗口已无号", null);
         }
     }
 
+    /**
+     * 顺序叫号成功后访问led大厅接口
+     * @param param
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public CommonResult callLed(String param) throws Exception {
+        JSONObject json = JSON.parseObject(param);
+        String windowName = JsonUtil.getStringParam(json,"windowName");
+        String ordinal = JsonUtil.getStringParam(json,"ordinal");
+        String kzkId = JsonUtil.getStringParam(json,"kzkId");
+        if(!StringUtils.isEmpty(kzkId) && !StringUtils.isEmpty(ordinal)){
+            //led小屏
+            this.ledHttp(kzkId,"请"+ordinal+"号办理");
+        }else {
+            log.info("未传入控制卡和排队号");
+            return new CommonResult(445, "error", "未传入控制卡和排队号", null);
+        }
+        if(!StringUtils.isEmpty(windowName) && !StringUtils.isEmpty(ordinal)){
+            //led大屏
+            this.callNumHttp(ordinal,windowName);
+        }else {
+            log.info("未传入窗口名和排队号");
+            return new CommonResult(446, "error", "未传入窗口名和排队号", null);
+        }
+        return new CommonResult(200,"success","成功!",null);
+    }
+    /**
+     *业务办理完结后访问，办结、空号、退号
+     * @param param
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public CommonResult complete(String param) throws Exception {
+        JSONObject json = JSON.parseObject(param);
+        String ordinal = JsonUtil.getStringParam(json,"ordinal");
+        String kzkId = JsonUtil.getStringParam(json,"kzkId");
+        //led小屏
+        this.ledHttp(kzkId,"号窗口");
+        //led大屏
+        String otherMsg = ObjectAsyncTask.downNumberHttp(ordinal);
+        return new CommonResult(200,"success","led屏更新成功!",null);
+    }
     //特呼
     @Transactional()
     @Override
@@ -1316,31 +1385,39 @@ public class THallQueueServiceImpl implements THallQueueService {
         String bCertificatesType = JsonUtil.getStringParam(jsonObject,"bCertificatesType");
         String bName = JsonUtil.getStringParam(jsonObject,"bName");
         String isAgent = JsonUtil.getStringParam(jsonObject,"isAgent");
+        if(StringUtils.isEmpty(isAgent)){
+            map.put("code", 451);
+            map.put("status", "error");
+            map.put("msg", "未传入是否为代理业务！");
+            return map;
+        }
         /**
          * 开始取号
          */
-        //1拿到该业务类型的标识
-        String sign = businesstypeMapper.selectTypeLevelByTypeName(businessType);
+        String sign = "A";
+        if(!StringUtils.isEmpty(businessType)){
+            //1拿到该业务类型的标识，如 普通车驾管业务标识为A
+            sign = businesstypeMapper.selectTypeLevelByTypeName(businessType);
+        }
         //2取得最大的号码
         String ordinal = this.getMaxTackNumber(sign);
+        //创建排队叫号实体
         THallQueue tHallQueue = new THallQueue();
-        //查询办理次数
-        int handleNum = tHallQueueMapper.handleNum(bIdCard);
-        //查询代理次数
-        int agentNum = tHallQueueMapper.agentNum(bIdCard);
+        String a_bIdCard = bIdCard;
+        boolean sfcxg = false;
+        int agentNum = 0;
         //本人信息
         tHallQueue.setBIdcard(bIdCard);
         tHallQueue.setBusinessType(businessType);
         tHallQueue.setBCertificatesType(bCertificatesType);
-        //代理业务
-        if(!isAgent.equals("1")) {
+        //代理业务isAgent = 0
+        if("0".equals(isAgent)) {
             String aIdCard = JsonUtil.getStringParam(jsonObject,"aIdCard");
             String aName = JsonUtil.getStringParam(jsonObject,"aName");
             String aCertificatesType = JsonUtil.getStringParam(jsonObject,"aCertificatesType");
-            //查询办理次数
-            handleNum = tHallQueueMapper.handleNum(aIdCard);
-            //查询代理次数
-            agentNum = tHallQueueMapper.agentNum(aIdCard);
+            a_bIdCard = aIdCard;
+            agentNum = tHallQueueMapper.agentNum(a_bIdCard);
+            sfcxg = true;
             tHallQueue.setAName(aName);
             tHallQueue.setAIdcard(aIdCard);
             tHallQueue.setACertificatesType(aCertificatesType);
@@ -1352,7 +1429,11 @@ public class THallQueueServiceImpl implements THallQueueService {
                 String value = tSysParamMapper.selectParamById("JRHMDDBCSXZ");
                 int max = 5;
                 if(value != null){
-                    max = Integer.parseInt(value);
+                    try {
+                        max = Integer.parseInt(value);
+                    }catch (Exception e){
+                        max = 5;
+                    }
                 }
                 if (agentNum >= max) {
                     map.put("code", 446);
@@ -1392,12 +1473,24 @@ public class THallQueueServiceImpl implements THallQueueService {
                         flag =false;
                         break;
                     }
-                    //4从同步库去查
-
+                    //4直接指定默认名字
+                    bName = "未知";
+                    if(StringUtils.isEmpty(bName)){
+                        bName = "未知";
+                        flag =false;
+                        break;
+                    }
+                    //5从同步库去查
                 }
                 flag =false;
                 break;
             }
+        }
+        //查询办理次数
+        int handleNum = tHallQueueMapper.handleNum(bIdCard);
+        if(!sfcxg){
+            //查询代理次数
+            agentNum = tHallQueueMapper.agentNum(bIdCard);
         }
         //录入处理后的本人名称
         tHallQueue.setBName(bName);
@@ -1413,12 +1506,11 @@ public class THallQueueServiceImpl implements THallQueueService {
         takenumber.setFlag(0);
         Date nowdate = new Date();
         takenumber.setGetTime(nowdate);
-        tHallTakenumberMapper.insertSelective(takenumber);
+        int i = tHallTakenumberMapper.insertSelective(takenumber);
+
         //查询前方等候人数
         int waitNum = tHallTakenumberMapper.selectWaitNum(ordinal);
-        /**EVALUATE
-         * 存储排队信息
-         */
+
         tHallQueue.setGetTime(nowdate);
         tHallQueue.setOrdinal(ordinal);
         tHallQueue.setIsVip(0);
@@ -1426,11 +1518,18 @@ public class THallQueueServiceImpl implements THallQueueService {
         tHallQueue.setWaitNum(waitNum);
         tHallQueue.setDaobanPeople(activeUser.getFullName());
         tHallQueue.setDaobanIdcard(activeUser.getIDcard());
-        ObjectAsyncTask.insertQueue(tHallQueue);
+        //异步录入排队信息
+        int j = ObjectAsyncTask.insertQueue(tHallQueue);
+
+        if(i > 0 || j > 0){
+            map.put("code", 447);
+            map.put("status", "error");
+            map.put("msg", "录入排队叫号信息失败，取号失败!");
+            return map;
+        }
         //
         map.put("code", 200);
         map.put("status", "success");
-        map.put("msg", "取号成功!");
         map.put("ordinalQueue", tHallQueue);
         //查询配置文件中，导办取号电脑的ip地址
         String getOrdinalIp = PropertiesUtil.getValue("webSocket.getqueue.ip");
@@ -1492,31 +1591,18 @@ public class THallQueueServiceImpl implements THallQueueService {
         String sendTextMessage = "请"+ordinal+"到"+window.getWindowName();
         json.put("call",sendTextMessage);
         webSocket.sendTextMessageTo(json.toJSONString());
-        //调用LED控制卡发送消息到屏幕上
-        String msg = "请"+ordinal+"号办理";
-        String kzkId = window.getControlCard();
-        /**
-         * led屏窗口信息
-         */
-        try{
-            String ledMsg = this.ledHttp(kzkId,msg);
-        }catch (Exception e){
-
-        }
-        return "成功！";
-        /**
-         * 不通过前端websocket接收消息播放
-         */
 //        //调用LED控制卡发送消息到屏幕上
-//        String msg = "请"+ordinal+"号到"+window.getWindowName();
+//        String msg = "请"+ordinal+"号办理";
 //        String kzkId = window.getControlCard();
-//        System.err.println(msg+kzkId);
-//
 //        /**
-//         * led屏窗口信息+语音播放
+//         * led屏窗口信息
 //         */
-//        String ledMsg = this.ledHttp(kzkId,msg);
-//        return "成功！";
+//        try{
+//            String ledMsg = this.ledHttp(kzkId,msg);
+//        }catch (Exception e){
+//
+//        }
+        return "成功！";
     }
 
     private String ledHttp(String kzkId, String msg) throws Exception {
@@ -1524,7 +1610,6 @@ public class THallQueueServiceImpl implements THallQueueService {
         if(!turnon.equals("true")){
             return "成功！";
         }
-
         Map<String,Object> paramMap = new HashMap<>();
         paramMap.put("kzk",kzkId);
         paramMap.put("msg",msg);

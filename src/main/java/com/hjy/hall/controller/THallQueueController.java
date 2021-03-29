@@ -175,6 +175,35 @@ public class THallQueueController {
             webSocketService.IndexData(request);
         }
     }
+
+    /**
+     * 叫号成功后访问led大厅接口
+     * @return 叫号结果
+     */
+    @PostMapping("/hall/queue/call/led")
+    public CommonResult callLed(@RequestBody String param )throws FebsException{
+        try {
+            CommonResult commonResult = tHallQueueService.callLed(param);
+            return commonResult;
+        } catch (Exception e) {
+            String message = "叫号失败";
+            log.error(message, e);
+            throw new FebsException(message);
+        }
+    }
+    /**
+     * 业务办理完结后访问，办结、空号、退号
+     */
+    @PostMapping("/hall/queue/complete")
+    public CommonResult complete(@RequestBody String param) throws FebsException, IOException {
+        try {
+            return tHallQueueService.complete(param);
+        } catch (Exception e) {
+            String message = "办结失败";
+            log.error(message, e);
+            throw new FebsException(message);
+        }
+    }
     /**
      * 业务办理-排队叫号
      * 办结

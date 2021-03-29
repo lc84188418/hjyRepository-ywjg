@@ -48,19 +48,23 @@ public interface THallQueueService {
     Map<String,Object> callPage(HttpServletRequest request);
     //顺序叫号
     CommonResult orderCall(HttpServletRequest request, HttpSession session) throws Exception;
+    //特呼
+    Map<String, Object> queueVipCall(HttpServletRequest request,HttpSession session,THallQueue tHallQueue) throws Exception;
+    //叫号成功后访问led接口
+    CommonResult callLed(String param) throws Exception;
+
     //设置空号
     Map<String, Object> nullNum(HttpServletRequest request,HttpSession session) throws Exception;
     //退号
     Map<String, Object> backNum(HttpServletRequest request,HttpSession session,String param) throws Exception;
     //办结
     Map<String ,Object> downNum(HttpServletRequest request,HttpSession session,String param) throws Exception;
-    //特呼
-    Map<String, Object> queueVipCall(HttpServletRequest request,HttpSession session,THallQueue tHallQueue) throws Exception;
+    //业务办理完结后访问，办结、空号、退号
+    CommonResult complete(String param) throws Exception;
     //重播
     Map<String, Object> repaly(HttpServletRequest request,String param) throws Exception;
     //获取同步库数据
     Map<String, Object> getTbkData(String param,HttpServletRequest request)throws SQLException, ConnectException;
-
 
     //大厅管理-统计分析-受理人员工作量统计
     List<Statistics> acceptancePeopleStatistics(String param) throws ParseException;
@@ -82,7 +86,6 @@ public interface THallQueueService {
     void deteleBeforeData();
     //定时任务，处理未办结的业务
     void deteleNoHandBeforeData();
-
     //统计分析-值日警官工作量统计
     List<THallQueueCount> dutyStatistics(String param)throws Exception;
 

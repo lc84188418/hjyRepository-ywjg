@@ -374,8 +374,8 @@ public class ObjectAsyncTask {
 //        return "制证文件修改成功";
 //    }
     //异步处理-添加排队信息
-    public static void insertQueue(THallQueue queueUpdate){
-        ntClient.tHallQueueService.insert(queueUpdate);
+    public static int insertQueue(THallQueue queueUpdate){
+        return ntClient.tHallQueueService.insert(queueUpdate);
     }
     //顺序叫号预警
     public static Warning warning347910(THallQueue queue,StringBuffer resultMsgBuffer,TListInfo infoB) {
