@@ -54,12 +54,17 @@ public interface TListInfoMapper {
      * 查询所有申请待审批数据
      * @return TListInfo 对象列表
      */
-    List<TListInfo> selectWaitApproval(Integer startRow, Integer endRow,@Param("listType")String listType);
+    List<TListInfo> selectWaitApproval(Integer startRow, Integer endRow,@Param("listType")String listType,@Param("fullName")String fullName,@Param("idCard")String IdCard);
+    /**
+     * 待审批记录条数
+     */
+    int selectWaitApprovalSize(@Param("listType")String listType,@Param("fullName")String fullName,@Param("idCard")String IdCard);
     /**
      * 查询所有删除待审批数据
      * @return TListInfo 对象列表
      */
-    List<TListInfo> selectDelWaitApproval(Integer startRow, Integer endRow,@Param("listType")String listType);
+    List<TListInfo> selectDelWaitApproval(Integer startRow, Integer endRow,@Param("listType")String listType,@Param("fullName")String fullName,@Param("idCard")String IdCard);
+
     //根据身份证查询是否在黑红名单中
     TListInfo selectByIdCard(@Param("idCard") String IdCard);
 
@@ -67,11 +72,7 @@ public interface TListInfoMapper {
 
     List<TListInfo> selectAllPage(Integer startRow, Integer endRow,@Param("listType")String listType,@Param("fullName")String fullName,@Param("idCard")String IdCard,@Param("approvalPeople")String approvalPeople);
 
-    /**
-     * 待审批记录条数
-     * @return
-     */
-    int selectWaitApprovalSize();
+
 
     void deleteBlackByYear(int dayNum);
 }

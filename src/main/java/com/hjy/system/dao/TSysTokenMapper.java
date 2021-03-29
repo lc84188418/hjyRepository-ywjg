@@ -3,6 +3,8 @@ package com.hjy.system.dao;
 import com.hjy.system.entity.SysToken;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 public interface TSysTokenMapper {
     //通过tokenId获取token信息
     SysToken findByToken(@Param("accessToken") String accessToken);
@@ -19,7 +21,7 @@ public interface TSysTokenMapper {
      * @param ip
      * @return
      */
-    SysToken selectByIp(@Param("ip") String ip);
+    List<SysToken> selectByIp(@Param("ip") String ip);
 
 
     int insertToken(SysToken tokenEntity);

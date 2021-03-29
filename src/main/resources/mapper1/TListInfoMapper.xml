@@ -59,12 +59,6 @@
             <if test="reason != null and reason != ''">
                 reason,
             </if>
-            <if test="whetherPass != null and whetherPass != ''">
-                whether_pass,
-            </if>
-            <if test="approvalPeople != null and approvalPeople != ''">
-                approval_people,
-            </if>
             <if test="unit != null and unit != ''">
                 unit,
             </if>
@@ -115,12 +109,6 @@
             <if test="reason != null and reason != ''">
                 #{reason,jdbcType=VARCHAR},
             </if>
-            <if test="whetherPass != null and whetherPass != ''">
-                #{whetherPass,jdbcType=VARCHAR},
-            </if>
-            <if test="approvalPeople != null and approvalPeople != ''">
-                #{approvalPeople,jdbcType=VARCHAR},
-            </if>
             <if test="unit != null and unit != ''">
                 #{unit,jdbcType=VARCHAR},
             </if>
@@ -170,15 +158,9 @@
             <if test="other != null and other != ''">
                 other = #{other,jdbcType=VARCHAR},
             </if>
-            <if test="reason != null and reason != ''">
-                reason = #{reason,jdbcType=VARCHAR},
-            </if>
-            <if test="whetherPass != null and whetherPass != ''">
-                whether_pass = #{whetherPass,jdbcType=VARCHAR},
-            </if>
-            <if test="approvalPeople != null and approvalPeople != ''">
-                approval_people = #{approvalPeople,jdbcType=VARCHAR},
-            </if>
+            reason = #{reason,jdbcType=VARCHAR},
+            whether_pass = #{whetherPass,jdbcType=VARCHAR},
+            approval_people = #{approvalPeople,jdbcType=VARCHAR},
             <if test="unit != null and unit != ''">
                 unit = #{unit,jdbcType=VARCHAR},
             </if>
@@ -197,9 +179,7 @@
             <if test="createTime != null">
                 create_time = #{createTime,jdbcType=DATE},
             </if>
-            <if test="approvalTime != null">
-                approval_time = #{approvalTime,jdbcType=DATE},
-            </if>
+            approval_time = #{approvalTime,jdbcType=DATE},
         </set>
         where pk_list_id = #{pkListId,jdbcType=VARCHAR}
     </update>
@@ -222,6 +202,13 @@
     <select id="selectWaitApprovalSize" resultType="java.lang.Integer">
         select count(*) from t_list_info
         where approval_people is null
+        and LIST_TYPE like '%${listType}%'
+        <if test="fullName != null and fullName != ''and fullName != 'null'">
+            and full_name like '%${fullName}%'
+        </if>
+        <if test="idCard != null and idCard != '' and idCard != 'null'">
+            and IDCARD like '%${idCard}%'
+        </if>
     </select>
     <!--No problem 分页-查询申请待审批记录-->
     <select id="selectWaitApproval" resultType="com.hjy.list.entity.TListInfo">
@@ -229,7 +216,16 @@
         from
         (select rownum rn, u.*
         from t_list_info u
-        where rownum &lt;= #{endRow,jdbcType=INTEGER} and LIST_TYPE =#{listType,jdbcType=VARCHAR} and approval_people is null) t
+        where rownum &lt;= #{endRow,jdbcType=INTEGER}
+        and approval_people is null
+        and LIST_TYPE like '%${listType}%'
+        <if test="fullName != null and fullName != ''and fullName != 'null'">
+            and full_name like '%${fullName}%'
+        </if>
+        <if test="idCard != null and idCard != '' and idCard != 'null'">
+            and IDCARD like '%${idCard}%'
+        </if>
+        ) t
         where t.rn &gt;= #{startRow,jdbcType=INTEGER}
     </select>
     <!--No problem 分页-查询删除待审批记录-->
@@ -238,7 +234,15 @@
         from
         (select rownum rn, u.*
         from t_list_info u
-        where rownum &lt;= #{endRow,jdbcType=INTEGER} and LIST_TYPE =#{listType,jdbcType=VARCHAR}) t
+        where rownum &lt;= #{endRow,jdbcType=INTEGER}
+        and LIST_TYPE like '%${listType}%'
+        <if test="fullName != null and fullName != ''and fullName != 'null'">
+            and full_name like '%${fullName}%'
+        </if>
+        <if test="idCard != null and idCard != '' and idCard != 'null'">
+            and IDCARD like '%${idCard}%'
+        </if>
+        ) t
         where t.rn &gt;= #{startRow,jdbcType=INTEGER}
     </select>
     <!--No problem 通过身份证查询黑红名单信息-->
