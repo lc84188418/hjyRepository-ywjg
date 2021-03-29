@@ -407,13 +407,15 @@
     <select id="handleNum" resultType="java.lang.Integer">
         select count(DISTINCT(ORDINAL)) from t_hall_queue
         where b_Idcard = #{idCard,jdbcType=VARCHAR}
+        and to_char(get_time,'yyyy') = to_char (sysdate,'yyyy')
         and a_Idcard is null
         and remarks ='办结'
     </select>
-    <!--no problem查询代理次数-->
+    <!--no problem查询今年代理次数-->
     <select id="agentNum" resultType="java.lang.Integer">
         select count(DISTINCT(ORDINAL)) from t_hall_queue
         where a_Idcard = #{idCard,jdbcType=VARCHAR}
+        and to_char(get_time,'yyyy') = to_char (sysdate,'yyyy')
         and remarks ='办结'
     </select>
     <select id="getNowNumByWindowName" resultType="com.hjy.hall.entity.THallQueue">

@@ -124,9 +124,10 @@ public class THallQueueController {
             return map;
         } catch (Exception e) {
             String message = "取号失败";
+            log.error(param);
             log.error(message, e);
             throw new FebsException(message);
-        }  finally {
+        } finally {
             //server处理逻辑
             webSocketService.IndexData(request);
         }
@@ -143,11 +144,9 @@ public class THallQueueController {
             map = tHallQueueService.callPage(request);
             return map;
         } catch (Exception e){
-            e.printStackTrace();
-            map.put("code",444);
-            map.put("status", "error");
-            map.put("msg", "系统异常，获取窗口及业务数据失败！");
-            return map;
+            String message = "系统异常，获取窗口及业务数据失败！";
+            log.error(message, e);
+            throw new FebsException(message);
         }finally {
             //server处理逻辑
             webSocketService.IndexData(request);
@@ -186,7 +185,7 @@ public class THallQueueController {
             CommonResult commonResult = tHallQueueService.callLed(param);
             return commonResult;
         } catch (Exception e) {
-            String message = "叫号失败";
+            String message = "叫号成功后访问大厅led和窗口led接口失败";
             log.error(message, e);
             throw new FebsException(message);
         }
@@ -199,7 +198,7 @@ public class THallQueueController {
         try {
             return tHallQueueService.complete(param);
         } catch (Exception e) {
-            String message = "办结失败";
+            String message = "办结成功后访问大厅led和窗口led接口失败";
             log.error(message, e);
             throw new FebsException(message);
         }
@@ -217,6 +216,7 @@ public class THallQueueController {
             return map;
         } catch (Exception e) {
             String message = "办结失败";
+            log.error(param);
             log.error(message, e);
             throw new FebsException(message);
         }finally {
@@ -259,13 +259,10 @@ public class THallQueueController {
             Map<String, Object> map = tHallQueueService.backNum(request,session,param);
             return map;
         } catch (Exception e) {
-            Map<String,Object> map2 = new HashMap<>();
-            map2.put("code",444);
-            map2.put("status", "error");
-            map2.put("msg", "系统异常，退办失败！");
-            map2.put("data", e.toString());
-            e.printStackTrace();
-            return map2;
+            String message = "退办失败！";
+            log.error(param);
+            log.error(message, e);
+            throw new FebsException(message);
         }finally {
             //server处理逻辑
             webSocketService.IndexData(request);
@@ -284,6 +281,7 @@ public class THallQueueController {
             return map;
         } catch (Exception e) {
             String message = "特呼失败";
+            log.error(String.valueOf(tHallQueue));
             log.error(message, e);
             throw new FebsException(message);
         }finally {
@@ -392,6 +390,7 @@ public class THallQueueController {
             return new CommonResult(200, "success", "查询排队信息数据成功!", jsonObject);
         } catch (Exception e) {
             String message = "查询排队信息数据失败";
+            log.error(param);
             log.error(message, e);
             throw new FebsException(message);
         }
@@ -437,6 +436,7 @@ public class THallQueueController {
             return new CommonResult(200, "success", "查询受理人员工作量统计成功!", jsonObject);
         } catch (Exception e) {
             String message = "查询受理人员工作量统计失败";
+            log.error(param);
             log.error(message, e);
             throw new FebsException(message);
         }
@@ -457,6 +457,7 @@ public class THallQueueController {
             return new CommonResult(200, "success", "查询值日警官工作量统计数据成功!", jsonObject);
         } catch (Exception e) {
             String message = "查询值日警官工作量统计数据失败";
+            log.error(param);
             log.error(message, e);
             throw new FebsException(message);
         }
@@ -475,6 +476,7 @@ public class THallQueueController {
             return new CommonResult(200, "success", "查询数据成功!", jsonObject);
         } catch (Exception e) {
             String message = "查询数据失败";
+            log.error(param);
             log.error(message, e);
             throw new FebsException(message);
         }
@@ -486,14 +488,15 @@ public class THallQueueController {
      */
     @OperLog(operModul = "大厅管理-业务办理-排队信息查询",operType = "删除",operDesc = "删除排队信息")
     @DeleteMapping("/hall/queue/del")
-    public CommonResult tHallQueueDel(@RequestBody String parm) throws FebsException {
-        JSONObject jsonObject = JSON.parseObject(parm);
+    public CommonResult tHallQueueDel(@RequestBody String param) throws FebsException {
+        JSONObject jsonObject = JSON.parseObject(param);
         String idStr = String.valueOf(jsonObject.get("pkQueueId"));
         try {
             tHallQueueService.deleteById(idStr);
             return new CommonResult(200, "success", "数据删除成功!", null);
         } catch (Exception e) {
             String message = "数据删除失败";
+            log.error(param);
             log.error(message, e);
             throw new FebsException(message);
         }
@@ -505,8 +508,8 @@ public class THallQueueController {
      */
     @OperLog(operModul = "大厅管理-业务办理-排队信息查询",operType = "查看",operDesc = "查看排队信息详情")
     @GetMapping("/hall/queue/getOne")
-    public CommonResult tHallQueuegetOne(@RequestBody String parm) throws FebsException {
-        JSONObject jsonObject = JSON.parseObject(parm);
+    public CommonResult tHallQueuegetOne(@RequestBody String param) throws FebsException {
+        JSONObject jsonObject = JSON.parseObject(param);
         String idStr = String.valueOf(jsonObject.get("pkQueueId"));
         try {
             //
@@ -514,6 +517,7 @@ public class THallQueueController {
             return new CommonResult(200, "success", "数据获取成功!", tHallQueue);
         } catch (Exception e) {
             String message = "数据获取失败";
+            log.error(param);
             log.error(message, e);
             throw new FebsException(message);
         }
@@ -532,6 +536,7 @@ public class THallQueueController {
             return new CommonResult(200, "success", "修改成功!", null);
         } catch (Exception e) {
             String message = "修改失败";
+            log.error(String.valueOf(tHallQueue));
             log.error(message, e);
             throw new FebsException(message);
         }

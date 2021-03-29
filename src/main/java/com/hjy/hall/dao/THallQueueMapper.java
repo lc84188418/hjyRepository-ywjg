@@ -65,9 +65,9 @@ public interface THallQueueMapper {
     List<THallQueueCount> indexDataBusinessToday();
     //各办理人员业务量统计
     List<THallQueueCount> agentNumToday(@Param("queryStart") String startTimeStr,  @Param("queryEnd")String endTimeStr,@Param("serviceOverTime") int serviceOverTime);
-    //查询办理次数
+    //查询今年办理次数
     int handleNum(@Param("idCard")String idCard);
-    //查询代理次数
+    //查询今年代理次数
     int agentNum(@Param("idCard")String idCard);
     //顺序叫号时通过排队号获取排队信息表中距离当前时间最近的排队信息
     THallQueue getCallNum(@Param("ordinal")String ordinal);

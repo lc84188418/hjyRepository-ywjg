@@ -27,11 +27,11 @@ public class  typeTransUtil {
         typeTransUtil.tSysBusinesstypeService= this.tSysBusinesstypeService;
     }
 
-   public static List<String> typeTrans(String business_type){
+   public static List<String> typeTrans(String businessTypes){
        List<String> typeDealList=new ArrayList<>();
        //查询数据库所有数据类型
        List<TSysBusinesstype> typeList=typeTransUtil.tSysBusinesstypeService.selectBusinessNameAndLevel2();
-       String types[]=business_type.split("/");//拿到当前窗口可办理的业务类型，用/分割
+       String types[]=businessTypes.split("/");//拿到当前窗口可办理的业务类型，用/分割
        for(String type : types){
           for(TSysBusinesstype businesstype: typeList){
               if( businesstype.getTypeName().equals(type)){

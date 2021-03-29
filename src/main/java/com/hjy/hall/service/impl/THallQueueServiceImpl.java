@@ -560,7 +560,7 @@ public class THallQueueServiceImpl implements THallQueueService {
         }
         String xianzhi1 = String.valueOf(max1);
         if(waitAllNum >= max1){
-            map.put("code", 447);
+            map.put("code", 445);
             map.put("status", "error");
             map.put("msg", "大厅待办理业务量已达限值("+xianzhi1+")，不予取号，请等待");
             return map;
@@ -572,6 +572,15 @@ public class THallQueueServiceImpl implements THallQueueService {
             map.put("status", "error");
             map.put("msg", "受理人证件号为空");
             return map;
+        }else {
+            int byteLength = bIdCard.getBytes().length;
+            if(byteLength > 36){
+                log.info("证件号已超过36字节");
+                map.put("code", 447);
+                map.put("status", "error");
+                map.put("msg", "证件号已超过36字节，请确认是否正确，或联系开发人员修改");
+                return map;
+            }
         }
         /**
          * 二、单人单日办理业务空号数超过最大限值（8）超过就不予取号,如果没有就默认为8次
@@ -786,33 +795,34 @@ public class THallQueueServiceImpl implements THallQueueService {
     @Transactional()
     @Override
     public CommonResult orderCall(HttpServletRequest request, HttpSession session) throws Exception{
-        JSONObject resultJson = new JSONObject();
-        CommonResult commonResult = new CommonResult();
+        int code = 200;
+        StringBuffer stringBuffer = new StringBuffer();
         //从token中拿到当前窗口信息
         String tokenStr = TokenUtil.getRequestToken(request);
         SysToken token = tSysTokenMapper.selectIpAndName(tokenStr);
+        if(token == null){
+            return new CommonResult(445, "error", "用户信息已失效，请重新登录后再试!", null);
+        }
         String ip = token.getIp();
         TSysWindow window = tSysWindowMapper.selectByIp(ip);
+        if(window == null){
+            return new CommonResult(446, "error", "该ip暂无窗口信息，请联系维护人员!", null);
+        }
         String windowName = window.getWindowName();
         String kzkId = window.getControlCard();
-        String businessType = window.getBusinessType();
+        String businessTypes = window.getBusinessType();
         //查询当前窗口是否存在正在办理的业务
         THallQueue resultQueue = new THallQueue();
         THallQueue tHallQueue = tHallQueueMapper.getNowNumByWindowName(windowName+"正在办理");
         if(tHallQueue != null){
             resultQueue = tHallQueue;
-            commonResult.setCode(446);
-            commonResult.setStatus("success");
-            commonResult.setMsg("该窗口还有未办结业务，请先处理!");
+            code = 447;
+            stringBuffer.append("该窗口还有未办结业务，请先处理!");
         }else {
             //判断该窗口服务是否开启中
             Integer serviceStatus = window.getServiceStatus();
             if(serviceStatus != null && serviceStatus == 0){
-                commonResult.setCode(447);
-                commonResult.setStatus("success");
-                commonResult.setMsg("该窗口已暂停服务！");
-                commonResult.setData(serviceStatus);
-                return commonResult;
+                return new CommonResult(448, "error", "该窗口已暂停服务！", serviceStatus);
             }
             //业务处理逻辑
             ActiveUser activeUser = (ActiveUser) session.getAttribute("activeUser");
@@ -820,11 +830,14 @@ public class THallQueueServiceImpl implements THallQueueService {
             String idCard = null;
             if(activeUser != null ){
                 idCard=activeUser.getIDcard();
+            }else {
+                log.info("顺序叫号时ActiveUser信息已失效!");
+                return new CommonResult(445, "error", "用户信息已失效，请重新登录后再试!", null);
             }
             //通过此工具类可以将该窗口可办理的业务类型转化为字母显示且已经排序的List集合[B,C]
             List<String> typeList = null;
             //如[B,C]
-            typeList = typeTransUtil.typeTrans(businessType);
+            typeList = typeTransUtil.typeTrans(businessTypes);
             //*****判断该窗口所办理的业务类型是否有号
             String ordinal = "";
             //mark为判断该窗口所办理的业务类型是否有号的标识
@@ -840,26 +853,34 @@ public class THallQueueServiceImpl implements THallQueueService {
                 }
             }
             if (typeList.size() == mark) {
-                return new CommonResult(444, "error", "该窗口已无号", null);
+                return new CommonResult(449, "error", "该窗口"+mark+"种业务均已无号！", null);
             }
             //异步处理取号表的flag标识
-            ObjectAsyncTask.updateTakeNumberFlag(ordinal,1);
-//            /**
-//             * 线程同步处理-led大屏文件信息-顺序叫号
-//             */
-//            String callMsg = this.callNumHttp(ordinal,windowName);
+            int i = ObjectAsyncTask.updateTakeNumberFlag(ordinal,1);
+            if(i < 0){
+                log.info("顺序叫号时修改取号表的flag标识失败！");
+                return new CommonResult(450, "error", "顺序叫号时修改取号表的flag标识失败！", null);
+            }
             //异步处理更新排队信息表
-            resultQueue = ObjectAsyncTask.updateQueue(ordinal,windowName,agent,idCard);
+//            resultQueue = ObjectAsyncTask.updateQueue(ordinal,windowName,agent,idCard);
+            Map<String,Object> sxjhMap = new HashMap<>();
+            sxjhMap = ObjectAsyncTask.updateQueue(ordinal,windowName,agent,idCard);
+            String status = (String) sxjhMap.get("status");
+            if("error".equals(status)){
+                log.info("顺序叫号时更新t_hall_queue表的叫号窗口信息失败！");
+                return new CommonResult(451, "error", "顺序叫号时更新叫号窗口信息失败！", null);
+            }else {
+                resultQueue = (THallQueue) sxjhMap.get("resultQueue");
+                stringBuffer.append(resultQueue.getWindowName()+":叫号成功！"+resultQueue.getOrdinal());
+            }
         }
         if(resultQueue != null){
+            JSONObject resultJson = new JSONObject();
             resultJson = this.getResultJson(resultQueue);
-            commonResult.setCode(200);
-            commonResult.setStatus("success");
-            commonResult.setMsg(resultQueue.getWindowName()+":叫号成功！"+resultQueue.getOrdinal());
+            //将windowName、ordinal、kzkId传回前端，用于单独访问led控制接口
             resultJson.put("windowName",resultQueue.getWindowName());
             resultJson.put("ordinal",resultQueue.getOrdinal());
             resultJson.put("kzkId",kzkId);
-            commonResult.setData(resultJson);
             /**
              * 预警处理-叫号预警
              */
@@ -873,9 +894,9 @@ public class THallQueueServiceImpl implements THallQueueService {
              * 线程同步发送叫号信息
              */
             String callNumMsg = this.callNumSendMsg(resultQueue.getOrdinal(),window);
-            return commonResult;
+            return new CommonResult(code, "success", stringBuffer.toString(), resultJson);
         }else {
-            return new CommonResult(445, "error", "该窗口已无号", null);
+            return new CommonResult(452, "error", "该窗口已无号", null);
         }
     }
 
@@ -1396,11 +1417,21 @@ public class THallQueueServiceImpl implements THallQueueService {
          */
         String sign = "A";
         if(!StringUtils.isEmpty(businessType)){
-            //1拿到该业务类型的标识，如 普通车驾管业务标识为A
+            //1拿到该业务类型的标识，如果没有传入就默认为普通车驾管业务，标识为A
             sign = businesstypeMapper.selectTypeLevelByTypeName(businessType);
+        }else {
+            businessType = "普通车驾管业务";
         }
         //2取得最大的号码
         String ordinal = this.getMaxTackNumber(sign);
+        if("该号已达最大数量999".equals(ordinal)){
+            log.info(sign+"号已达最大数量999！");
+            map.put("code", 452);
+            map.put("status", "error");
+            map.put("msg", "该号已达最大数量999！");
+            map.put("data", null);
+            return map;
+        }
         //创建排队叫号实体
         THallQueue tHallQueue = new THallQueue();
         String a_bIdCard = bIdCard;
@@ -1415,6 +1446,17 @@ public class THallQueueServiceImpl implements THallQueueService {
             String aIdCard = JsonUtil.getStringParam(jsonObject,"aIdCard");
             String aName = JsonUtil.getStringParam(jsonObject,"aName");
             String aCertificatesType = JsonUtil.getStringParam(jsonObject,"aCertificatesType");
+            if(StringUtils.isEmpty(aCertificatesType)){
+                aCertificatesType = "居民身份证";
+            }
+            if(StringUtils.isEmpty(aIdCard)){
+                log.info("代理业务需传入代理人证件号!");
+                map.put("code", 453);
+                map.put("status", "error");
+                map.put("msg", "代理业务需传入代理人证件号");
+                map.put("data", null);
+                return map;
+            }
             a_bIdCard = aIdCard;
             agentNum = tHallQueueMapper.agentNum(a_bIdCard);
             sfcxg = true;
@@ -1436,7 +1478,7 @@ public class THallQueueServiceImpl implements THallQueueService {
                     }
                 }
                 if (agentNum >= max) {
-                    map.put("code", 446);
+                    map.put("code", 453);
                     map.put("status", "error");
                     map.put("msg", "该代办人代理次数已达"+max+"次！不予取号");
                     return map;
@@ -1486,10 +1528,10 @@ public class THallQueueServiceImpl implements THallQueueService {
                 break;
             }
         }
-        //查询办理次数
+        //查询今年办理次数
         int handleNum = tHallQueueMapper.handleNum(bIdCard);
         if(!sfcxg){
-            //查询代理次数
+            //查询今年代理次数
             agentNum = tHallQueueMapper.agentNum(bIdCard);
         }
         //录入处理后的本人名称
@@ -1507,10 +1549,15 @@ public class THallQueueServiceImpl implements THallQueueService {
         Date nowdate = new Date();
         takenumber.setGetTime(nowdate);
         int i = tHallTakenumberMapper.insertSelective(takenumber);
-
+        if(i != 1){
+            log.info("录入takeNumber信息失败!"+takenumber);
+            map.put("code", 454);
+            map.put("status", "error");
+            map.put("msg", "录入取号信息失败，取号失败!");
+            return map;
+        }
         //查询前方等候人数
         int waitNum = tHallTakenumberMapper.selectWaitNum(ordinal);
-
         tHallQueue.setGetTime(nowdate);
         tHallQueue.setOrdinal(ordinal);
         tHallQueue.setIsVip(0);
@@ -1520,11 +1567,11 @@ public class THallQueueServiceImpl implements THallQueueService {
         tHallQueue.setDaobanIdcard(activeUser.getIDcard());
         //异步录入排队信息
         int j = ObjectAsyncTask.insertQueue(tHallQueue);
-
-        if(i > 0 || j > 0){
-            map.put("code", 447);
+        if(j != 1){
+            log.info("录入tHallQueue信息失败!"+tHallQueue);
+            map.put("code", 455);
             map.put("status", "error");
-            map.put("msg", "录入排队叫号信息失败，取号失败!");
+            map.put("msg", "录入排队信息失败，取号失败!");
             return map;
         }
         //
@@ -1552,6 +1599,9 @@ public class THallQueueServiceImpl implements THallQueueService {
             int ordinal_num = 0;
             //去掉业务类型标识 ,num3 = 010
             String num3 = maxNum.substring(1,maxNum.length());
+            if("999".equals(num3)){
+                return "该号已达最大数量999";
+            }
             String num2 = maxNum.substring(2,maxNum.length());
             String num1 = maxNum.substring(3,maxNum.length());
             //第一个字符 0

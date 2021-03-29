@@ -186,11 +186,13 @@ public class ObjectAsyncTask {
     }
 
     //更新取号表状态
-    public static void updateTakeNumberFlag(String ordinal,int flag){
+    public static int updateTakeNumberFlag(String ordinal,int flag){
         THallTakenumber tHallTakenumber = ntClient.tHallTakenumberService.getByOrdinal(ordinal);
         if(tHallTakenumber != null){
-            tHallTakenumber.setFlag(flag);
-            ntClient.tHallTakenumberService.updateById(tHallTakenumber);
+            THallTakenumber updateEntity = new THallTakenumber();
+            updateEntity.setFlag(flag);
+            updateEntity.setPkTakenumId(tHallTakenumber.getPkTakenumId());
+            return ntClient.tHallTakenumberService.updateById(updateEntity);
         }else {
             //添加一个
             THallTakenumber insertEntity = new THallTakenumber();
@@ -198,7 +200,7 @@ public class ObjectAsyncTask {
             insertEntity.setGetTime(new Date());
             insertEntity.setFlag(flag);
             insertEntity.setOrdinal(ordinal);
-            ntClient.tHallTakenumberService.insertSelective(insertEntity);
+            return ntClient.tHallTakenumberService.insertSelective(insertEntity);
         }
 
     }
@@ -262,15 +264,30 @@ public class ObjectAsyncTask {
         }
     }
     //异步处理更新排队信息表
-    public static THallQueue updateQueue(String ordinal,String windowName,String agent,String idCard){
+    public static Map<String,Object> updateQueue(String ordinal,String windowName,String agent,String idCard){
+        Map<String,Object> sxjhMap = new HashMap<>();
+
         THallQueue queueUpdate = ntClient.tHallQueueService.getCallNum(ordinal);
+        if(queueUpdate == null){
+            sxjhMap.put("status","error");
+            sxjhMap.put("resultQueue",null);
+            return sxjhMap;
+        }
         queueUpdate.setStartTime(new Date());
         queueUpdate.setWindowName(windowName);
         queueUpdate.setAgent(agent);
         queueUpdate.setIdCard(idCard);
         queueUpdate.setRemarks(windowName+"正在办理");
-        ntClient.tHallQueueService.updateById(queueUpdate);
-        return queueUpdate;
+        int i = ntClient.tHallQueueService.updateById(queueUpdate);
+        if(i > 0){
+            sxjhMap.put("status","success");
+            sxjhMap.put("resultQueue",queueUpdate);
+            return sxjhMap;
+        }else {
+            sxjhMap.put("status","error");
+            sxjhMap.put("resultQueue",null);
+            return sxjhMap;
+        }
     }
     //办结业务
     public static int updateQueueByEntity(THallQueue nowQueue) {

@@ -74,10 +74,12 @@ public class TSysWindowServiceImpl implements TSysWindowService {
         }else {
             return new CommonResult(445,"error","ip不能为空",null);
         }
-        if(windowName != null){
+        if(!StringUtils.isEmpty(windowName)){
             if(windowName.length()>5){
                 return new CommonResult(446,"error","窗口名过长，最大值为5",null);
             }
+        }else {
+            return new CommonResult(447,"error","窗口名不能为空",null);
         }
         tSysWindow.setPkWindowId(IDUtils.getUUID());
         tSysWindow.setDeptName(deptName);
