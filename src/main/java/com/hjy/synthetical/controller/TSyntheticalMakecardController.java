@@ -110,24 +110,6 @@ public class TSyntheticalMakecardController {
             throw new FebsException(message);
         }
     }
-
-    /**
-     * 批量制作完成
-     * @param param 实体对象
-     * @return 修改结果
-     */
-    @OperLog(operModul = "综合管理-综合管理-制证管理",operType = "制证完成",operDesc = "批量证件制作完成")
-    @PutMapping("/synthetical/makeCard/makeComplete_batch")
-    public CommonResult makeCompleteBatch(@RequestBody String param, HttpSession session) throws FebsException {
-        try {
-            return tHallMakecardService.makeCompleteBatch(param,session);
-        } catch (Exception e) {
-            String message = "修改失败";
-            log.error(message, e);
-            throw new FebsException(message);
-        }
-    }
-
     /**
      * 3 删除数据-领取、弃用
      * @return 删除结果
@@ -146,59 +128,19 @@ public class TSyntheticalMakecardController {
     }
 
     /**
-     * 3 批量领取-删除数据-领取、弃用
+     * 批量操作
      * @return 删除结果
      */
-    @OperLog(operModul = "综合管理-综合管理-制证管理",operType = "领取/弃用",operDesc = "制证领用/弃用")
-    @DeleteMapping("/synthetical/makeCard/del_batch")
-    public CommonResult tHallMakecardDelBatch(@RequestBody String param) throws FebsException {
+    @OperLog(operModul = "综合管理-综合管理-制证管理",operType = "完成、领取",operDesc = "制证完成/领用/弃用")
+    @PostMapping("/synthetical/makeCard/batch")
+    public CommonResult tHallMakecardBatch(@RequestBody String param,HttpSession session) throws FebsException {
         try {
             //
-            return tHallMakecardService.tHallMakecardDelBatch(param);
+            return tHallMakecardService.tHallMakecardBatch(param,session);
         } catch (Exception e) {
             String message = "数据删除失败";
             log.error(message, e);
             throw new FebsException(message);
         }
     }
-
-    /**
-     * 4 通过主键查询单条数据
-     * @return 单条数据
-     */
-    @OperLog(operModul = "综合管理-综合管理-制证管理",operType = "查看",operDesc = "查看制证详情")
-    @PostMapping("/synthetical/makeCard/getOne")
-    public CommonResult tHallMakecardgetOne(@RequestBody String parm) throws FebsException {
-        JSONObject jsonObject = JSON.parseObject(parm);
-        String idStr = String.valueOf(jsonObject.get("pkCardId"));
-        try {
-            //
-            TSyntheticalMakecard tHallMakecard = tHallMakecardService.selectById(idStr);
-            return new CommonResult(200, "success", "数据获取成功!", tHallMakecard);
-        } catch (Exception e) {
-            String message = "数据获取失败";
-            log.error(message, e);
-            throw new FebsException(message);
-        }
-    }
-
-    /**
-     * 4 修改数据
-     * @param tHallMakecard 实体对象
-     * @return 修改结果
-     */
-    @OperLog(operModul = "综合管理-综合管理-制证管理",operType = "修改",operDesc = "修改制证信息")
-    @PutMapping("/synthetical/makeCard/update")
-    public CommonResult tHallMakecardUpdate(@RequestBody TSyntheticalMakecard tHallMakecard) throws FebsException {
-        try {
-            //
-            tHallMakecardService.updateById(tHallMakecard);
-            return new CommonResult(200, "success", "修改成功!", null);
-        } catch (Exception e) {
-            String message = "修改失败";
-            log.error(message, e);
-            throw new FebsException(message);
-        }
-    }
-
 }

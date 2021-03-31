@@ -70,7 +70,7 @@ public interface TSyntheticalMakecardMapper {
      * 批量修改制证完成
      * @return 修改数据量
      */
-    int makeCompleteBatchUpdate(@Param("idList")List<String> idList, @Param("operatorPeople")String operatorPeople, Date sysdate);
+    int makeCompleteBatchUpdate(@Param("makeCardList")List<TSyntheticalMakecard> makeCardList,@Param("operatorPeople") String operatorPeople);
     /**
      * 批量获取制证信息
      * @return 制证信息列表
@@ -80,5 +80,10 @@ public interface TSyntheticalMakecardMapper {
      * 批量删除数据
      * @return 制证信息列表
      */
-    int deleteByIdList(@Param("idList")List<String> idList);
+    int deleteByIdList(@Param("makeCardList")List<TSyntheticalMakecard> makeCardList);
+    /**
+     * 通过主键列表查询制作信息列表
+     * @return 制证信息列表
+     */
+    List<TSyntheticalMakecard> selectAllByIdList(@Param("idList")List<String> idList);
 }

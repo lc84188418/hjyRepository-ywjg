@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -33,17 +34,6 @@ import java.util.List;
 public class TSyntheticalMakecardServiceImpl implements TSyntheticalMakecardService {
     @Autowired
     private TSyntheticalMakecardMapper tHallMakecardMapper;
-
-    /**
-     * 通过ID查询单条数据
-     *
-     * @param pkCardId 主键
-     * @return 实例对象
-     */
-    @Override
-    public TSyntheticalMakecard selectById(String pkCardId) {
-        return this.tHallMakecardMapper.selectById(pkCardId);
-    }
 
     /**
      * 新增数据
@@ -64,7 +54,6 @@ public class TSyntheticalMakecardServiceImpl implements TSyntheticalMakecardServ
             i = 2;
         }else if( StringUtils.isEmpty(tHallMakecard.getBName()) || StringUtils.isEmpty(tHallMakecard.getBIdcard()) ){
             i = 2;
-
         }else{
             i = tHallMakecardMapper.insertSelective(tHallMakecard);
         }
@@ -73,37 +62,6 @@ public class TSyntheticalMakecardServiceImpl implements TSyntheticalMakecardServ
     @Override
     public int insert(TSyntheticalMakecard tHallMakecard) {
         return tHallMakecardMapper.insertSelective(tHallMakecard);
-    }
-
-    /**
-     * 修改数据
-     *
-     * @param tHallMakecard 实例对象
-     * @return 实例对象
-     */
-    @Transactional()
-    @Override
-    public int updateById(TSyntheticalMakecard tHallMakecard) {
-        //修改制证
-        int i = tHallMakecardMapper.updateById(tHallMakecard);
-        //制证完成
-        if(i>0 && tHallMakecard.getStatus().equals("已完成")){
-            //异步处理-修改制证共享文件夹
-            ObjectAsyncTask.updateMakeCardShareFile(tHallMakecard);
-        }
-        return i;
-    }
-
-    /**
-     * 通过主键删除数据
-     *
-     * @param pkCardId 主键
-     * @return 是否成功
-     */
-    @Transactional()
-    @Override
-    public int deleteById(String pkCardId) {
-        return tHallMakecardMapper.deleteById(pkCardId);
     }
 
     /**
@@ -169,74 +127,34 @@ public class TSyntheticalMakecardServiceImpl implements TSyntheticalMakecardServ
         if(i > 0){
             resultBuffer.append("证件领取或弃用成功！");
             //修改本地制证文件
-            String msg = CardFileUtil.MakeCardShareFileDel(tHallMakecard);
-            resultBuffer.append(msg);
+            TSyntheticalMakecard selectEntity = new TSyntheticalMakecard();
+            selectEntity.setStatus("已完成");
+            List<TSyntheticalMakecard> list = tHallMakecardMapper.selectAllByEntity(selectEntity);
+            CardFileUtil.MakeCardShareFile(list);
             //将本地文件上传至共享文件
-            String whether = PropertiesUtil.getValue("test.whether.update.share.file");
-            if(whether.equals("true")){
-                //本地文件添加完成后上传到共享文件
-                String shareDir = PropertiesUtil.getValue("share.file.directory");
-                String localFilePath = "d://hjy//ywjg//makeCard//左边.txt";
-                try {
-                    SmbFileUtil.smbPut(shareDir,localFilePath);
-                    resultBuffer.append("共享文件上传成功");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    resultBuffer.append("共享文件上传失败");
-                    throw new RuntimeException();
-                }
-            }
+            resultBuffer = this.uploadSmbFile(resultBuffer);
             return new CommonResult(200, "success", resultBuffer.toString(), null);
         }else {
             return new CommonResult(444, "error", "证件领取或弃用失败", null);
-
         }
     }
 
-    /**
-     * 3 批量领取-删除数据-领取、弃用
-     * @return 删除结果
-     */
-    @Transactional()
-    @Override
-    public CommonResult tHallMakecardDelBatch(String param) {
-        JSONObject json = JSON.parseObject(param);
-        JSONArray jsonArray = json.getJSONArray("ids");
-        String permsIdsStr = jsonArray.toString();
-        List<String> idList = JSONArray.parseArray(permsIdsStr,String.class);
-        if(idList != null && idList.size()>0){
-            List<TSyntheticalMakecard> list = tHallMakecardMapper.selectAllById(idList);
-            //批量删除数据库数据
-            int i = tHallMakecardMapper.deleteByIdList(idList);
-            StringBuffer resultBuffer = new StringBuffer();
-            if(i > 0){
-                resultBuffer.append("证件领取或弃用成功！");
-                //修改本地制证文件
-                String msg = CardFileUtil.MakeCardShareFileDelBatch(list);
-                resultBuffer.append(msg);
-                //将本地文件上传至共享文件
-                String whether = PropertiesUtil.getValue("test.whether.update.share.file");
-                if(whether.equals("true")){
-                    //本地文件添加完成后上传到共享文件
-                    String shareDir = PropertiesUtil.getValue("share.file.directory");
-                    String localFilePath = "d://hjy//ywjg//makeCard//左边.txt";
-                    try {
-                        SmbFileUtil.smbPut(shareDir,localFilePath);
-                        resultBuffer.append("共享文件上传成功");
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        resultBuffer.append("共享文件上传失败");
-                        throw new RuntimeException();
-                    }
-                }
-                return new CommonResult(200, "success", resultBuffer.toString(), null);
-            }else {
-                return new CommonResult(444, "error", "证件领取或弃用失败", null);
+    private StringBuffer uploadSmbFile(StringBuffer resultBuffer) {
+        String whether = PropertiesUtil.getValue("test.whether.update.share.file");
+        if(whether.equals("true")){
+            //本地文件添加完成后上传到共享文件
+            String shareDir = PropertiesUtil.getValue("share.file.directory");
+            String localFilePath = "d://hjy//ywjg//makeCard//左边.txt";
+            try {
+                SmbFileUtil.smbPut(shareDir,localFilePath);
+                resultBuffer.append("共享文件上传成功");
+            } catch (Exception e) {
+                e.printStackTrace();
+                resultBuffer.append("共享文件上传失败");
+                throw new RuntimeException();
             }
-        }else {
-            return new CommonResult(445, "error", "你还未选择!", null);
-
         }
+        return resultBuffer;
     }
 
     /**
@@ -254,60 +172,68 @@ public class TSyntheticalMakecardServiceImpl implements TSyntheticalMakecardServ
         int i = tHallMakecardMapper.updateById(tHallMakecard);
         //制证完成
         if(i>0){
-            //修改制证共享文件夹
-            String flag = CardFileUtil.MakeCardShareFileComplet(tHallMakecard);
-            if(flag != null){
-                String whether = PropertiesUtil.getValue("test.whether.update.share.file");
-                if(whether.equals("true")){
-                    //本地文件添加完成后上传到共享文件
-                    String shareDir = PropertiesUtil.getValue("share.file.directory");
-                    String localFilePath = "d://hjy//ywjg//makeCard//左边.txt";
-                    try {
-                        SmbFileUtil.smbPut(shareDir,localFilePath);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-            return new CommonResult(200, "success", "制作证件已完成!", null);
+            StringBuffer resultBuffer = new StringBuffer();
+            resultBuffer.append("证件制作已完成!");
+            //更新制证共享文件夹
+            TSyntheticalMakecard selectEntity = new TSyntheticalMakecard();
+            selectEntity.setStatus("已完成");
+            List<TSyntheticalMakecard> list = tHallMakecardMapper.selectAllByEntity(selectEntity);
+            CardFileUtil.MakeCardShareFile(list);
+            //将本地文件上传至共享文件
+            resultBuffer = this.uploadSmbFile(resultBuffer);
+            return new CommonResult(200, "success", resultBuffer.toString(), null);
         }else {
             return new CommonResult(444, "error", "制作完成已失败!", null);
         }
     }
-    //批量制作完成
+    //批量操作
     @Transactional()
     @Override
-    public synchronized CommonResult makeCompleteBatch(String param, HttpSession session) {
+    public synchronized CommonResult tHallMakecardBatch(String param, HttpSession session) {
         ActiveUser activeUser = (ActiveUser) session.getAttribute("activeUser");
         JSONObject json = JSON.parseObject(param);
         JSONArray jsonArray = json.getJSONArray("ids");
         String permsIdsStr = jsonArray.toString();
         List<String> idList = JSONArray.parseArray(permsIdsStr,String.class);
         if(idList != null && idList.size()>0){
-            int i = tHallMakecardMapper.makeCompleteBatchUpdate(idList,activeUser.getFullName(),new Date());
-            //制证完成
-            if(i>0){
-                //查询出选中的制证数据列表
-                List<TSyntheticalMakecard> list = tHallMakecardMapper.selectAllById(idList);
-                //修改制证共享文件夹
-                String flag = CardFileUtil.MakeCardShareFileCompletBatch(list);
-                if(flag != null){
-                    String whether = PropertiesUtil.getValue("test.whether.update.share.file");
-                    if(whether.equals("true")){
-                        //本地文件添加完成后上传到共享文件
-                        String shareDir = PropertiesUtil.getValue("share.file.directory");
-                        String localFilePath = "d://hjy//ywjg//makeCard//左边.txt";
-                        try {
-                            SmbFileUtil.smbPut(shareDir,localFilePath);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
+            //查询哪些是需要完成的，哪些是领取的
+            List<TSyntheticalMakecard> list = tHallMakecardMapper.selectAllById(idList);
+            //将待完成列表和待领取列表分开
+            List<TSyntheticalMakecard> listComplete = new ArrayList<>();
+            List<TSyntheticalMakecard> listDel = new ArrayList<>();
+            Iterator<TSyntheticalMakecard> iterator = list.iterator();
+            while (iterator.hasNext()){
+                TSyntheticalMakecard obj = iterator.next();
+                if("制作中".equals(obj.getStatus())){
+                    obj.setOperatorPeople(activeUser.getFullName());
+                    listComplete.add(obj);
+                }else {
+                    listDel.add(obj);
                 }
-                return new CommonResult(200, "success", "制作证件已完成!", null);
-            }else {
-                return new CommonResult(444, "error", "制作完成已失败!", null);
             }
+            StringBuffer resultBuffer = new StringBuffer();
+            if(listComplete .size() > 0){
+                int i = tHallMakecardMapper.makeCompleteBatchUpdate(listComplete,activeUser.getFullName());
+                if(i > 0){
+                    resultBuffer.append(i+"个证件制作已完成！");
+                }
+            }
+            if(listDel .size() > 0){
+                //批量删除数据库数据
+                int j = tHallMakecardMapper.deleteByIdList(listDel);
+                if( j > 0){
+                    resultBuffer.append(j+"个证件已领取！");
+                }
+
+            }
+            //修改本地制证文件
+            TSyntheticalMakecard selectEntity = new TSyntheticalMakecard();
+            selectEntity.setStatus("已完成");
+            List<TSyntheticalMakecard> completeList = tHallMakecardMapper.selectAllByEntity(selectEntity);
+            CardFileUtil.MakeCardShareFile(completeList);
+            //将本地文件上传至共享文件
+            resultBuffer = this.uploadSmbFile(resultBuffer);
+            return new CommonResult(200, "success",resultBuffer.toString(), null);
         }
         return new CommonResult(445, "error", "你还未选择!", null);
     }

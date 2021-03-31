@@ -208,16 +208,15 @@
 <!--    批量修改制作完成-->
     <update id="makeCompleteBatchUpdate">
         update t_synthetical_makeCard
-        set end_time = #{sysdate,jdbcType=DATE},
+        set end_time = sysdate,
         status = '已完成',
         OPERATOR_PEOPLE = #{operatorPeople,jdbcType=VARCHAR}
         where pk_card_id
         in(
-        <foreach collection="idList" item="item" separator=",">
-            #{item,jdbcType=VARCHAR}
+        <foreach collection="makeCardList" item="item" separator=",">
+            #{item.pkCardId,jdbcType=VARCHAR}
         </foreach>
         )
-
     </update>
 
     <!--通过主键删除-->
@@ -228,8 +227,8 @@
         delete from t_synthetical_makeCard
         where pk_card_id
         in(
-        <foreach collection="idList" item="item" separator=",">
-            #{item,jdbcType=VARCHAR}
+        <foreach collection="makeCardList" item="item" separator=",">
+            #{item.pkCardId,jdbcType=VARCHAR}
         </foreach>
         )
     </delete>
@@ -251,5 +250,13 @@
         </foreach>
         )
     </select>
-
+    <select id="selectAllByIdList" resultType="com.hjy.synthetical.entity.TSyntheticalMakecard">
+        select pk_card_id,status from t_synthetical_makeCard
+        where pk_card_id
+        in(
+        <foreach collection="idList" item="item" separator=",">
+            #{item,jdbcType=VARCHAR}
+        </foreach>
+        )
+    </select>
 </mapper>

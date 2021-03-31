@@ -354,42 +354,6 @@ public class ObjectAsyncTask {
         tHallMakecard.setStatus("制作中");
         return ntClient.tHallMakecardService.insert(tHallMakecard);
     }
-    //异步处理-修改制证共享文件夹
-    public static void updateMakeCardShareFile(TSyntheticalMakecard tHallMakecard) {
-        String flag = CardFileUtil.MakeCardShareFileComplet(tHallMakecard);
-        if(flag != null){
-            String whether = PropertiesUtil.getValue("test.whether.update.share.file");
-            if(whether.equals("true")){
-                //本地文件添加完成后上传到共享文件
-                String shareDir = PropertiesUtil.getValue("share.file.directory");
-                String localFilePath = "d://hjy//ywjg//makeCard//左边.txt";
-                try {
-                    SmbFileUtil.smbPut(shareDir,localFilePath);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-//    //异步处理-删除制证共享文件夹
-//    public static String deleteMakeCardShareFile(TSyntheticalMakecard tHallMakecard) {
-//        //删除制证共享文件中该制证信息的内容
-//        CardFileUtil.MakeCardShareFileDel(tHallMakecard);
-//        String whether = PropertiesUtil.getValue("test.whether.update.share.file");
-//        if(whether.equals("true")){
-//            //本地文件添加完成后上传到共享文件
-//            String shareDir = PropertiesUtil.getValue("share.file.directory");
-//            String localFilePath = "d://hjy//ywjg//makeCard//左边.txt";
-//            try {
-//                SmbFileUtil.smbPut(shareDir,localFilePath);
-//                return "制证文件修改成功";
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//                throw new RuntimeException();
-//            }
-//        }
-//        return "制证文件修改成功";
-//    }
     //异步处理-添加排队信息
     public static int insertQueue(THallQueue queueUpdate){
         return ntClient.tHallQueueService.insert(queueUpdate);
