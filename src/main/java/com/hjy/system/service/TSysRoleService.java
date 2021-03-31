@@ -1,5 +1,6 @@
 package com.hjy.system.service;
 
+import com.hjy.common.domin.CommonResult;
 import com.hjy.system.entity.ReUserRole;
 import com.hjy.system.entity.TSysRole;
 import java.util.List;

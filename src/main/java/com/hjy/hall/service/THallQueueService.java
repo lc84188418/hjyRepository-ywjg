@@ -50,10 +50,14 @@ public interface THallQueueService {
     CommonResult orderCall(HttpServletRequest request, HttpSession session) throws Exception;
     //特呼
     Map<String, Object> queueVipCall(HttpServletRequest request,HttpSession session,THallQueue tHallQueue) throws Exception;
-    //叫号成功后访问led接口
-    CommonResult callLed(String param) throws Exception;
+    //叫号成功后访问led屏接口
+    CommonResult led(String param) throws Exception;
+    //叫号成功后访问led窗口屏接口
+    CommonResult smallLed(String param) throws Exception;
+    //叫号成功后访问led大屏接口
+    CommonResult bigLed(String param) throws Exception;
 
-    //设置空号
+    //空号
     Map<String, Object> nullNum(HttpServletRequest request,HttpSession session) throws Exception;
     //退号
     Map<String, Object> backNum(HttpServletRequest request,HttpSession session,String param) throws Exception;
@@ -61,6 +65,8 @@ public interface THallQueueService {
     Map<String ,Object> downNum(HttpServletRequest request,HttpSession session,String param) throws Exception;
     //业务办理完结后访问，办结、空号、退号
     CommonResult complete(String param) throws Exception;
+    CommonResult completeSmallLed(String param) throws Exception;
+    CommonResult completeBigLed(String param) throws Exception;
     //重播
     Map<String, Object> repaly(HttpServletRequest request,String param) throws Exception;
     //获取同步库数据

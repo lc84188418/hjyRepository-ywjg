@@ -27,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.http.HttpSession;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
+import java.net.ConnectException;
 import java.util.*;
 
 import static com.hjy.common.utils.led.util.sendMsg;
@@ -268,8 +269,12 @@ public class TSysWindowServiceImpl implements TSysWindowService {
                  */
                 if(!StringUtils.isEmpty(window.getControlCard())){
 //                    sendMsg(window.getControlCard(),msg);
-                    this.ledHttp(window.getControlCard(),msg);
-                    return new CommonResult(200,"success","暂停服务成功!",null);
+                    try{
+                        this.ledHttp(window.getControlCard(),msg);
+                        return new CommonResult(200,"success","暂停服务成功!",null);
+                    }catch (Exception e){
+                        return new CommonResult(447,"error","导办取号电脑未打开java程序，无法修改led屏内容!",null);
+                    }
                 }else {
                     return new CommonResult(446,"error","暂停服务成功！该窗口未配置控制卡地址，无法展示‘暂停服务’",null);
                 }

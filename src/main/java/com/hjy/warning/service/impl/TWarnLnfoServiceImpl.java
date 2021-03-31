@@ -356,6 +356,11 @@ public class TWarnLnfoServiceImpl implements TWarnLnfoService {
 
     }
 
+    @Override
+    public void systemMaintain() {
+        tWarnLnfoMapper.systemMaintain();
+    }
+
     //将本人驾驶证信息做筛选修饰
     private List<TbkDrivinglicense> getBRJSZQK(List<TbkDrivinglicense> brjszList) {
         if(brjszList == null){

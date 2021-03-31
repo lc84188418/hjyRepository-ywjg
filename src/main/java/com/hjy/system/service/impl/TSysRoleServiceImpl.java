@@ -208,7 +208,7 @@ public class TSysRoleServiceImpl implements TSysRoleService {
     public void distributeMenu(String fk_role_id, List<String> idList) {
         if(idList != null){
             //通过role_id删除原有的perms
-            ObjectAsyncTask.deleteRolePermsByRoleId(fk_role_id);
+            tSysRoleMapper.deleteRolePermsByRoleId(fk_role_id);
         }
         //添加选中的权限菜单
         List<ReRolePerms> rolePermsList = new ArrayList<>();

@@ -45,4 +45,5 @@ public interface TWarnLnfoService {
 
     CommonResult getListInfo(String param);
 
+    void systemMaintain();
 }

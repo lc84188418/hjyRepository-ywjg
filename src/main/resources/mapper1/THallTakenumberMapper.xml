@@ -89,7 +89,7 @@
         delete from t_hall_takeNumber
     </delete>
     <delete id="deteleBeforeData">
-        delete from t_hall_takeNumber where GET_TIME &lt;= SYSDATE -1
+        delete from t_hall_takeNumber where to_char(GET_TIME,'yyyy-mm-dd') &lt;= TO_CHAR(SYSDATE-1,'yyyy-mm-dd')
     </delete>
 <!--    //顺序叫号时，以防万一若有重复数据，则删除-->
     <delete id="deleteDuplicateData">

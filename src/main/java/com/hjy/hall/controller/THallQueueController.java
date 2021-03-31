@@ -139,10 +139,8 @@ public class THallQueueController {
     @RequiresPermissions({"queue:call"})
     @GetMapping("/hall/queue/call/page")
     public Map<String,Object> callPage(HttpServletRequest request) throws FebsException , IOException{
-        Map<String,Object> map = new HashMap<>();
         try {
-            map = tHallQueueService.callPage(request);
-            return map;
+            return tHallQueueService.callPage(request);
         } catch (Exception e){
             String message = "系统异常，获取窗口及业务数据失败！";
             log.error(message, e);
@@ -175,34 +173,6 @@ public class THallQueueController {
         }
     }
 
-    /**
-     * 叫号成功后访问led大厅接口
-     * @return 叫号结果
-     */
-    @PostMapping("/hall/queue/call/led")
-    public CommonResult callLed(@RequestBody String param )throws FebsException{
-        try {
-            CommonResult commonResult = tHallQueueService.callLed(param);
-            return commonResult;
-        } catch (Exception e) {
-            String message = "叫号成功后访问大厅led和窗口led接口失败";
-            log.error(message, e);
-            throw new FebsException(message);
-        }
-    }
-    /**
-     * 业务办理完结后访问，办结、空号、退号
-     */
-    @PostMapping("/hall/queue/complete")
-    public CommonResult complete(@RequestBody String param) throws FebsException, IOException {
-        try {
-            return tHallQueueService.complete(param);
-        } catch (Exception e) {
-            String message = "办结成功后访问大厅led和窗口led接口失败";
-            log.error(message, e);
-            throw new FebsException(message);
-        }
-    }
     /**
      * 业务办理-排队叫号
      * 办结
@@ -294,7 +264,7 @@ public class THallQueueController {
      * 有叫号信息后访问同步库数据
      */
     @PostMapping("/hall/queue/call/getTbkData")
-    public Map<String,Object> getTbkData(@RequestBody String param,HttpServletRequest request)throws SQLException, ConnectException {
+    public Map<String,Object> getTbkData(@RequestBody String param,HttpServletRequest request)throws FebsException{
         Map<String,Object> map = new HashMap<>();
         try {
             /**
@@ -304,74 +274,11 @@ public class THallQueueController {
             map.put("status", "success");
             map.put("exception",null);
             return map;
-        } catch (SQLRecoverableException e) {
-            map.put("code",444);
-            map.put("status", "error");
-            TSysParam tSysParam = new TSysParam();
-            tSysParam.setPkParamId("SFHQTBKSJ");
-            tSysParam.setParamValue("否");
-            tSysParam.setOperatorPeople("queue444");
-            tSysParam.setOperatorTime(new Date());
-//            tSysParamMapper.updateById(tSysParam);
-            map.put("exception","444同步库连接出错，请联系维护人员排查，系统已自动更改参数配置：是否获取同步库数据改为否");
-            return map;
-        }catch (ConnectException e) {
-            map.put("code",445);
-            map.put("status", "error");
-            TSysParam tSysParam = new TSysParam();
-            tSysParam.setPkParamId("SFHQTBKSJ");
-            tSysParam.setParamValue("否");
-            tSysParam.setOperatorPeople("queue445");
-            tSysParam.setOperatorTime(new Date());
-//            tSysParamMapper.updateById(tSysParam);
-            map.put("exception","445同步库连接出错，请联系维护人员排查，系统已自动更改参数配置：是否获取同步库数据改为否");
-            return map;
-        }catch (MyBatisSystemException e) {
-            //无法接通网络时
-            map.put("code",446);
-            map.put("status", "error");
-            TSysParam tSysParam = new TSysParam();
-            tSysParam.setPkParamId("SFHQTBKSJ");
-            tSysParam.setParamValue("否");
-            tSysParam.setOperatorPeople("queue446");
-            tSysParam.setOperatorTime(new Date());
-//            tSysParamMapper.updateById(tSysParam);
-            map.put("exception","446同步库连接出错，请联系维护人员排查，系统已自动更改参数配置：是否获取同步库数据改为否");
-            return map;
-        } catch (CannotGetJdbcConnectionException e) {
-            map.put("code",447);
-            map.put("status", "error");
-            TSysParam tSysParam = new TSysParam();
-            tSysParam.setPkParamId("SFHQTBKSJ");
-            tSysParam.setParamValue("否");
-            tSysParam.setOperatorPeople("queue447");
-            tSysParam.setOperatorTime(new Date());
-//            tSysParamMapper.updateById(tSysParam);
-            map.put("exception","447同步库连接出错，请联系维护人员排查，系统已自动更改参数配置：是否获取同步库数据改为否");
-            return map;
-        } catch (PersistenceException e) {
-            map.put("code",448);
-            map.put("status", "error");
-            TSysParam tSysParam = new TSysParam();
-            tSysParam.setPkParamId("SFHQTBKSJ");
-            tSysParam.setParamValue("否");
-            tSysParam.setOperatorPeople("queue448");
-            tSysParam.setOperatorTime(new Date());
-//            tSysParamMapper.updateById(tSysParam);
-            map.put("exception","448同步库连接出错，请联系维护人员排查，系统已自动更改参数配置：是否获取同步库数据改为否");
-            return map;
-        }
-        catch (Exception e) {
-            map.put("code",449);
-            map.put("status", "error");
-            TSysParam tSysParam = new TSysParam();
-            tSysParam.setPkParamId("SFHQTBKSJ");
-            tSysParam.setParamValue("否");
-            tSysParam.setOperatorPeople("queue449");
-            tSysParam.setOperatorTime(new Date());
-//            tSysParamMapper.updateById(tSysParam);
-            map.put("exception","449同步库连接出错，请联系维护人员排查，系统已自动更改参数配置：是否获取同步库数据改为否");
-            return map;
+        } catch (Exception e) {
+            String message = "同步库连接出错，请联系维护人员排查";
+            log.error(param);
+            log.error(message, e);
+            throw new FebsException(message);
         }
     }
     /**
@@ -537,6 +444,85 @@ public class THallQueueController {
         } catch (Exception e) {
             String message = "修改失败";
             log.error(String.valueOf(tHallQueue));
+            log.error(message, e);
+            throw new FebsException(message);
+        }
+    }
+    /**
+     * 叫号成功（顺序叫号和特呼）后访问led屏接口
+     * @return 叫号结果
+     */
+    @PostMapping("/hall/queue/call/led")
+    public CommonResult led(@RequestBody String param )throws FebsException{
+        try {
+            CommonResult commonResult = tHallQueueService.led(param);
+            return commonResult;
+        } catch (Exception e) {
+            String message = "叫号成功后访问大厅led和窗口led接口失败";
+            log.error(message, e);
+            throw new FebsException(message);
+        }
+    }
+
+    /**
+     * 叫号成功（顺序叫号和特呼）后访问led窗口屏接口
+     * @return 叫号结果
+     */
+    @PostMapping("/hall/queue/call/smallLed")
+    public CommonResult smallLed(@RequestBody String param )throws FebsException{
+        try {
+            CommonResult commonResult = tHallQueueService.smallLed(param);
+            return commonResult;
+        } catch (Exception e) {
+            String message = "叫号成功后访问大厅led和窗口led接口失败";
+            log.error(message, e);
+            throw new FebsException(message);
+        }
+    }
+    /**
+     * 叫号成功（顺序叫号和特呼）后访问led大屏接口
+     * @return 叫号结果
+     */
+    @PostMapping("/hall/queue/call/bigLed")
+    public CommonResult bigLed(@RequestBody String param )throws FebsException{
+        try {
+            CommonResult commonResult = tHallQueueService.bigLed(param);
+            return commonResult;
+        } catch (Exception e) {
+            String message = "叫号成功后访问大厅led和窗口led接口失败";
+            log.error(message, e);
+            throw new FebsException(message);
+        }
+    }
+    /**
+     * 业务办理完结后访问，办结、空号、退号
+     */
+    @PostMapping("/hall/queue/complete")
+    public CommonResult complete(@RequestBody String param) throws FebsException {
+        try {
+            return tHallQueueService.complete(param);
+        } catch (Exception e) {
+            String message = "办结成功后访问大厅led和窗口led接口失败";
+            log.error(message, e);
+            throw new FebsException(message);
+        }
+    }
+    @PostMapping("/hall/queue/complete/smallLed")
+    public CommonResult completeSmallLed(@RequestBody String param) throws FebsException {
+        try {
+            return tHallQueueService.completeSmallLed(param);
+        } catch (Exception e) {
+            String message = "办结成功后访问窗口led接口失败";
+            log.error(message, e);
+            throw new FebsException(message);
+        }
+    }
+    @PostMapping("/hall/queue/complete/bigLed")
+    public CommonResult completeBigLed(@RequestBody String param) throws FebsException {
+        try {
+            return tHallQueueService.completeBigLed(param);
+        } catch (Exception e) {
+            String message = "办结成功后访问大厅led接口失败";
             log.error(message, e);
             throw new FebsException(message);
         }

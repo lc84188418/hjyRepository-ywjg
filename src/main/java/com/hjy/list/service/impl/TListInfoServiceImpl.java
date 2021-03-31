@@ -27,6 +27,7 @@ import com.hjy.tbk.service.TbkVehicleService;
 import com.hjy.tbk.statusCode.HPStatus;
 import com.hjy.tbk.statusCode.SYXZStatus;
 import com.hjy.tbk.statusCode.VehicleStatus;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -44,6 +45,7 @@ import java.util.*;
  * @author liuchun
  * @since 2020-08-05 12:45:38
  */
+@Slf4j
 @Service
 public class TListInfoServiceImpl implements TListInfoService {
     @Autowired
@@ -95,6 +97,24 @@ public class TListInfoServiceImpl implements TListInfoService {
     @Transactional()
     @Override
     public CommonResult insertList(TListInfo tListInfo, HttpSession session){
+        if(StringUtils.isEmpty(tListInfo.getFullName())){
+            return new CommonResult(445, "error","申请人姓名不能为空", null);
+        }else {
+            int byteLength = tListInfo.getFullName().getBytes().length;
+            if(byteLength > 100){
+                log.info("黑红名单申请人姓名已超过100字节");
+                return new CommonResult(446, "error","黑红名单申请人姓名长度达最大值，请确认是否正确，或联系开发人员修改", null);
+            }
+        }
+        if(StringUtils.isEmpty(tListInfo.getIdCard())){
+            return new CommonResult(447, "error","申请人证件号不能为空", null);
+        }else {
+            int byteLength = tListInfo.getIdCard().getBytes().length;
+            if(byteLength > 50){
+                log.info("黑红名单申请人姓名已超过50字节");
+                return new CommonResult(448, "error","黑红名单申请人证件号长度达最大值，请确认是否正确，或联系开发人员修改", null);
+            }
+        }
         ActiveUser activeUser = (ActiveUser) session.getAttribute("activeUser");
         tListInfo.setOperator(activeUser.getFullName());
         tListInfo.setPkListId(IDUtils.getUUID());

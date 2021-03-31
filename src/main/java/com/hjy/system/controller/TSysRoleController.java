@@ -214,8 +214,8 @@ public class TSysRoleController {
     @RequiresPermissions({"role:view"})
 //    @RequiresPermissions({"role:distributePerms"})
     @PostMapping("/system/role/distribute")
-    public CommonResult FPRoleMenu(@RequestBody String parm) throws FebsException{
-        JSONObject json = JSON.parseObject(parm);
+    public CommonResult FPRoleMenu(@RequestBody String param) throws FebsException{
+        JSONObject json = JSON.parseObject(param);
         String fk_role_id=String.valueOf(json.get("fk_role_id"));
         if(fk_role_id.equals("1595564064909")){
             return new CommonResult(444,"error","超级管理员的权限不可更改!",null);

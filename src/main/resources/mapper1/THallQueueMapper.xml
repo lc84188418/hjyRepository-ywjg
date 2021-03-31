@@ -430,7 +430,9 @@
         FROM t_hall_queue t
         WHERE t.get_time =
         (SELECT MAX(t.get_time)
-        FROM t_hall_queue t where ordinal = #{ordinal,jdbcType=VARCHAR})
+        FROM t_hall_queue t
+        where ordinal = #{ordinal,jdbcType=VARCHAR}
+        and to_char(get_time,'yyyy-mm-dd') = to_char (sysdate,'yyyy-mm-dd'))
         AND remarks is null
         AND ordinal = #{ordinal,jdbcType=VARCHAR}
         and rownum = 1
@@ -723,7 +725,7 @@ ORDER BY
         FROM
         T_HALL_QUEUE
         WHERE
-        GET_TIME &lt;= SYSDATE -1
+        TO_CHAR(GET_TIME,'YYYY-MM-DD') &lt;= TO_CHAR(SYSDATE-1,'YYYY-MM-DD')
         and  END_TIME is null
     </delete>
     <delete id="deteleNoHandBeforeData">
