@@ -126,6 +126,8 @@ public interface THallQueueMapper {
     String selectANameByIdCard(String bIdCard);
     //查询代理人代办信息
     List<THallQueue> selectAB_Card_date(@Param("aIdCard")String aIdCard);
+
+    List<String> selectHanding();
     //当日某办理人员所办的业务类型
 //    List<String> selectAllBusinessTypeOneday(@Param("idCard")String idCard,@Param("queryStart") String queryStart, @Param("queryEnd") String queryEnd);
 }

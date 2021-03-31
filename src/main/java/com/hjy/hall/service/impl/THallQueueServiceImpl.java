@@ -880,7 +880,7 @@ public class THallQueueServiceImpl implements THallQueueService {
         String kzkId = JsonUtil.getStringParam(json,"kzkId");
         if(!StringUtils.isEmpty(windowName) && !StringUtils.isEmpty(ordinal)){
             //led大屏
-            this.callNumHttp(ordinal,windowName);
+//            this.callNumHttp(ordinal,windowName);
         }else {
             log.info("未传入窗口名和排队号");
             return new CommonResult(446, "error", "未传入窗口名和排队号", null);
@@ -924,16 +924,8 @@ public class THallQueueServiceImpl implements THallQueueService {
      */
     @Override
     public CommonResult bigLed(String param) throws Exception {
-        JSONObject json = JSON.parseObject(param);
-        String windowName = JsonUtil.getStringParam(json,"windowName");
-        String ordinal = JsonUtil.getStringParam(json,"ordinal");
-        if(!StringUtils.isEmpty(windowName) && !StringUtils.isEmpty(ordinal)){
-            //led大屏
-            this.callNumHttp(ordinal,windowName);
-        }else {
-            log.info("未传入窗口名和排队号");
-            return new CommonResult(446, "error", "未传入窗口名和排队号", null);
-        }
+        List<String> list = tHallQueueMapper.selectHanding();
+        this.callNumHttp(list);
         return new CommonResult(200,"success","led大屏更新成功!",null);
     }
 
@@ -1693,15 +1685,14 @@ public class THallQueueServiceImpl implements THallQueueService {
         }
     }
 
-    private synchronized String callNumHttp(String ordinal, String windowName)throws Exception {
+    private synchronized String callNumHttp(List<String> list)throws Exception {
         String turnon = PropertiesUtil.getValue("test.whether.turn.on.httpClient");
         if(!turnon.equals("true")){
             return "成功！";
         }
 
         Map<String,Object> paramMap = new HashMap<>();
-        paramMap.put("ordinal",ordinal);
-        paramMap.put("windowName",windowName);
+        paramMap.put("list",list);
         String msg = null;
         String url = PropertiesUtil.getValue("httpClient.request.url");
         msg = HttpClient4.sendPost(url+"/callNumHttp",paramMap);

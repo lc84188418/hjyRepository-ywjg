@@ -720,6 +720,13 @@ ORDER BY
     <select id="selectAB_Card_date" resultType="com.hjy.hall.entity.THallQueue">
         select A_NAME,A_IDCARD,B_IDCARD,END_TIME from T_HALL_QUEUE where A_IDCARD = #{aIdCard,jdbcType=VARCHAR}
     </select>
+    <!--    查询正在办理的排队信息-->
+    <select id="selectHanding" resultType="java.lang.String">
+        select ORDINAL||'到'||WINDOW_NAME as WINDOW_NAME
+        from T_HALL_QUEUE
+        where to_char(GET_TIME,'yyyy-mm-dd') = to_char(SYSdate,'yyyy-mm-dd')
+        and REMARKS like '%正在办理%'
+    </select>
     <delete id="deteleBeforeData">
         DELETE
         FROM
