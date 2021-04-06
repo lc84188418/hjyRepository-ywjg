@@ -310,7 +310,7 @@ public class TListInfoServiceImpl implements TListInfoService {
     @Override
     public PageResult selectWaitApproval(String param) throws Exception{
         JSONObject json = JSON.parseObject(param);
-        String listType = "名单";
+        String listType = "红名单";
         String temp = JsonUtil.getStringParam(json,"listType");
         String fullName = JsonUtil.getStringParam(json,"fullName");
         String idCard = JsonUtil.getStringParam(json,"idCard");

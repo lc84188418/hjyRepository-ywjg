@@ -38,8 +38,8 @@ public class CardFileUtil {
             String bIdMsg = null;
             StringBuilder sb = new StringBuilder(tHallMakecard.getBIdcard());
             if(bIdCardLength >0 && bIdCardLength <10){
-                bIdMsg = sb.replace(3,bIdCardLength-3,"*****").toString();
-            }else if(bIdCardLength >9 && bIdCardLength <19) {
+                bIdMsg = sb.toString();
+            }else if(bIdCardLength >9) {
                 bIdMsg = sb.replace(4,bIdCardLength-4,"*****").toString();
             }
             String aIdMsg = null;
@@ -47,8 +47,8 @@ public class CardFileUtil {
                 aIdCardLength = tHallMakecard.getAIdcard().length();
                 StringBuilder sb2 = new StringBuilder(tHallMakecard.getAIdcard());
                 if(aIdCardLength >0 && aIdCardLength <10){
-                    aIdMsg = sb2.replace(3,aIdCardLength-3,"*****").toString();
-                }else if(aIdCardLength >9 && aIdCardLength <19) {
+                    aIdMsg = sb2.toString();
+                }else if(aIdCardLength >9) {
                     aIdMsg = sb2.replace(4,aIdCardLength-4,"*****").toString();
                 }
             }
@@ -130,8 +130,8 @@ public class CardFileUtil {
             String bIdMsg = null;
             StringBuilder sb = new StringBuilder(tHallMakecard.getBIdcard());
             if(bIdCardLength >0 && bIdCardLength <10){
-                bIdMsg = sb.replace(3,bIdCardLength-3,"*****").toString();
-            }else if(bIdCardLength >9 && bIdCardLength <19) {
+                bIdMsg = sb.toString();
+            }else if(bIdCardLength >9) {
                 bIdMsg = sb.replace(4,bIdCardLength-4,"*****").toString();
             }
             String aIdMsg = null;

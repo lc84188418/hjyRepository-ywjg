@@ -225,6 +225,7 @@
         <if test="idCard != null and idCard != '' and idCard != 'null'">
             and IDCARD like '%${idCard}%'
         </if>
+        ORDER BY LIST_TYPE ASC
         ) t
         where t.rn &gt;= #{startRow,jdbcType=INTEGER}
     </select>
@@ -242,6 +243,7 @@
         <if test="idCard != null and idCard != '' and idCard != 'null'">
             and IDCARD like '%${idCard}%'
         </if>
+        ORDER BY LIST_TYPE ASC
         ) t
         where t.rn &gt;= #{startRow,jdbcType=INTEGER}
     </select>
