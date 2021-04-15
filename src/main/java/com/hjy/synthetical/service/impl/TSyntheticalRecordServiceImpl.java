@@ -12,6 +12,7 @@ import com.hjy.hall.entity.THallQueue;
 import com.hjy.synthetical.dao.TSyntheticalRecordMapper;
 import com.hjy.synthetical.entity.TSyntheticalRecord;
 import com.hjy.synthetical.service.TSyntheticalRecordService;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -153,9 +154,24 @@ public class TSyntheticalRecordServiceImpl implements TSyntheticalRecordService 
     @Transactional()
     @Override
     public CommonResult updateById(TSyntheticalRecord tSyntheticalRecord) throws Exception {
+        tSyntheticalRecord.setBaDate(new Date());
+        //说明、其他字段较长时
+        String temp1 = this.strBufferUtil(tSyntheticalRecord.getBasm());
+        tSyntheticalRecord.setBasm(temp1);
+        //修改图片和路径
+        String zzjgdmzPath = null;
+        String wtsPath = null;
+        if(tSyntheticalRecord.getZzjgdmz() != null){
+            zzjgdmzPath = tSyntheticalRecord.getZzjgdmz().replace("http://"+webIp+":"+serverPort+"/img/","");
+            tSyntheticalRecord.setZzjgdmz(zzjgdmzPath);
+        }
+        if(tSyntheticalRecord.getWts() != null){
+            wtsPath = tSyntheticalRecord.getWts().replace("http://"+webIp+":"+serverPort+"/img/","");
+            tSyntheticalRecord.setWts(wtsPath);
+        }
         int i = tSyntheticalRecordMapper.updateById(tSyntheticalRecord);
         if(i > 0){
-            return new CommonResult(200, "success", "备案信息修改成功!", null);
+            return new CommonResult(200, "success", "备案信息已修改成功!", null);
         }else {
             return new CommonResult(444, "error", "备案信息修改失败!", null);
 
@@ -233,5 +249,23 @@ public class TSyntheticalRecordServiceImpl implements TSyntheticalRecordService 
     public List<TSyntheticalRecord> selectByZzjgdm(String zzjgdm) {
         return tSyntheticalRecordMapper.selectByZzjgdm(zzjgdm);
     }
-
+    private String strBufferUtil(String param) {
+        if(StringUtils.isEmpty(param)){
+            return null;
+        }else {
+            StringBuffer resultBuffer = new StringBuffer();
+            //
+            int byteLength = param.getBytes().length;
+            if(byteLength >3999){
+                //字节过长，只取其中一部分
+                resultBuffer.append("输入字段已超过4000字节，固只录入部分");
+                if(param.length() > 1300){
+                    resultBuffer.append(param.substring(0,1200));
+                }
+                return resultBuffer.toString();
+            }else {
+                return param;
+            }
+        }
+    }
 }
