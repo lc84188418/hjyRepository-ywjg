@@ -761,7 +761,7 @@ public class THallQueueServiceImpl implements THallQueueService {
     //顺序叫号
     @Transactional()
     @Override
-    public CommonResult orderCall(HttpServletRequest request, HttpSession session) throws Exception{
+    public synchronized CommonResult orderCall(HttpServletRequest request, HttpSession session) throws Exception{
         int code = 200;
         StringBuffer stringBuffer = new StringBuffer();
         //从token中拿到当前窗口信息
@@ -770,8 +770,7 @@ public class THallQueueServiceImpl implements THallQueueService {
         if(token == null){
             return new CommonResult(445, "error", "用户信息已失效，请重新登录后再试!", null);
         }
-        String ip = token.getIp();
-        TSysWindow window = tSysWindowMapper.selectByIp(ip);
+        TSysWindow window = tSysWindowMapper.selectByIp(token.getIp());
         if(window == null){
             return new CommonResult(446, "error", "该ip暂无窗口信息，请联系维护人员!", null);
         }
@@ -801,6 +800,10 @@ public class THallQueueServiceImpl implements THallQueueService {
                 log.info("顺序叫号时ActiveUser信息已失效!");
                 return new CommonResult(445, "error", "用户信息已失效，请重新登录后再试!", null);
             }
+            /**
+             * 改为现场同步
+             */
+
             //通过此工具类可以将该窗口可办理的业务类型转化为字母显示且已经排序的List集合[B,C]
             List<String> typeList = null;
             //如[B,C]

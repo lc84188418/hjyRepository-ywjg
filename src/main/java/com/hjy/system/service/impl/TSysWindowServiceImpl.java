@@ -243,7 +243,6 @@ public class TSysWindowServiceImpl implements TSysWindowService {
         }
     }
     //暂停服务
-    @Transactional()
     @Override
     public CommonResult stopService(HttpSession session) throws Exception {
         ActiveUser activeUser = (ActiveUser) session.getAttribute("activeUser");
@@ -251,16 +250,21 @@ public class TSysWindowServiceImpl implements TSysWindowService {
         TSysWindow window = tSysWindowMapper.selectByIp(ip);
         if(window != null){
             String msg = "暂停服务";
+            String resultMsg = "暂停服务";
             Integer serviceStatus = window.getServiceStatus();
             if(serviceStatus != null && serviceStatus == 0){
                 window.setServiceStatus(1);
                 msg = "号窗口";
+                resultMsg = "开启服务";
             }
             if(serviceStatus != null && serviceStatus == 1){
                 window.setServiceStatus(0);
             }
             int i = tSysWindowMapper.stopService(window);
             if(i > 0){
+                JSONObject resultJson = new JSONObject();
+                resultJson.put("serviceStatus", window.getServiceStatus());
+                resultJson.put("windowName", window.getWindowName());
                 /**
                  * 发送提示到窗口上
                  * 示例： 发送消息（值日警官），LED屏地址（1）
@@ -271,18 +275,18 @@ public class TSysWindowServiceImpl implements TSysWindowService {
 //                    sendMsg(window.getControlCard(),msg);
                     try{
                         this.ledHttp(window.getControlCard(),msg);
-                        return new CommonResult(200,"success","暂停服务成功!",null);
+                        return new CommonResult(200,"success",resultMsg+"成功!",resultJson);
                     }catch (Exception e){
-                        return new CommonResult(447,"error","导办取号电脑未打开java程序，无法修改led屏内容!",null);
+                        return new CommonResult(200,"success",resultMsg+"成功!导办取号电脑未打开java程序，无法修改led屏内容!",resultJson);
                     }
                 }else {
-                    return new CommonResult(446,"error","暂停服务成功！该窗口未配置控制卡地址，无法展示‘暂停服务’",null);
+                    return new CommonResult(200,"success",resultMsg+"成功！该窗口未配置控制卡地址，无法同步内容",resultJson);
                 }
             }else {
-                return new CommonResult(444,"error","暂停服务失败!",null);
+                return new CommonResult(444,"error",resultMsg+"失败!",null);
             }
         }else {
-            return new CommonResult(445,"error","该窗口非业务窗口，操作无效!",null);
+            return new CommonResult(444,"error","该窗口非业务窗口，操作无效!",null);
         }
     }
 
