@@ -167,9 +167,15 @@ public class TWarnLnfoServiceImpl implements TWarnLnfoService {
         //预警信息主键
         String pkWarningId = JsonUtil.getStringParam(json,"pkWarningId");
         Warning warning = tWarnLnfoMapper.selectById(pkWarningId);
+        if(warning == null){
+            return new CommonResult(444, "error", "该预警信息已不存在!", null);
+        }
         //转化一下等待时长
-        long waitTime = (warning.getStartTime().getTime()-warning.getGetTime().getTime())/1000;
-        warning.setWaitTime(DateUtil.translateLong(waitTime));
+        try {
+            long waitTime = (warning.getStartTime().getTime()-warning.getGetTime().getTime())/1000;
+            warning.setWaitTime(DateUtil.translateLong(waitTime));
+        }catch (NullPointerException e){
+        }
         //结束时间
         if(warning.getEndTime() != null){
             //计算处理时间

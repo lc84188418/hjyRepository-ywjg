@@ -91,7 +91,7 @@ public class WarningController {
         try {
             return warningService.details(param);
         } catch (Exception e) {
-            String message = "核查失败";
+            String message = "查看详情失败";
             log.error(message, e);
             throw new FebsException(message);
         }

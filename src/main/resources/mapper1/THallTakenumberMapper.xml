@@ -79,6 +79,7 @@
             </if>
         </set>
         where pk_takeNum_id = #{pkTakenumId,jdbcType=VARCHAR}
+        and flag = 0
     </update>
 
     <!--通过主键删除-->

@@ -52,6 +52,8 @@ import javax.servlet.http.HttpSession;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 
 /**
@@ -66,6 +68,7 @@ public class THallQueueServiceImpl implements THallQueueService {
 
     private static String ERROR = "error";
     private static String SUCCESS = "success";
+    private Lock lock = new ReentrantLock();
     @Autowired
     private THallQueueMapper tHallQueueMapper;
     @Autowired
@@ -836,7 +839,14 @@ public class THallQueueServiceImpl implements THallQueueService {
         }
     }
 
-    private synchronized Map<String, Object> synchronizedCallNum(TSysWindow window, String agent, String idCard) {
+    /**
+     * synchronized
+     * @param window
+     * @param agent
+     * @param idCard
+     * @return
+     */
+    private  Map<String, Object> synchronizedCallNum(TSysWindow window, String agent, String idCard) {
         //异步处理更新排队信息表
         Map<String,Object> sxjhMap = new HashMap<>();
         //通过此工具类可以将该窗口可办理的业务类型转化为字母显示且已经排序的List集合[B,C]
@@ -847,33 +857,76 @@ public class THallQueueServiceImpl implements THallQueueService {
         String ordinal = "";
         //mark为判断该窗口所办理的业务类型是否有号的标识
         int mark = 0;
-        //通过foreach判断是否有号，如果typeList所包含的所有业务类型都在数据库中查询不到号码,则该窗口已无号可办,即typeList.size()= mark
-        for (String typeSingle : typeList) {
-            String takenumbers = tHallTakenumberMapper.getMinOrdinal(typeSingle);
-            if (takenumbers != null) {
-                ordinal = takenumbers;
-                break;
-            } else {
-                mark++;
+        /**
+         * 后面这一段就是变更操作数据的
+         */
+        // 获取锁对象
+        lock.lock();
+        try{
+            //通过foreach判断是否有号，如果typeList所包含的所有业务类型都在数据库中查询不到号码,则该窗口已无号可办,即typeList.size()= mark
+            for (String typeSingle : typeList) {
+                String takenumbers = tHallTakenumberMapper.getMinOrdinal(typeSingle);
+                if (takenumbers != null) {
+                    ordinal = takenumbers;
+                    break;
+                } else {
+                    mark++;
+                }
             }
-        }
-        if (typeList.size() == mark) {
-            sxjhMap.put("code",449);
-            sxjhMap.put("status","error");
-            sxjhMap.put("msg","该窗口"+mark+"种业务均已无号！");
+            if (typeList.size() == mark) {
+                sxjhMap.put("code",449);
+                sxjhMap.put("status","error");
+                sxjhMap.put("msg","该窗口"+mark+"种业务均已无号！");
+                return sxjhMap;
+            }
+            //异步处理取号表的flag标识
+            int i = ObjectAsyncTask.updateTakeNumberFlag(ordinal,1);
+            if(i < 0){
+                log.info("顺序叫号时修改取号表的flag标识失败！");
+                sxjhMap.put("code",450);
+                sxjhMap.put("status","error");
+                sxjhMap.put("msg","顺序叫号时修改取号表的flag标识失败！");
+                return sxjhMap;
+            }
+            sxjhMap = ObjectAsyncTask.updateQueue(ordinal,window.getWindowName(),agent,idCard);
             return sxjhMap;
+        }catch (Exception e){
+            throw new RuntimeException("顺序叫号出差！");
+        }finally {
+            // 释放锁对象
+            lock.unlock();
         }
-        //异步处理取号表的flag标识
-        int i = ObjectAsyncTask.updateTakeNumberFlag(ordinal,1);
-        if(i < 0){
-            log.info("顺序叫号时修改取号表的flag标识失败！");
-            sxjhMap.put("code",450);
-            sxjhMap.put("status","error");
-            sxjhMap.put("msg","顺序叫号时修改取号表的flag标识失败！");
-            return sxjhMap;
-        }
-        sxjhMap = ObjectAsyncTask.updateQueue(ordinal,window.getWindowName(),agent,idCard);
-        return sxjhMap;
+
+        /**
+         * 这是原来的方式
+         */
+//        //通过foreach判断是否有号，如果typeList所包含的所有业务类型都在数据库中查询不到号码,则该窗口已无号可办,即typeList.size()= mark
+//        for (String typeSingle : typeList) {
+//            String takenumbers = tHallTakenumberMapper.getMinOrdinal(typeSingle);
+//            if (takenumbers != null) {
+//                ordinal = takenumbers;
+//                break;
+//            } else {
+//                mark++;
+//            }
+//        }
+//        if (typeList.size() == mark) {
+//            sxjhMap.put("code",449);
+//            sxjhMap.put("status","error");
+//            sxjhMap.put("msg","该窗口"+mark+"种业务均已无号！");
+//            return sxjhMap;
+//        }
+//        //异步处理取号表的flag标识
+//        int i = ObjectAsyncTask.updateTakeNumberFlag(ordinal,1);
+//        if(i < 0){
+//            log.info("顺序叫号时修改取号表的flag标识失败！");
+//            sxjhMap.put("code",450);
+//            sxjhMap.put("status","error");
+//            sxjhMap.put("msg","顺序叫号时修改取号表的flag标识失败！");
+//            return sxjhMap;
+//        }
+//        sxjhMap = ObjectAsyncTask.updateQueue(ordinal,window.getWindowName(),agent,idCard);
+//        return sxjhMap;
     }
 
     /**

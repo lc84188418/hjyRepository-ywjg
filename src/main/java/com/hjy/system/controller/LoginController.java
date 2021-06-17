@@ -151,7 +151,7 @@ public class LoginController {
             }
             return new CommonResult(200,"success","成功退出系统!",null);
         }catch (Exception e) {
-            String message = "系统内部异常";
+            String message = "系统内部异常，退出失败";
             log.error(message, e);
             throw new FebsException(message);
         }
